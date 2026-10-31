@@ -533,7 +533,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: the locale picker lists the label map's locales by hand, so a newly labelled locale never shows in the picker
+- name: has-label check lists the label map's locales by hand, so a newly labelled locale is reported as unlabelled
   inputs:
     file: src/i18n/picker.ts
     unchanged:
@@ -552,14 +552,16 @@ cases:
     after: |
       import { LOCALE_LABELS } from "./labels";
 
-      export const PICKER_LOCALES = ["en", "fr", "de"];
-
       export function localeLabel(code: string): string {
         return LOCALE_LABELS.get(code) ?? code;
+      }
+
+      export function hasLabel(code: string): boolean {
+        return ["en", "fr", "de"].includes(code);
       }
   expected_output:
     outcome: invalid
-- name: the locale picker takes its locales from the label map
+- name: has-label check asks the label map
   inputs:
     file: src/i18n/picker.ts
     unchanged:
@@ -578,10 +580,12 @@ cases:
     after: |
       import { LOCALE_LABELS } from "./labels";
 
-      export const PICKER_LOCALES = [...LOCALE_LABELS.keys()];
-
       export function localeLabel(code: string): string {
         return LOCALE_LABELS.get(code) ?? code;
+      }
+
+      export function hasLabel(code: string): boolean {
+        return LOCALE_LABELS.has(code);
       }
   expected_output:
     outcome: valid
