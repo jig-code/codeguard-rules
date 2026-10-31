@@ -533,42 +533,56 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a role union lists the permission map's roles by hand, so a new role is missing from it
+- name: the locale picker lists the label map's locales by hand, so a newly labelled locale never shows in the picker
   inputs:
-    file: src/auth/roles.ts
+    file: src/i18n/picker.ts
+    unchanged:
+      src/i18n/labels.ts: |
+        export const LOCALE_LABELS = new Map<string, string>([
+          ["en", "English"],
+          ["fr", "Français"],
+          ["de", "Deutsch"],
+        ]);
     before: |
-      export const PERMISSIONS = {
-        viewer: ["read"],
-        editor: ["read", "write"],
-        owner: ["read", "write", "delete"],
-      } as const;
-    after: |
-      export const PERMISSIONS = {
-        viewer: ["read"],
-        editor: ["read", "write"],
-        owner: ["read", "write", "delete"],
-      } as const;
+      import { LOCALE_LABELS } from "./labels";
 
-      export type Role = "viewer" | "editor" | "owner";
+      export function localeLabel(code: string): string {
+        return LOCALE_LABELS.get(code) ?? code;
+      }
+    after: |
+      import { LOCALE_LABELS } from "./labels";
+
+      export const PICKER_LOCALES = ["en", "fr", "de"];
+
+      export function localeLabel(code: string): string {
+        return LOCALE_LABELS.get(code) ?? code;
+      }
   expected_output:
     outcome: invalid
-- name: the role type is taken from the permission map's keys
+- name: the locale picker takes its locales from the label map
   inputs:
-    file: src/auth/roles.ts
+    file: src/i18n/picker.ts
+    unchanged:
+      src/i18n/labels.ts: |
+        export const LOCALE_LABELS = new Map<string, string>([
+          ["en", "English"],
+          ["fr", "Français"],
+          ["de", "Deutsch"],
+        ]);
     before: |
-      export const PERMISSIONS = {
-        viewer: ["read"],
-        editor: ["read", "write"],
-        owner: ["read", "write", "delete"],
-      } as const;
-    after: |
-      export const PERMISSIONS = {
-        viewer: ["read"],
-        editor: ["read", "write"],
-        owner: ["read", "write", "delete"],
-      } as const;
+      import { LOCALE_LABELS } from "./labels";
 
-      export type Role = keyof typeof PERMISSIONS;
+      export function localeLabel(code: string): string {
+        return LOCALE_LABELS.get(code) ?? code;
+      }
+    after: |
+      import { LOCALE_LABELS } from "./labels";
+
+      export const PICKER_LOCALES = [...LOCALE_LABELS.keys()];
+
+      export function localeLabel(code: string): string {
+        return LOCALE_LABELS.get(code) ?? code;
+      }
   expected_output:
     outcome: valid
 - name: an interface repeats the webhook schema's fields, so the two drift when the webhook changes
