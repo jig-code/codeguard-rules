@@ -32,7 +32,7 @@ the languages it runs on.
 | Rule | Checks | Validated |
 |---|---|---|
 | `dry` | Don't Repeat Yourself: code the change adds doesn't state a computation, process, set or outside shape again when the file or a module it imports already states it | Not yet |
-| `domain-logic-separate-from-io` | Domain logic separate from I/O: a domain decision is made in code that does no I/O, so a function the change adds or edits doesn't decide and read or change state outside the program in the same body | Not yet |
+| `domain-logic-separate-from-io` | Domain logic separate from I/O: a function that makes a domain decision does no I/O, so a function the change adds or edits doesn't decide and read or change anything outside the program in the same body | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
