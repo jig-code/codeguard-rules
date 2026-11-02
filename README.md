@@ -152,9 +152,9 @@ task eval                # codeguard eval: judge each judge rule eval case with 
 Credentials with the Vertex AI User role, `GOOGLE_CLOUD_PROJECT`, and
 `GOOGLE_CLOUD_LOCATION=global`.
 
-A Claude Code session here installs codeguard at the release CI pins (`CODEGUARD_REF`
+A Claude Code session here installs codeguard at the commit CI pins (`CODEGUARD_REF`
 in `.github/workflows/ci.yaml`) when it starts, through `.claude/hooks/session-start.sh`,
-so local runs match CI. Moving to a new codeguard release is that one line.
+so local runs match CI. Moving to a new codeguard commit is that one line.
 
 CI judges only the rules a change can affect: a rule whose skill, binding, eval or a
 trigger's gate changed, or every rule when `codeguard-package.yaml`, the workflow or
@@ -191,5 +191,5 @@ binding's model on Vertex AI in the `global` location, the only one that serves
 `GOOGLE_CREDENTIALS` (a service account key with the Vertex AI User role), and bills
 the project in the variable `GOOGLE_CLOUD_PROJECT`. codeguard's README, under "Judge with Gemini on Google
 Cloud", has the setup.
-CI runs the codeguard release in `CODEGUARD_REF` in `.github/workflows/ci.yaml`, so
-moving to a new release is a change here, which judges every rule.
+CI runs the codeguard commit in `CODEGUARD_REF` in `.github/workflows/ci.yaml`, so
+moving to a new commit is a change here, which judges every rule.
