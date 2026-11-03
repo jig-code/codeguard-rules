@@ -1,7 +1,7 @@
 #!/bin/bash
-# Installs the codeguard CLI at the release CI pins (CODEGUARD_REF in ci.yaml), so a
+# Installs the codeguard CLI at the commit CI pins (CODEGUARD_REF in ci.yaml), so a
 # session's codeguard test and codeguard eval match CI's. Skips the install when that
-# version is already installed.
+# commit is already installed.
 set -euo pipefail
 
 workflow="$CLAUDE_PROJECT_DIR/.github/workflows/ci.yaml"
@@ -11,7 +11,8 @@ if [ -z "$ref" ]; then
   exit 1
 fi
 
-if ! uv tool list 2>/dev/null | grep -qx "codeguard $ref"; then
+receipt="$HOME/.local/share/uv/tools/codeguard/uv-receipt.toml"
+if ! grep -q "jig-code/codeguard?rev=$ref\"" "$receipt" 2>/dev/null; then
   uv tool install --force --quiet "git+https://github.com/jig-code/codeguard@$ref"
 fi
 
