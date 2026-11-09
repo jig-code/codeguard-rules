@@ -418,8 +418,6 @@ cases:
             if code.startswith("TEST-"):
                 return False
             return re.fullmatch(r"[A-Z]{4}-\d{4}", code) is not None
-    before: |
-      from checkout.coupons import is_coupon_code
     after: |
       import re
 
