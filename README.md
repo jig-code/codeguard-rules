@@ -118,7 +118,7 @@ packages:
   brings test files back into an app rule.
 - `codeguard update` moves `ref` to the newest tag.
 
-Diagnostics name a rule by package, ruleset and id: `jig-code/python/no-del-param`.
+Diagnostics name a rule by package, ruleset and id: `codeguard/python/no-del-param`.
 
 The pattern rules work with ast-grep `>=0.45`, set in `codeguard-package.yaml`. A
 project that sets `ast-grep` in its config must pick a version in that range.

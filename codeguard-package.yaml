@@ -1,4 +1,4 @@
-name: jig-code
+name: codeguard
 rulesets: [general, python]
 ast-grep: ">=0.45"
 codeguard: ">=0.9"
