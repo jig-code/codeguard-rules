@@ -1,27 +1,20 @@
 id: mock-use
 snapshots:
-  ? |
-    @mock.patch.object(OrderService, "_validate")
-    def test_x(validate):
-        pass
-  : labels:
-    - source: '@mock.patch.object(OrderService, "_validate")'
+  "@mock.patch.object(OrderService, \"_validate\")\ndef test_x(validate):\n    pass\n":
+    labels:
+    - source: "@mock.patch.object(OrderService, \"_validate\")"
       style: primary
       start: 0
       end: 45
-  ? |
-    @patch('a.b')
-    def test_x(b):
-        pass
-  : labels:
-    - source: '@patch(''a.b'')'
+  "@patch('a.b')\ndef test_x(b):\n    pass\n":
+    labels:
+    - source: "@patch('a.b')"
       style: primary
       start: 0
       end: 13
-  ? |
-    billing.invoices.calculate_tax = lambda amount: 0
-  : labels:
-    - source: 'billing.invoices.calculate_tax = lambda amount: 0'
+  "billing.invoices.calculate_tax = lambda amount: 0\n":
+    labels:
+    - source: "billing.invoices.calculate_tax = lambda amount: 0"
       style: primary
       start: 0
       end: 49
@@ -29,13 +22,12 @@ snapshots:
       style: secondary
       start: 0
       end: 30
-    - source: 'lambda amount: 0'
+    - source: "lambda amount: 0"
       style: secondary
       start: 33
       end: 49
-  ? |
-    client = AsyncMock()
-  : labels:
+  "client = AsyncMock()\n":
+    labels:
     - source: AsyncMock()
       style: primary
       start: 9
@@ -44,9 +36,8 @@ snapshots:
       style: secondary
       start: 9
       end: 18
-  ? |
-    client = MagicMock()
-  : labels:
+  "client = MagicMock()\n":
+    labels:
     - source: MagicMock()
       style: primary
       start: 9
@@ -55,9 +46,8 @@ snapshots:
       style: secondary
       start: 9
       end: 18
-  ? |
-    mocker.patch("billing.invoices.calculate_tax")
-  : labels:
+  "mocker.patch(\"billing.invoices.calculate_tax\")\n":
+    labels:
     - source: mocker.patch("billing.invoices.calculate_tax")
       style: primary
       start: 0
@@ -66,9 +56,8 @@ snapshots:
       style: secondary
       start: 0
       end: 12
-  ? |
-    monkeypatch.setattr(module, 'load', fake)
-  : labels:
+  "monkeypatch.setattr(module, 'load', fake)\n":
+    labels:
     - source: monkeypatch.setattr(module, 'load', fake)
       style: primary
       start: 0
@@ -77,9 +66,8 @@ snapshots:
       style: secondary
       start: 0
       end: 19
-  ? |
-    monkeypatch.setitem(registry, "orders", fake)
-  : labels:
+  "monkeypatch.setitem(registry, \"orders\", fake)\n":
+    labels:
     - source: monkeypatch.setitem(registry, "orders", fake)
       style: primary
       start: 0
@@ -88,9 +76,8 @@ snapshots:
       style: secondary
       start: 0
       end: 19
-  ? |
-    repository = create_autospec(OrderRepository)
-  : labels:
+  "repository = create_autospec(OrderRepository)\n":
+    labels:
     - source: create_autospec(OrderRepository)
       style: primary
       start: 13
@@ -99,9 +86,8 @@ snapshots:
       style: secondary
       start: 13
       end: 28
-  ? |
-    repository = mock.Mock()
-  : labels:
+  "repository = mock.Mock()\n":
+    labels:
     - source: mock.Mock()
       style: primary
       start: 13
@@ -110,9 +96,8 @@ snapshots:
       style: secondary
       start: 13
       end: 22
-  ? |
-    setattr(billing.invoices, "calculate_tax", fake)
-  : labels:
+  "setattr(billing.invoices, \"calculate_tax\", fake)\n":
+    labels:
     - source: setattr(billing.invoices, "calculate_tax", fake)
       style: primary
       start: 0
@@ -121,10 +106,8 @@ snapshots:
       style: secondary
       start: 0
       end: 7
-  ? |
-    with patch("billing.invoices.calculate_tax", return_value=1):
-        pass
-  : labels:
+  "with patch(\"billing.invoices.calculate_tax\", return_value=1):\n    pass\n":
+    labels:
     - source: patch("billing.invoices.calculate_tax", return_value=1)
       style: primary
       start: 5
@@ -133,11 +116,9 @@ snapshots:
       style: secondary
       start: 5
       end: 10
-  ? |
-    with patch.dict(os.environ, {"MODE": "live"}):
-        pass
-  : labels:
-    - source: 'patch.dict(os.environ, {"MODE": "live"})'
+  "with patch.dict(os.environ, {\"MODE\": \"live\"}):\n    pass\n":
+    labels:
+    - source: "patch.dict(os.environ, {\"MODE\": \"live\"})"
       style: primary
       start: 5
       end: 45
@@ -145,10 +126,8 @@ snapshots:
       style: secondary
       start: 5
       end: 15
-  ? |
-    with patch.object(OrderService, "_validate"):
-        pass
-  : labels:
+  "with patch.object(OrderService, \"_validate\"):\n    pass\n":
+    labels:
     - source: patch.object(OrderService, "_validate")
       style: primary
       start: 5

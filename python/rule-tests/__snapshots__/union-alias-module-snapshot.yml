@@ -1,13 +1,7 @@
 id: union-alias-module
 snapshots:
-  ? |
-    @dataclass
-    class Card:
-        pass
-
-
-    Payment = Card | Transfer
-  : labels:
+  "@dataclass\nclass Card:\n    pass\n\n\nPayment = Card | Transfer\n":
+    labels:
     - source: |-
         @dataclass
         class Card:
@@ -37,9 +31,8 @@ snapshots:
       style: secondary
       start: 0
       end: 60
-  ? |
-    Payment = Annotated[Card | Transfer, Field(discriminator="kind")]
-  : labels:
+  "Payment = Annotated[Card | Transfer, Field(discriminator=\"kind\")]\n":
+    labels:
     - source: Payment = Annotated[Card | Transfer, Field(discriminator="kind")]
       style: primary
       start: 0
@@ -57,9 +50,8 @@ snapshots:
       style: secondary
       start: 0
       end: 66
-  ? |
-    Payment = Card | Transfer
-  : labels:
+  "Payment = Card | Transfer\n":
+    labels:
     - source: Payment = Card | Transfer
       style: primary
       start: 0
@@ -77,9 +69,8 @@ snapshots:
       style: secondary
       start: 0
       end: 26
-  ? |
-    Payment = Union[Card, Transfer]
-  : labels:
+  "Payment = Union[Card, Transfer]\n":
+    labels:
     - source: Payment = Union[Card, Transfer]
       style: primary
       start: 0
@@ -97,12 +88,8 @@ snapshots:
       style: secondary
       start: 0
       end: 32
-  ? |
-    VERSION = "2024-06"
-
-
-    type Payment = Card | Transfer
-  : labels:
+  "VERSION = \"2024-06\"\n\n\ntype Payment = Card | Transfer\n":
+    labels:
     - source: VERSION = "2024-06"
       style: primary
       start: 0
@@ -123,13 +110,8 @@ snapshots:
       style: secondary
       start: 0
       end: 53
-  ? |
-    class Card:
-        pass
-
-
-    type Payment = Card | Transfer
-  : labels:
+  "class Card:\n    pass\n\n\ntype Payment = Card | Transfer\n":
+    labels:
     - source: |-
         class Card:
             pass
@@ -153,13 +135,8 @@ snapshots:
       style: secondary
       start: 0
       end: 54
-  ? |
-    def fee(payment):
-        return 1
-
-
-    type Payment = Card | Transfer
-  : labels:
+  "def fee(payment):\n    return 1\n\n\ntype Payment = Card | Transfer\n":
+    labels:
     - source: |-
         def fee(payment):
             return 1
@@ -183,12 +160,8 @@ snapshots:
       style: secondary
       start: 0
       end: 64
-  ? |
-    from payments.transfer import Transfer
-
-
-    type Payment = Card | Transfer
-  : labels:
+  "from payments.transfer import Transfer\n\n\ntype Payment = Card | Transfer\n":
+    labels:
     - source: from payments.transfer import Transfer
       style: primary
       start: 0
@@ -209,9 +182,8 @@ snapshots:
       style: secondary
       start: 0
       end: 72
-  ? |
-    type Payment = Card | Transfer
-  : labels:
+  "type Payment = Card | Transfer\n":
+    labels:
     - source: type Payment = Card | Transfer
       style: primary
       start: 0

@@ -1,9 +1,7 @@
 id: normalizing-call
 snapshots:
-  ? |
-    actual = copy.copy(order)
-    actual.id = None
-  : labels:
+  "actual = copy.copy(order)\nactual.id = None\n":
+    labels:
     - source: copy.copy(order)
       style: primary
       start: 9
@@ -12,9 +10,8 @@ snapshots:
       style: secondary
       start: 9
       end: 18
-  ? |
-    actual = result.model_dump(exclude={'id'})
-  : labels:
+  "actual = result.model_dump(exclude={'id'})\n":
+    labels:
     - source: exclude={'id'}
       style: primary
       start: 27
@@ -23,9 +20,8 @@ snapshots:
       style: secondary
       start: 27
       end: 34
-  ? |
-    actual = result.model_dump(exclude_none=True)
-  : labels:
+  "actual = result.model_dump(exclude_none=True)\n":
+    labels:
     - source: exclude_none=True
       style: primary
       start: 27
@@ -34,9 +30,8 @@ snapshots:
       style: secondary
       start: 27
       end: 39
-  ? |
-    actual = result.model_dump(include={'total'})
-  : labels:
+  "actual = result.model_dump(include={'total'})\n":
+    labels:
     - source: include={'total'}
       style: primary
       start: 27
@@ -45,10 +40,9 @@ snapshots:
       style: secondary
       start: 27
       end: 34
-  ? |
-    actual = {key: value for key, value in vars(order).items() if key != 'id'}
-  : labels:
-    - source: '{key: value for key, value in vars(order).items() if key != ''id''}'
+  "actual = {key: value for key, value in vars(order).items() if key != 'id'}\n":
+    labels:
+    - source: "{key: value for key, value in vars(order).items() if key != 'id'}"
       style: primary
       start: 9
       end: 74
@@ -64,10 +58,9 @@ snapshots:
       style: secondary
       start: 59
       end: 73
-  ? |
-    assert expected == result.model_copy(update={'id': None})
-  : labels:
-    - source: 'result.model_copy(update={''id'': None})'
+  "assert expected == result.model_copy(update={'id': None})\n":
+    labels:
+    - source: "result.model_copy(update={'id': None})"
       style: primary
       start: 19
       end: 57
@@ -75,9 +68,8 @@ snapshots:
       style: secondary
       start: 19
       end: 36
-  ? |
-    assert replace(result, id=None) == expected
-  : labels:
+  "assert replace(result, id=None) == expected\n":
+    labels:
     - source: replace(result, id=None)
       style: primary
       start: 7
@@ -86,17 +78,15 @@ snapshots:
       style: secondary
       start: 7
       end: 14
-  ? |
-    del actual['id']
-  : labels:
+  "del actual['id']\n":
+    labels:
     - source: del actual['id']
       style: primary
       start: 0
       end: 16
-  ? |
-    errors = [d for d in review.diagnostics if d.is_error]
-  : labels:
-    - source: '[d for d in review.diagnostics if d.is_error]'
+  "errors = [d for d in review.diagnostics if d.is_error]\n":
+    labels:
+    - source: "[d for d in review.diagnostics if d.is_error]"
       style: primary
       start: 9
       end: 54
@@ -108,10 +98,8 @@ snapshots:
       style: secondary
       start: 40
       end: 53
-  ? |
-    order.id = None
-    assert order == Order(id=None, total=1)
-  : labels:
+  "order.id = None\nassert order == Order(id=None, total=1)\n":
+    labels:
     - source: order.id = None
       style: primary
       start: 0

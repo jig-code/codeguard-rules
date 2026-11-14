@@ -9,7 +9,9 @@ note: |
   and name it: `payment: CardPayment | BankPayment = Field(discriminator="kind")`, or
   inside a type, `list[Annotated[CardPayment | BankPayment, Field(discriminator="kind")]]`.
 metadata:
-  why: With the tag named, the parser reads one field, picks the model, and reports errors against that model alone.
+  why: >-
+    A union with no named discriminator is parsed by trying each model in turn, so a
+    payload that fits two models becomes whichever is tried first.
 utils:
   pydantic-model:
     kind: class_definition

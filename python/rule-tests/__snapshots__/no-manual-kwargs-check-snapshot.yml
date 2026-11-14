@@ -1,12 +1,7 @@
 id: no-manual-kwargs-check
 snapshots:
-  ? |
-    def make_order(**kwargs):
-        unknown = set(kwargs) - {"total"}
-        if unknown:
-            raise TypeError(f"unexpected {unknown}")
-        return ExampleOrder(**kwargs)
-  : labels:
+  "def make_order(**kwargs):\n    unknown = set(kwargs) - {\"total\"}\n    if unknown:\n        raise TypeError(f\"unexpected {unknown}\")\n    return ExampleOrder(**kwargs)\n":
+    labels:
     - source: |-
         def make_order(**kwargs):
             unknown = set(kwargs) - {"total"}
@@ -16,11 +11,11 @@ snapshots:
       style: primary
       start: 0
       end: 162
-    - source: '**kwargs'
+    - source: "**kwargs"
       style: secondary
       start: 15
       end: 23
-    - source: '**kwargs'
+    - source: "**kwargs"
       style: secondary
       start: 15
       end: 23

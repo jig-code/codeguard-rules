@@ -6,10 +6,10 @@ snapshots:
         class ExampleService():
             def __init__(self, repository):
                 self._repository = repository
-        
+
             def get(self, example_id):
                 return self._repository.get(example_id)
-        
+
             def save(self, example):
                 self._repository.save(example)
       style: primary
@@ -54,10 +54,10 @@ snapshots:
     - source: |-
         def __init__(self, repository):
                 self._repository = repository
-        
+
             def get(self, example_id):
                 return self._repository.get(example_id)
-        
+
             def save(self, example):
                 self._repository.save(example)
       style: secondary
@@ -69,11 +69,11 @@ snapshots:
         class ExampleService:
             def __init__(self, repository):
                 self._repository = repository
-        
+
             async def get(self, example_id):
                 """Get one example."""
                 return await self._repository.get(example_id)
-        
+
             async def save(self, example):
                 await self._repository.save(example)
       style: primary
@@ -121,11 +121,11 @@ snapshots:
     - source: |-
         def __init__(self, repository):
                 self._repository = repository
-        
+
             async def get(self, example_id):
                 """Get one example."""
                 return await self._repository.get(example_id)
-        
+
             async def save(self, example):
                 await self._repository.save(example)
       style: secondary
@@ -137,11 +137,11 @@ snapshots:
         class ExampleService:
             def __init__(self, repository):
                 self._repository = repository
-        
+
             def get(self, example_id):
                 # Reads through to the store.
                 return self._repository.get(example_id)
-        
+
             def save(self, example):
                 self._repository.save(example)
       style: primary
@@ -187,11 +187,11 @@ snapshots:
     - source: |-
         def __init__(self, repository):
                 self._repository = repository
-        
+
             def get(self, example_id):
                 # Reads through to the store.
                 return self._repository.get(example_id)
-        
+
             def save(self, example):
                 self._repository.save(example)
       style: secondary
@@ -203,10 +203,10 @@ snapshots:
         class ExampleService:
             def __init__(self, repository):
                 self._repository = repository
-        
+
             def get(self, example_id):
                 return self._repository.get(example_id)
-        
+
             def save(self, example):
                 self._repository.save(example)
       style: primary
@@ -251,10 +251,10 @@ snapshots:
     - source: |-
         def __init__(self, repository):
                 self._repository = repository
-        
+
             def get(self, example_id):
                 return self._repository.get(example_id)
-        
+
             def save(self, example):
                 self._repository.save(example)
       style: secondary

@@ -90,7 +90,7 @@ code skip test files:
 | `no-assert-on-lookup-field` | Don't assert the field used to find an item |
 | `no-bucket-module-names` | No `utils`, `helpers`, `common`, `shared`, or `contracts` modules |
 | `no-class-level-mutable-container` | No mutating a class attribute through `self`: a method never mutates, through `self`, a list, dict or set that the class body binds and every instance shares |
-| `union-declares-discriminator-python`, `union-declares-discriminator-typescript` | Union declares discriminator: a pydantic field typed as a union of models defined in the file names its discriminator, and a `z.union` of object schemas sharing a literal field is a `z.discriminatedUnion` (the syntactic form of `discriminated-unions`) |
+| `union-declares-discriminator-python`, `union-declares-discriminator-typescript` | Union declares discriminator: a pydantic field typed as a union of two or more models defined in the file names its discriminator, and a `z.union` of two or more object schemas defined in the file is a `z.discriminatedUnion` (the syntactic form of `discriminated-unions`) |
 | `no-comments-in-tests` | No comments in test files, except tool directives |
 | `no-constructed-test-constants` | No module-level `UPPER = SomeClass(...)` in test files; build it in a fixture |
 | `no-default-constructor-fixtures` | No fixture or test helper that only returns `SomeClass()` |

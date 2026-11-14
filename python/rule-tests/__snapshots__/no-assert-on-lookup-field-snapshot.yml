@@ -1,9 +1,7 @@
 id: no-assert-on-lookup-field
 snapshots:
-  ? |
-    def test_sku():
-        assert "A1" == next(i for i in result.items if i.sku == "A1").sku
-  : labels:
+  "def test_sku():\n    assert \"A1\" == next(i for i in result.items if i.sku == \"A1\").sku\n":
+    labels:
     - source: next(i for i in result.items if i.sku == "A1").sku
       style: primary
       start: 35
@@ -16,19 +14,17 @@ snapshots:
       style: secondary
       start: 20
       end: 85
-    - source: '"A1" == next(i for i in result.items if i.sku == "A1").sku'
+    - source: "\"A1\" == next(i for i in result.items if i.sku == \"A1\").sku"
       style: secondary
       start: 27
       end: 85
-  ? |
-    def test_sku():
-        assert [i for i in result.items if "A1" == i.sku][0].sku == "A1"
-  : labels:
-    - source: '[i for i in result.items if "A1" == i.sku][0].sku'
+  "def test_sku():\n    assert [i for i in result.items if \"A1\" == i.sku][0].sku == \"A1\"\n":
+    labels:
+    - source: "[i for i in result.items if \"A1\" == i.sku][0].sku"
       style: primary
       start: 27
       end: 76
-    - source: '[i for i in result.items if "A1" == i.sku][0]'
+    - source: "[i for i in result.items if \"A1\" == i.sku][0]"
       style: secondary
       start: 27
       end: 72
@@ -36,19 +32,17 @@ snapshots:
       style: secondary
       start: 20
       end: 84
-    - source: '[i for i in result.items if "A1" == i.sku][0].sku == "A1"'
+    - source: "[i for i in result.items if \"A1\" == i.sku][0].sku == \"A1\""
       style: secondary
       start: 27
       end: 84
-  ? |
-    def test_sku():
-        assert [i for i in result.items if i.sku == "A1"][0].sku == "A1"
-  : labels:
-    - source: '[i for i in result.items if i.sku == "A1"][0].sku'
+  "def test_sku():\n    assert [i for i in result.items if i.sku == \"A1\"][0].sku == \"A1\"\n":
+    labels:
+    - source: "[i for i in result.items if i.sku == \"A1\"][0].sku"
       style: primary
       start: 27
       end: 76
-    - source: '[i for i in result.items if i.sku == "A1"][0]'
+    - source: "[i for i in result.items if i.sku == \"A1\"][0]"
       style: secondary
       start: 27
       end: 72
@@ -56,14 +50,12 @@ snapshots:
       style: secondary
       start: 20
       end: 84
-    - source: '[i for i in result.items if i.sku == "A1"][0].sku == "A1"'
+    - source: "[i for i in result.items if i.sku == \"A1\"][0].sku == \"A1\""
       style: secondary
       start: 27
       end: 84
-  ? |
-    def test_sku():
-        assert next((i for i in result.items if "A1" == i.sku), None).sku == "A1"
-  : labels:
+  "def test_sku():\n    assert next((i for i in result.items if \"A1\" == i.sku), None).sku == \"A1\"\n":
+    labels:
     - source: next((i for i in result.items if "A1" == i.sku), None).sku
       style: primary
       start: 27
@@ -80,10 +72,8 @@ snapshots:
       style: secondary
       start: 27
       end: 93
-  ? |
-    def test_sku():
-        assert next((i for i in result.items if i.sku == "A1"), None).sku == "A1"
-  : labels:
+  "def test_sku():\n    assert next((i for i in result.items if i.sku == \"A1\"), None).sku == \"A1\"\n":
+    labels:
     - source: next((i for i in result.items if i.sku == "A1"), None).sku
       style: primary
       start: 27
@@ -100,10 +90,8 @@ snapshots:
       style: secondary
       start: 27
       end: 93
-  ? |
-    def test_sku():
-        assert next(i for i in result.items if "A1" == i.sku).sku == "A1"
-  : labels:
+  "def test_sku():\n    assert next(i for i in result.items if \"A1\" == i.sku).sku == \"A1\"\n":
+    labels:
     - source: next(i for i in result.items if "A1" == i.sku).sku
       style: primary
       start: 27
@@ -120,10 +108,8 @@ snapshots:
       style: secondary
       start: 27
       end: 85
-  ? |
-    def test_sku():
-        assert next(i for i in result.items if i.sku == "A1").sku == "A1"
-  : labels:
+  "def test_sku():\n    assert next(i for i in result.items if i.sku == \"A1\").sku == \"A1\"\n":
+    labels:
     - source: next(i for i in result.items if i.sku == "A1").sku
       style: primary
       start: 27
@@ -140,11 +126,8 @@ snapshots:
       style: secondary
       start: 27
       end: 85
-  ? |
-    def test_sku():
-        line = next(i for i in result.items if i.sku == "A1")
-        assert line.sku == "A1"
-  : labels:
+  "def test_sku():\n    line = next(i for i in result.items if i.sku == \"A1\")\n    assert line.sku == \"A1\"\n":
+    labels:
     - source: line.sku
       style: primary
       start: 85

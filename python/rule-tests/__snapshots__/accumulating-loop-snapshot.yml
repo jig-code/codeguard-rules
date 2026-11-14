@@ -1,11 +1,7 @@
 id: accumulating-loop
 snapshots:
-  ? |
-    async def collect(items):
-        async for item in items:
-            if item.active:
-                results.append(item.name)
-  : labels:
+  "async def collect(items):\n    async for item in items:\n        if item.active:\n            results.append(item.name)\n":
+    labels:
     - source: |-
         async for item in items:
                 if item.active:
@@ -41,15 +37,8 @@ snapshots:
       style: secondary
       start: 91
       end: 116
-  ? |
-    for event in events:
-        match event.kind:
-            case "scan":
-                kind = "S"
-            case _:
-                kind = "X"
-        kinds.append(kind)
-  : labels:
+  "for event in events:\n    match event.kind:\n        case \"scan\":\n            kind = \"S\"\n        case _:\n            kind = \"X\"\n    kinds.append(kind)\n":
+    labels:
     - source: |-
         for event in events:
             match event.kind:
@@ -95,15 +84,8 @@ snapshots:
       style: secondary
       start: 130
       end: 148
-  ? |
-    for item in items:
-        if item.active:
-            results.append(item.name)
-        else:
-            results.append(item.id)
-    else:
-        results.append(None)
-  : labels:
+  "for item in items:\n    if item.active:\n        results.append(item.name)\n    else:\n        results.append(item.id)\nelse:\n    results.append(None)\n":
+    labels:
     - source: |-
         for item in items:
             if item.active:
@@ -147,10 +129,8 @@ snapshots:
       style: secondary
       start: 47
       end: 72
-  ? |
-    for line in lines:
-        amounts.append(-line.amount if line.is_refund else line.amount)
-  : labels:
+  "for line in lines:\n    amounts.append(-line.amount if line.is_refund else line.amount)\n":
+    labels:
     - source: |-
         for line in lines:
             amounts.append(-line.amount if line.is_refund else line.amount)
@@ -181,15 +161,8 @@ snapshots:
       style: secondary
       start: 23
       end: 86
-  ? |
-    for line in lines:
-        if line.is_voided:
-            continue
-        if line.is_refund:
-            amounts.append(-line.amount)
-        else:
-            amounts.append(line.amount)
-  : labels:
+  "for line in lines:\n    if line.is_voided:\n        continue\n    if line.is_refund:\n        amounts.append(-line.amount)\n    else:\n        amounts.append(line.amount)\n":
+    labels:
     - source: |-
         for line in lines:
             if line.is_voided:
@@ -229,11 +202,8 @@ snapshots:
       style: secondary
       start: 90
       end: 118
-  ? |
-    for line in lines:
-        if line.sku:
-            found.append(line)
-  : labels:
+  "for line in lines:\n    if line.sku:\n        found.append(line)\n":
+    labels:
     - source: |-
         for line in lines:
             if line.sku:
@@ -269,11 +239,8 @@ snapshots:
       style: secondary
       start: 44
       end: 62
-  ? |
-    for order in orders:
-        if order.is_paid:
-            paid += [order.id]
-  : labels:
+  "for order in orders:\n    if order.is_paid:\n        paid += [order.id]\n":
+    labels:
     - source: |-
         for order in orders:
             if order.is_paid:
@@ -293,7 +260,7 @@ snapshots:
       style: secondary
       start: 25
       end: 69
-    - source: '[order.id]'
+    - source: "[order.id]"
       style: secondary
       start: 59
       end: 69
@@ -305,11 +272,8 @@ snapshots:
       style: secondary
       start: 51
       end: 69
-  ? |
-    for order in orders:
-        if order.is_paid:
-            paid.add(order.id)
-  : labels:
+  "for order in orders:\n    if order.is_paid:\n        paid.add(order.id)\n":
+    labels:
     - source: |-
         for order in orders:
             if order.is_paid:
@@ -345,11 +309,8 @@ snapshots:
       style: secondary
       start: 51
       end: 69
-  ? |
-    for order in orders:
-        if order.is_urgent:
-            queue.insert(0, order)
-  : labels:
+  "for order in orders:\n    if order.is_urgent:\n        queue.insert(0, order)\n":
+    labels:
     - source: |-
         for order in orders:
             if order.is_urgent:
@@ -385,11 +346,8 @@ snapshots:
       style: secondary
       start: 53
       end: 75
-  ? |
-    for order in orders:
-        if order.lines:
-            lines.extend(order.lines)
-  : labels:
+  "for order in orders:\n    if order.lines:\n        lines.extend(order.lines)\n":
+    labels:
     - source: |-
         for order in orders:
             if order.lines:
@@ -425,14 +383,8 @@ snapshots:
       style: secondary
       start: 49
       end: 74
-  ? |
-    for shipment in shipments:
-        if shipment.is_express:
-            label = "EXPRESS"
-        else:
-            label = "STANDARD"
-        labels.append(label)
-  : labels:
+  "for shipment in shipments:\n    if shipment.is_express:\n        label = \"EXPRESS\"\n    else:\n        label = \"STANDARD\"\n    labels.append(label)\n":
+    labels:
     - source: |-
         for shipment in shipments:
             if shipment.is_express:
