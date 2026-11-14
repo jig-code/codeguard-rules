@@ -66,6 +66,22 @@ cases:
           return _exporters[name](report)
   expected_output:
     outcome: valid
+- name: a request handler adds a host to the allowed hosts of the config module
+  inputs:
+    file: admin/hosts.py
+    unchanged:
+      app/config.py: |
+        ALLOWED_HOSTS: list[str] = ["example.com"]
+        RETRY_LIMIT = 3
+    after: |
+      from app import config
+
+
+      def handle_add_host(host: str) -> dict[str, bool]:
+          config.ALLOWED_HOSTS.append(host)
+          return {"ok": True}
+  expected_output:
+    outcome: invalid
 - name: a function formats a byte count
   inputs:
     file: exports/size.py

@@ -9,6 +9,19 @@ valid:
       if example_row.is_last:
           break
       example_ledger.post(example_row)
+# map call
+- |
+  example_totals = list(map(example_total, example_lines))
+# if with an else in a loop that appends in both branches
+- |
+  def example_split(example_rows):
+      example_paid, example_due = [], []
+      for example_row in example_rows:
+          if example_row.paid:
+              example_paid.append(example_row)
+          else:
+              example_due.append(example_row)
+      return example_paid, example_due
 invalid:
 # comprehension condition
 - |
@@ -22,3 +35,20 @@ invalid:
       if example_row.amount is None:
           continue
       example_ledger.post(example_row)
+# filter call
+- |
+  example_rows = list(filter(None, example_rows))
+# loop that appends only some items
+- |
+  def example_valid(example_rows):
+      example_kept = []
+      for example_row in example_rows:
+          if example_row.amount is not None:
+              example_kept.append(example_row)
+      return example_kept
+# loop that yields only some items
+- |
+  def example_valid(example_rows):
+      for example_row in example_rows:
+          if example_row.amount is not None:
+              yield example_row

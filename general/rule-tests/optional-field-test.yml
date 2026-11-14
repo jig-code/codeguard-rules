@@ -9,9 +9,22 @@ valid:
   def label(parcel):
       note: str | None = None
       return note
-# A keyword argument that isn't null
+# A local variable set to None
 - |
-  name = models.CharField(max_length=80, blank=True)
+  def label(parcel):
+      note = None
+      return note
+# A field set to a value that isn't None
+- |
+  class Parcel:
+      def __init__(self):
+          self.attempts = 0
+# A column that allows null, with no optional annotation
+- |
+  shipped_at = mapped_column(DateTime, nullable=True)
+# A keyword argument in a call that isn't a class header
+- |
+  options = dict(total=False)
 invalid:
 # An optional field written with a union
 - |
@@ -21,14 +34,25 @@ invalid:
 - |
   class Parcel:
       note: Optional[str]
+# An optional field written with NotRequired
+- |
+  class Parcel(TypedDict):
+      note: NotRequired[str]
+# A class whose fields are all optional
+- |
+  class Parcel(TypedDict, total=False):
+      note: str
+# A class-level field set to None with no annotation
+- |
+  class Parcel:
+      note = None
 # An optional attribute set in __init__
 - |
   class Parcel:
       def __init__(self):
           self.note: str | None = None
-# A Django field that allows null
+# An attribute set to None in a method, with no annotation
 - |
-  shipped_at = models.DateTimeField(null=True)
-# A SQLAlchemy column that allows null
-- |
-  shipped_at = mapped_column(DateTime, nullable=True)
+  class Parcel:
+      def __init__(self):
+          self.note = None
