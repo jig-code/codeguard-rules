@@ -1,9 +1,7 @@
 id: class-construction
 snapshots:
-  ? |
-    def build(order):
-        return _Draft(order_id=order.id)
-  : labels:
+  "def build(order):\n    return _Draft(order_id=order.id)\n":
+    labels:
     - source: _Draft(order_id=order.id)
       style: primary
       start: 29
@@ -12,17 +10,9 @@ snapshots:
       style: secondary
       start: 29
       end: 35
-    - source: order_id=order.id
+    - source: (order_id=order.id)
       style: secondary
-      start: 36
-      end: 53
-    - source: order_id=order.id
-      style: secondary
-      start: 36
-      end: 53
-    - source: return _Draft(order_id=order.id)
-      style: secondary
-      start: 22
+      start: 35
       end: 54
     - source: |-
         def build(order):
@@ -30,10 +20,8 @@ snapshots:
       style: secondary
       start: 0
       end: 54
-  ? |
-    def handler_for(name):
-        _handlers[name] = Handler(name=name, level=level_for(name))
-  : labels:
+  "def handler_for(name):\n    _handlers[name] = Handler(name=name, level=level_for(name))\n":
+    labels:
     - source: Handler(name=name, level=level_for(name))
       style: primary
       start: 45
@@ -42,17 +30,9 @@ snapshots:
       style: secondary
       start: 45
       end: 52
-    - source: name=name
+    - source: (name=name, level=level_for(name))
       style: secondary
-      start: 53
-      end: 62
-    - source: name=name
-      style: secondary
-      start: 53
-      end: 62
-    - source: _handlers[name] = Handler(name=name, level=level_for(name))
-      style: secondary
-      start: 27
+      start: 52
       end: 86
     - source: |-
         def handler_for(name):
@@ -60,11 +40,69 @@ snapshots:
       style: secondary
       start: 0
       end: 86
-  ? |
-    def lines(rows):
-        for row in rows:
-            yield ReportLine(sku=row.sku)
-  : labels:
+  "def lend(book, member, today):\n    due_on = today + timedelta(days=21)\n    return Loan(book.id, member.id, due_on)\n":
+    labels:
+    - source: Loan(book.id, member.id, due_on)
+      style: primary
+      start: 82
+      end: 114
+    - source: Loan
+      style: secondary
+      start: 82
+      end: 86
+    - source: (book.id, member.id, due_on)
+      style: secondary
+      start: 86
+      end: 114
+    - source: |-
+        def lend(book, member, today):
+            due_on = today + timedelta(days=21)
+            return Loan(book.id, member.id, due_on)
+      style: secondary
+      start: 0
+      end: 114
+  "def lend(book_id, member_id, today):\n    return Loan(book_id, member_id, today + timedelta(days=21))\n":
+    labels:
+    - source: Loan(book_id, member_id, today + timedelta(days=21))
+      style: primary
+      start: 48
+      end: 100
+    - source: Loan
+      style: secondary
+      start: 48
+      end: 52
+    - source: (book_id, member_id, today + timedelta(days=21))
+      style: secondary
+      start: 52
+      end: 100
+    - source: |-
+        def lend(book_id, member_id, today):
+            return Loan(book_id, member_id, today + timedelta(days=21))
+      style: secondary
+      start: 0
+      end: 100
+  "def lend(self, book, member):\n    self.loans.add(Loan(book_id=book.id, member_id=member.id))\n":
+    labels:
+    - source: Loan(book_id=book.id, member_id=member.id)
+      style: primary
+      start: 49
+      end: 91
+    - source: Loan
+      style: secondary
+      start: 49
+      end: 53
+    - source: (book_id=book.id, member_id=member.id)
+      style: secondary
+      start: 53
+      end: 91
+    - source: |-
+        def lend(self, book, member):
+            self.loans.add(Loan(book_id=book.id, member_id=member.id))
+      style: secondary
+      start: 0
+      end: 92
+  "def lines(rows):\n    for row in rows:\n        yield ReportLine(sku=row.sku)\n":
+    labels:
     - source: ReportLine(sku=row.sku)
       style: primary
       start: 52
@@ -73,17 +111,9 @@ snapshots:
       style: secondary
       start: 52
       end: 62
-    - source: sku=row.sku
+    - source: (sku=row.sku)
       style: secondary
-      start: 63
-      end: 74
-    - source: sku=row.sku
-      style: secondary
-      start: 63
-      end: 74
-    - source: yield ReportLine(sku=row.sku)
-      style: secondary
-      start: 46
+      start: 62
       end: 75
     - source: |-
         def lines(rows):
@@ -92,10 +122,8 @@ snapshots:
       style: secondary
       start: 0
       end: 75
-  ? |
-    def make_shipment(order):
-        return Shipment(order_id=order.id)
-  : labels:
+  "def make_shipment(order):\n    return Shipment(order_id=order.id)\n":
+    labels:
     - source: Shipment(order_id=order.id)
       style: primary
       start: 37
@@ -104,17 +132,9 @@ snapshots:
       style: secondary
       start: 37
       end: 45
-    - source: order_id=order.id
+    - source: (order_id=order.id)
       style: secondary
-      start: 46
-      end: 63
-    - source: order_id=order.id
-      style: secondary
-      start: 46
-      end: 63
-    - source: return Shipment(order_id=order.id)
-      style: secondary
-      start: 30
+      start: 45
       end: 64
     - source: |-
         def make_shipment(order):
@@ -122,10 +142,28 @@ snapshots:
       style: secondary
       start: 0
       end: 64
-  ? |
-    def pair(order):
-        return [Parcel(sku=order.sku), Parcel(sku=order.spare)]
-  : labels:
+  "def open_ticket(subject, email):\n    return Ticket(subject, email, \"normal\")\n":
+    labels:
+    - source: Ticket(subject, email, "normal")
+      style: primary
+      start: 44
+      end: 76
+    - source: Ticket
+      style: secondary
+      start: 44
+      end: 50
+    - source: (subject, email, "normal")
+      style: secondary
+      start: 50
+      end: 76
+    - source: |-
+        def open_ticket(subject, email):
+            return Ticket(subject, email, "normal")
+      style: secondary
+      start: 0
+      end: 76
+  "def pair(order):\n    return [Parcel(sku=order.sku), Parcel(sku=order.spare)]\n":
+    labels:
     - source: Parcel(sku=order.sku)
       style: primary
       start: 29
@@ -134,62 +172,58 @@ snapshots:
       style: secondary
       start: 29
       end: 35
-    - source: sku=order.sku
+    - source: (sku=order.sku)
       style: secondary
-      start: 36
-      end: 49
-    - source: sku=order.sku
-      style: secondary
-      start: 36
-      end: 49
-    - source: return [Parcel(sku=order.sku), Parcel(sku=order.spare)]
-      style: secondary
-      start: 21
-      end: 76
-    - source: '[Parcel(sku=order.sku), Parcel(sku=order.spare)]'
-      style: secondary
-      start: 28
-      end: 76
+      start: 35
+      end: 50
     - source: |-
         def pair(order):
             return [Parcel(sku=order.sku), Parcel(sku=order.spare)]
       style: secondary
       start: 0
       end: 76
-  ? |
-    def parcels(order):
-        return [Parcel(sku=line.sku) for line in order.lines]
-  : labels:
-    - source: Parcel(sku=line.sku)
+  "def parcels(order):\n    return [Parcel(sku=order_line.sku) for order_line in order.lines]\n":
+    labels:
+    - source: Parcel(sku=order_line.sku)
       style: primary
       start: 32
-      end: 52
+      end: 58
     - source: Parcel
       style: secondary
       start: 32
       end: 38
-    - source: sku=line.sku
+    - source: (sku=order_line.sku)
       style: secondary
-      start: 39
-      end: 51
-    - source: sku=line.sku
-      style: secondary
-      start: 39
-      end: 51
-    - source: '[Parcel(sku=line.sku) for line in order.lines]'
-      style: secondary
-      start: 31
-      end: 77
+      start: 38
+      end: 58
     - source: |-
         def parcels(order):
-            return [Parcel(sku=line.sku) for line in order.lines]
+            return [Parcel(sku=order_line.sku) for order_line in order.lines]
       style: secondary
       start: 0
-      end: 77
-  ? |
-    def quote(self, response):
-        return Quote.model_validate(response.json())
-  : labels:
+      end: 89
+  "def profile_from(data):\n    return Profile(**data)\n":
+    labels:
+    - source: Profile(**data)
+      style: primary
+      start: 35
+      end: 50
+    - source: Profile
+      style: secondary
+      start: 35
+      end: 42
+    - source: (**data)
+      style: secondary
+      start: 42
+      end: 50
+    - source: |-
+        def profile_from(data):
+            return Profile(**data)
+      style: secondary
+      start: 0
+      end: 50
+  "def quote(self, response):\n    return Quote.model_validate(response.json())\n":
+    labels:
     - source: Quote.model_validate(response.json())
       style: primary
       start: 38
@@ -202,17 +236,9 @@ snapshots:
       style: secondary
       start: 38
       end: 58
-    - source: response.json()
+    - source: (response.json())
       style: secondary
-      start: 59
-      end: 74
-    - source: response.json()
-      style: secondary
-      start: 59
-      end: 74
-    - source: return Quote.model_validate(response.json())
-      style: secondary
-      start: 31
+      start: 58
       end: 75
     - source: |-
         def quote(self, response):
@@ -220,11 +246,29 @@ snapshots:
       style: secondary
       start: 0
       end: 75
-  ? |
-    def ship(self, order):
-        shipment = Shipment(order.id)
-        self.repo.add(shipment)
-  : labels:
+  "def save_profile(store, user_id, display_name):\n    profile: Profile = {\"user_id\": user_id, \"display_name\": display_name.strip()}\n    store.put(profile)\n":
+    labels:
+    - source: "profile: Profile = {\"user_id\": user_id, \"display_name\": display_name.strip()}"
+      style: primary
+      start: 52
+      end: 129
+    - source: Profile
+      style: secondary
+      start: 61
+      end: 68
+    - source: "{\"user_id\": user_id, \"display_name\": display_name.strip()}"
+      style: secondary
+      start: 71
+      end: 129
+    - source: |-
+        def save_profile(store, user_id, display_name):
+            profile: Profile = {"user_id": user_id, "display_name": display_name.strip()}
+            store.put(profile)
+      style: secondary
+      start: 0
+      end: 152
+  "def ship(self, order):\n    shipment = Shipment(order.id)\n    self.repo.add(shipment)\n":
+    labels:
     - source: Shipment(order.id)
       style: primary
       start: 38
@@ -233,17 +277,9 @@ snapshots:
       style: secondary
       start: 38
       end: 46
-    - source: order.id
+    - source: (order.id)
       style: secondary
-      start: 47
-      end: 55
-    - source: order.id
-      style: secondary
-      start: 47
-      end: 55
-    - source: shipment = Shipment(order.id)
-      style: secondary
-      start: 27
+      start: 46
       end: 56
     - source: |-
         def ship(self, order):
@@ -252,10 +288,8 @@ snapshots:
       style: secondary
       start: 0
       end: 84
-  ? |
-    def to_line(row):
-        return ReportLine(row["sku"])
-  : labels:
+  "def to_line(row):\n    return ReportLine(row[\"sku\"])\n":
+    labels:
     - source: ReportLine(row["sku"])
       style: primary
       start: 29
@@ -264,17 +298,9 @@ snapshots:
       style: secondary
       start: 29
       end: 39
-    - source: row["sku"]
+    - source: (row["sku"])
       style: secondary
-      start: 40
-      end: 50
-    - source: row["sku"]
-      style: secondary
-      start: 40
-      end: 50
-    - source: return ReportLine(row["sku"])
-      style: secondary
-      start: 22
+      start: 39
       end: 51
     - source: |-
         def to_line(row):
@@ -282,3 +308,23 @@ snapshots:
       style: secondary
       start: 0
       end: 51
+  "def warn(message):\n    Warning(text=message.strip())\n":
+    labels:
+    - source: Warning(text=message.strip())
+      style: primary
+      start: 23
+      end: 52
+    - source: Warning
+      style: secondary
+      start: 23
+      end: 30
+    - source: (text=message.strip())
+      style: secondary
+      start: 30
+      end: 52
+    - source: |-
+        def warn(message):
+            Warning(text=message.strip())
+      style: secondary
+      start: 0
+      end: 52
