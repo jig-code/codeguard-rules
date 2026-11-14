@@ -33,7 +33,7 @@ the languages it runs on.
 |---|---|---|
 | `dry` | Don't Repeat Yourself: code the change adds doesn't state a computation, process, set or outside shape again when the file or a module it imports already states it | Not yet |
 | `domain-logic-separate-from-io` | Domain logic separate from I/O: a function whose own code applies business rules never reads or changes anything outside the program's memory, directly or through a function it calls | Not yet |
-| `single-responsibility` | Single responsibility: a function or class never holds code that belongs to two different concerns (one set of business rules, one outside system, one file or message format), counting only the code written in a function's own body | Not yet |
+| `single-responsibility` | Single responsibility: a function or class never holds both business rules and the details of a data format or of an outside system's interface | Not yet |
 | `no-repeated-switches` | No repeated switches: code never chooses behaviour by which kind a value is (its class, or an enum member or tag naming its variant) in a second place over the same kinds, in the file or a module it imports, when the type checker would accept either place with a kind that has no branch or table entry of its own | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
