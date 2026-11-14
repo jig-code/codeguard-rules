@@ -52,6 +52,7 @@ the languages it runs on.
 | `validator-depends-on-its-data` | Validator depends on its data: code that a data type runs when an instance is created, to accept or reject it, decides only from that instance's values and constants, so it parses the same anywhere and its tests need no setup. | Not yet |
 | `no-recheck-of-guaranteed-condition` | No recheck of guaranteed condition: a check never tests a condition which code that has already run makes true every time the check runs, so one place owns each guarantee. | Not yet |
 | `discriminated-unions` | Discriminated unions: a tagged union never has two variants whose tag fields can hold the same value, so code that narrows or dispatches on the tag tells every variant apart. | Not yet |
+| `no-stamp-coupling` | No stamp coupling: a function whose parameters no framework dictates never takes a bundle of values that unrelated parts of the program use, when it uses that bundle only to read some of those values or plain data they hold | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:

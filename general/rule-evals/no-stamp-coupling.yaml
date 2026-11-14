@@ -1,0 +1,126 @@
+cases:
+- name: a tax function reads two of the six fields of the checkout context it takes
+  inputs:
+    file: checkout/tax.py
+    after: |
+      from dataclasses import dataclass
+      from decimal import Decimal
+
+      RATES = {"EU": Decimal("0.21"), "UK": Decimal("0.20"), "US": Decimal("0.07")}
+
+
+      @dataclass(frozen=True)
+      class CheckoutContext:
+          customer_id: str
+          subtotal_cents: int
+          region: str
+          coupon_code: str | None
+          locale: str
+          session_id: str
+
+
+      def tax_cents(context: CheckoutContext) -> int:
+          rate = RATES[context.region]
+          return int(context.subtotal_cents * rate)
+  expected_output:
+    outcome: invalid
+- name: a function reads the start of the date range it takes
+  inputs:
+    file: billing/periods.py
+    after: |
+      from dataclasses import dataclass
+      from datetime import date
+
+
+      @dataclass(frozen=True)
+      class DateRange:
+          start: date
+          end: date
+
+
+      def has_started(period: DateRange, today: date) -> bool:
+          return period.start <= today
+  expected_output:
+    outcome: valid
+- name: a web framework's view reads the user from its request
+  inputs:
+    file: accounts/views.py
+    after: |
+      from django.http import HttpRequest, JsonResponse
+      from django.views import View
+
+
+      class ProfileView(View):
+          def get(self, request: HttpRequest) -> JsonResponse:
+              return JsonResponse({"email": request.user.email})
+  expected_output:
+    outcome: valid
+- name: a checkout step reads the session id of the context it takes and passes the context on whole
+  inputs:
+    file: checkout/run.py
+    unchanged:
+      checkout/context.py: |
+        from dataclasses import dataclass
+
+
+        @dataclass(frozen=True)
+        class CheckoutContext:
+            customer_id: str
+            subtotal_cents: int
+            region: str
+            coupon_code: str | None
+            locale: str
+            session_id: str
+    after: |
+      from checkout.cart import Cart
+      from checkout.context import CheckoutContext
+      from checkout.errors import EmptyCartError
+      from checkout.orders import Order, place_order
+
+
+      def run_checkout(context: CheckoutContext, cart: Cart) -> Order:
+          if not cart.lines:
+              raise EmptyCartError(context.session_id)
+          return place_order(context, cart)
+  expected_output:
+    outcome: valid
+- name: a function totals a list of prices
+  inputs:
+    file: checkout/totals.py
+    after: |
+      def total_cents(prices: list[int]) -> int:
+          return sum(prices)
+  expected_output:
+    outcome: skipped
+- name: a retry helper reads one of the six fields of the app config it takes
+  inputs:
+    file: jobs/retry.ts
+    after: |
+      export interface AppConfig {
+        databaseUrl: string;
+        redisUrl: string;
+        retryBaseMs: number;
+        sentryDsn?: string;
+        logLevel: "debug" | "info" | "warn";
+        port: number;
+      }
+
+      export function retryDelay(config: AppConfig, attempt: number): number {
+        return config.retryBaseMs * 2 ** attempt;
+      }
+  expected_output:
+    outcome: invalid
+- name: a check reads the amount of the money value it takes
+  inputs:
+    file: pricing/money.ts
+    after: |
+      export interface Money {
+        amountCents: number;
+        currency: string;
+      }
+
+      export function isFree(price: Money): boolean {
+        return price.amountCents === 0;
+      }
+  expected_output:
+    outcome: valid
