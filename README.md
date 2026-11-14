@@ -45,7 +45,7 @@ the languages it runs on.
 | `composition-over-inheritance` | Composition over inheritance: a class never inherits from another class whose job is different from the job of the inheriting class | Not yet |
 | `single-source-of-truth` | Single source of truth: a class never stores a value in a field when that value must always equal the result of a computation on a single other value that the class holds, in another field or in a field of a held object | Not yet |
 | `single-writer` | Single writer: a value that a module holds at its top level is never changed after that module has loaded by code in another module, or by two or more functions of that module that are not all methods of one class | Not yet |
-| `no-disinformation` | No disinformation: a name claims nothing its body doesn't do, so a function, method or class name the change adds or renames has no verb, noun or qualifier its body makes false | Not yet |
+| `no-disinformation` | No disinformation: a function, method or class is never named with a verb, noun or qualifier that its code makes false | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
