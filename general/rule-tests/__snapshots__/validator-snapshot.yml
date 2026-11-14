@@ -1,0 +1,323 @@
+id: validator
+snapshots:
+  "@field_validator('sku')\ndef check(cls, value):\n    return value\n":
+    labels:
+    - source: |-
+        @field_validator('sku')
+        def check(cls, value):
+            return value
+      style: primary
+      start: 0
+      end: 63
+    - source: "@field_validator('sku')"
+      style: secondary
+      start: 0
+      end: 23
+  "@model_validator(mode='after')\ndef check(self):\n    return self\n":
+    labels:
+    - source: |-
+        @model_validator(mode='after')
+        def check(self):
+            return self
+      style: primary
+      start: 0
+      end: 63
+    - source: "@model_validator(mode='after')"
+      style: secondary
+      start: 0
+      end: 30
+  "@root_validator\ndef check(cls, values):\n    return values\n":
+    labels:
+    - source: |-
+        @root_validator
+        def check(cls, values):
+            return values
+      style: primary
+      start: 0
+      end: 57
+    - source: "@root_validator"
+      style: secondary
+      start: 0
+      end: 15
+  "@sku.validator\ndef _check_sku(self, attribute, value):\n    pass\n":
+    labels:
+    - source: |-
+        @sku.validator
+        def _check_sku(self, attribute, value):
+            pass
+      style: primary
+      start: 0
+      end: 63
+    - source: "@sku.validator"
+      style: secondary
+      start: 0
+      end: 14
+  "@validates('sku')\ndef check_sku(self, key, value):\n    return value\n":
+    labels:
+    - source: |-
+        @validates('sku')
+        def check_sku(self, key, value):
+            return value
+      style: primary
+      start: 0
+      end: 67
+    - source: "@validates('sku')"
+      style: secondary
+      start: 0
+      end: 17
+  "@validates_schema\ndef check(self, data, **kwargs):\n    pass\n":
+    labels:
+    - source: |-
+        @validates_schema
+        def check(self, data, **kwargs):
+            pass
+      style: primary
+      start: 0
+      end: 59
+    - source: "@validates_schema"
+      style: secondary
+      start: 0
+      end: 17
+  "Sku = Annotated[str, AfterValidator(check_sku)]\n":
+    labels:
+    - source: AfterValidator(check_sku)
+      style: primary
+      start: 21
+      end: 46
+    - source: AfterValidator
+      style: secondary
+      start: 21
+      end: 35
+  "Sku = Annotated[str, functional_validators.BeforeValidator(strip_sku)]\n":
+    labels:
+    - source: functional_validators.BeforeValidator(strip_sku)
+      style: primary
+      start: 21
+      end: 69
+    - source: functional_validators.BeforeValidator
+      style: secondary
+      start: 21
+      end: 58
+  "class Shipment(BaseModel):\n    def model_post_init(self, context):\n        pass\n":
+    labels:
+    - source: |-
+        def model_post_init(self, context):
+                pass
+      style: primary
+      start: 31
+      end: 79
+    - source: |-
+        class Shipment(BaseModel):
+            def model_post_init(self, context):
+                pass
+      style: secondary
+      start: 0
+      end: 79
+    - source: |-
+        def model_post_init(self, context):
+                pass
+      style: secondary
+      start: 31
+      end: 79
+    - source: model_post_init
+      style: secondary
+      start: 35
+      end: 50
+  "class Shipment(models.Model):\n    def clean(self):\n        pass\n":
+    labels:
+    - source: |-
+        def clean(self):
+                pass
+      style: primary
+      start: 34
+      end: 63
+    - source: |-
+        class Shipment(models.Model):
+            def clean(self):
+                pass
+      style: secondary
+      start: 0
+      end: 63
+    - source: |-
+        def clean(self):
+                pass
+      style: secondary
+      start: 34
+      end: 63
+    - source: clean
+      style: secondary
+      start: 38
+      end: 43
+  "class Shipment(models.Model):\n    def clean_sku(self):\n        return self.sku\n":
+    labels:
+    - source: |-
+        def clean_sku(self):
+                return self.sku
+      style: primary
+      start: 34
+      end: 78
+    - source: |-
+        class Shipment(models.Model):
+            def clean_sku(self):
+                return self.sku
+      style: secondary
+      start: 0
+      end: 78
+    - source: |-
+        def clean_sku(self):
+                return self.sku
+      style: secondary
+      start: 34
+      end: 78
+    - source: clean_sku
+      style: secondary
+      start: 38
+      end: 47
+  "class Shipment:\n    def __attrs_post_init__(self):\n        pass\n":
+    labels:
+    - source: |-
+        def __attrs_post_init__(self):
+                pass
+      style: primary
+      start: 20
+      end: 63
+    - source: |-
+        class Shipment:
+            def __attrs_post_init__(self):
+                pass
+      style: secondary
+      start: 0
+      end: 63
+    - source: |-
+        def __attrs_post_init__(self):
+                pass
+      style: secondary
+      start: 20
+      end: 63
+    - source: __attrs_post_init__
+      style: secondary
+      start: 24
+      end: 43
+  "class Shipment:\n    def __init__(self, sku, quantity):\n        if quantity <= 0:\n            raise ValueError('quantity must be positive')\n        self.sku = sku\n":
+    labels:
+    - source: |-
+        def __init__(self, sku, quantity):
+                if quantity <= 0:
+                    raise ValueError('quantity must be positive')
+                self.sku = sku
+      style: primary
+      start: 20
+      end: 161
+    - source: __init__
+      style: secondary
+      start: 24
+      end: 32
+    - source: raise ValueError('quantity must be positive')
+      style: secondary
+      start: 93
+      end: 138
+    - source: raise ValueError('quantity must be positive')
+      style: secondary
+      start: 93
+      end: 138
+    - source: |-
+        class Shipment:
+            def __init__(self, sku, quantity):
+                if quantity <= 0:
+                    raise ValueError('quantity must be positive')
+                self.sku = sku
+      style: secondary
+      start: 0
+      end: 161
+    - source: |-
+        def __init__(self, sku, quantity):
+                if quantity <= 0:
+                    raise ValueError('quantity must be positive')
+                self.sku = sku
+      style: secondary
+      start: 20
+      end: 161
+  "class Shipment:\n    def __post_init__(self):\n        pass\n":
+    labels:
+    - source: |-
+        def __post_init__(self):
+                pass
+      style: primary
+      start: 20
+      end: 57
+    - source: |-
+        class Shipment:
+            def __post_init__(self):
+                pass
+      style: secondary
+      start: 0
+      end: 57
+    - source: |-
+        def __post_init__(self):
+                pass
+      style: secondary
+      start: 20
+      end: 57
+    - source: __post_init__
+      style: secondary
+      start: 24
+      end: 37
+  "class Sku(str):\n    def __new__(cls, value):\n        if not value:\n            raise ValueError('empty sku')\n        return super().__new__(cls, value)\n":
+    labels:
+    - source: |-
+        def __new__(cls, value):
+                if not value:
+                    raise ValueError('empty sku')
+                return super().__new__(cls, value)
+      style: primary
+      start: 20
+      end: 151
+    - source: __new__
+      style: secondary
+      start: 24
+      end: 31
+    - source: raise ValueError('empty sku')
+      style: secondary
+      start: 79
+      end: 108
+    - source: raise ValueError('empty sku')
+      style: secondary
+      start: 79
+      end: 108
+    - source: |-
+        class Sku(str):
+            def __new__(cls, value):
+                if not value:
+                    raise ValueError('empty sku')
+                return super().__new__(cls, value)
+      style: secondary
+      start: 0
+      end: 151
+    - source: |-
+        def __new__(cls, value):
+                if not value:
+                    raise ValueError('empty sku')
+                return super().__new__(cls, value)
+      style: secondary
+      start: 20
+      end: 151
+  "sku = models.CharField(max_length=12, validators=[check_sku])\n":
+    labels:
+    - source: validators=[check_sku]
+      style: primary
+      start: 38
+      end: 60
+    - source: validators
+      style: secondary
+      start: 38
+      end: 48
+  "sku: str = attrs.field(validator=check_sku)\n":
+    labels:
+    - source: validator=check_sku
+      style: primary
+      start: 23
+      end: 42
+    - source: validator
+      style: secondary
+      start: 23
+      end: 32

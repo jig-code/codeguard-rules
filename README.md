@@ -49,6 +49,7 @@ the languages it runs on.
 | `claim-check` | Claim check: a record that the program stores and loads again by its id never reaches work that is queued to run later or in another process as a copy of that record | Not yet |
 | `constructor-injection` | Constructor injection: a class never chooses to make the callers of its methods pass in an object that a method uses as a service, rather than as data the one call works on | Not yet |
 | `result-parts-named` | Result parts named: a function never returns values that answer different questions in a form that neither its callers nor a well-known convention set, where callers find each by position or by an unchecked key | Not yet |
+| `validator-depends-on-its-data` | Validator depends on its data: code that a data type runs when an instance is created, to accept or reject it, decides only from that instance's values and constants, so it parses the same anywhere and its tests need no setup. | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
