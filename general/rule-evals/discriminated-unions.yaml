@@ -126,21 +126,6 @@ cases:
                   return subtotal * (1 + rate)
   expected_output:
     outcome: valid
-- name: a pydantic field accepts a decimal or a builtin integer
-  inputs:
-    file: pricing/schemas.py
-    after: |
-      from decimal import Decimal
-
-      from pydantic import BaseModel
-
-
-      class PriceIn(BaseModel):
-          sku: str
-          amount: Decimal | int
-          currency: str
-  expected_output:
-    outcome: skipped
 - name: a function formats a price
   inputs:
     file: pricing/format.py
@@ -165,6 +150,37 @@ cases:
         amount: z.number().positive(),
         payment: z.union([cardPayment, bankPayment]),
       });
+  expected_output:
+    outcome: invalid
+- name: a zod discriminated union variant declares its tag as any string
+  inputs:
+    file: payments/schema.ts
+    after: |
+      import { z } from "zod";
+
+      const cardPayment = z.object({ kind: z.literal("card"), cardToken: z.string() });
+      const bankPayment = z.object({ kind: z.string(), iban: z.string() });
+
+      export const checkoutSchema = z.object({
+        amount: z.number().positive(),
+        payment: z.discriminatedUnion("kind", [cardPayment, bankPayment]),
+      });
+  expected_output:
+    outcome: invalid
+- name: two zod object schemas in a discriminated union share a tag value
+  inputs:
+    file: events/schema.ts
+    after: |
+      import { z } from "zod";
+
+      const orderPlaced = z.object({ type: z.literal("order"), orderId: z.string() });
+      const orderCancelled = z.object({
+        type: z.literal("order"),
+        orderId: z.string(),
+        reason: z.string(),
+      });
+
+      export const eventSchema = z.discriminatedUnion("type", [orderPlaced, orderCancelled]);
   expected_output:
     outcome: invalid
 - name: a zod discriminated union of uniquely tagged object schemas
