@@ -1,0 +1,36 @@
+id: subclass-override
+language: python
+rule:
+  any:
+  - kind: function_definition
+  - kind: assignment
+    all:
+    - has:
+        field: left
+        kind: identifier
+    - has:
+        field: right
+        kind: lambda
+    - inside:
+        kind: expression_statement
+        inside:
+          kind: block
+          inside:
+            kind: class_definition
+            field: body
+  inside:
+    kind: class_definition
+    stopBy: end
+    all:
+    - has:
+        field: superclasses
+        kind: argument_list
+        has:
+          any:
+          - kind: identifier
+          - kind: attribute
+          - kind: subscript
+    - not:
+        has:
+          field: name
+          regex: ^(Test([A-Z0-9_].*)?|.*[a-z0-9]Tests)$
