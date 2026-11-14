@@ -1,12 +1,12 @@
 ---
 name: call-data-stays-local
-description: Code never keeps the input, working values or results that only one call, request or job needs in state that every call, request or job sees.
+description: Code never keeps the input, working values or results that only one call, request or job needs in module-level state that every call, request or job sees.
 ---
 
 # Call Data Stays Local
 
 Code never keeps the input, working values or results that only one call, request or job
-needs in state that every call, request or job sees.
+needs in module-level state that every call, request or job sees.
 
 ## Why
 

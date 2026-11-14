@@ -1,9 +1,7 @@
 id: function-name
 snapshots:
-  ? |
-    async def submit(order):
-        return order
-  : labels:
+  "async def submit(order):\n    return order\n":
+    labels:
     - source: submit
       style: primary
       start: 10
@@ -14,11 +12,20 @@ snapshots:
       style: secondary
       start: 0
       end: 41
-  ? |
-    class Order:
-        def submit(self):
-            pass
-  : labels:
+  "class Order:\n    @classmethod\n    def submit(cls):\n        pass\n":
+    labels:
+    - source: submit
+      style: primary
+      start: 38
+      end: 44
+    - source: |-
+        def submit(cls):
+                pass
+      style: secondary
+      start: 34
+      end: 63
+  "class Order:\n    def submit(self):\n        pass\n":
+    labels:
     - source: submit
       style: primary
       start: 21
@@ -29,10 +36,22 @@ snapshots:
       style: secondary
       start: 17
       end: 47
-  ? |
-    def submit(order):
-        return order
-  : labels:
+  "def submit(order):\n    def stamp():\n        return order\n    return stamp()\n":
+    labels:
+    - source: submit
+      style: primary
+      start: 4
+      end: 10
+    - source: |-
+        def submit(order):
+            def stamp():
+                return order
+            return stamp()
+      style: secondary
+      start: 0
+      end: 75
+  "def submit(order):\n    return order\n":
+    labels:
     - source: submit
       style: primary
       start: 4
@@ -43,3 +62,17 @@ snapshots:
       style: secondary
       start: 0
       end: 35
+  "submit = lambda order: order\n":
+    labels:
+    - source: submit
+      style: primary
+      start: 0
+      end: 6
+    - source: "lambda order: order"
+      style: secondary
+      start: 9
+      end: 28
+    - source: "submit = lambda order: order"
+      style: secondary
+      start: 0
+      end: 28

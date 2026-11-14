@@ -8,6 +8,9 @@ valid:
   @property
   def total(self):
       return 1
+# Thread started with arguments
+- |
+  threading.Thread(target=ship_order, args=(order,)).start()
 invalid:
 # Celery delay
 - |
@@ -27,12 +30,39 @@ invalid:
 # Broker publish
 - |
   broker.publish("orders", order)
+# Exchange publish
+- |
+  channel.basic_publish(exchange="", routing_key="orders", body=payload)
+# Message produce
+- |
+  producer.produce("orders", value=payload)
+# List push
+- |
+  store.rpush("orders", payload)
+# Stream add
+- |
+  store.xadd("orders", payload)
 # Queue put
 - |
   jobs.put(order)
 # Process pool submit
 - |
   pool.submit(ship_order, order)
+# Executor call from an event loop
+- |
+  loop.run_in_executor(pool, ship_order, order)
+# Process pool map
+- |
+  pool.map_async(ship_order, orders)
+# Process pool starmap
+- |
+  pool.starmap_async(ship_order, pairs)
+# Process started with arguments
+- |
+  multiprocessing.Process(target=ship_order, args=(order,)).start()
+# Scheduled job
+- |
+  scheduler.add_job(ship_order, args=[order])
 # Workflow client start
 - |
   client.start_workflow(ShipOrder.run, order, id="x")

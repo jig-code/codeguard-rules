@@ -1,12 +1,13 @@
 ---
 name: no-shotgun-surgery
-description: A type's public method never itself does a job to something the program models when a public method of another type in the program already does that same job to the same thing.
+description: A type's public method never itself does a job to something the program models when a public method of another type, found by searching the program for the name of that thing, already does that same job to the same thing.
 ---
 
 # No Shotgun Surgery
 
 A type's public method never itself does a job to something the program models when a
-public method of another type in the program already does that same job to the same thing.
+public method of another type, found by searching the program for the name of that thing,
+already does that same job to the same thing.
 
 ## Why
 

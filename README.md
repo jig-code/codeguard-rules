@@ -33,31 +33,31 @@ the languages it runs on.
 |---|---|---|
 | `dry` | Don't Repeat Yourself: code the change adds doesn't state a computation, process, set or outside shape again when the file or a module it imports already states it | Not yet |
 | `domain-logic-separate-from-io` | Domain logic separate from I/O: a function whose own code applies business rules never reads or changes anything outside the program's memory, directly or through a function it calls | Not yet |
-| `single-responsibility` | Single responsibility: a function or class never holds code that belongs to two different concerns (one set of business rules, one outside system, one file or message format), counting only the code written in a function's own body | Not yet |
-| `no-repeated-switches` | No repeated switches: code never chooses behaviour by which kind a value is (its class, or an enum member or tag naming its variant) in a second place over the same kinds, in the file or a module it imports, when the type checker would accept either place with a kind that has no branch or table entry of its own | Not yet |
-| `no-feature-envy` | No feature envy: code outside the module that defines one of the program's types never works out an answer the program's rules give about one value of that type from two or more of its fields alone, with no other program type and no constant or table of its own module | Not yet |
+| `single-responsibility` | Single responsibility: a function or class never holds both business rules and the details of a data format or of an outside system's interface | Not yet |
+| `no-repeated-switches` | No repeated switches: code never repeats a choice of behaviour by which of a type's variants a value is, in a place that the type checker would still accept if that place handled only some of those variants | Not yet |
+| `no-feature-envy` | No feature envy: code outside the module that defines one of the program's own types never works out a fact about a value of that type from that value's fields alone | Not yet |
 | `fail-fast` | Fail fast: code never turns an error an operation reports, data the program requires but finds missing, or a state the program's own rules make impossible into a result with which the work carries on as if it had not occurred | Not yet |
-| `no-shared-mutable-state` | Call data stays local: code never keeps the input, working values or results that only one call, request or job needs in state that every call, request or job sees | Not yet |
-| `liskov-substitution` | Liskov substitution: a subclass's method never breaks a promise that the base method of the same name makes in its signature, body or documentation about the arguments it accepts and uses, what it returns, the errors it raises or the work it does | Not yet |
-| `no-shotgun-surgery` | No shotgun surgery: a type's public method never itself does a job to something the program models when a public method of another type already does that same job to the same thing | Not yet |
-| `construction-in-its-home` | Construction in its home: a function that does work besides building never itself decides a value a new instance of a program data type holds, whether read off another object, translated from outside data or picked | Not yet |
-| `make-illegal-states-unrepresentable` | Make illegal states unrepresentable: a type never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type | Not yet |
-| `composition-over-inheritance` | Composition over inheritance: a class never inherits from another class whose job is different from the job of the inheriting class | Not yet |
+| `no-shared-mutable-state` | Call data stays local: code never keeps the input, working values or results that only one call, request or job needs in module-level state that every call, request or job sees | Not yet |
+| `liskov-substitution` | Liskov substitution: a subclass's method never breaks a promise that the method of the same name in the base class or interface makes, in the base method's signature, body or documentation, about which arguments the base method accepts and uses, what the base method returns, which errors the base method raises or which changes the base method makes that callers of the base class or interface can see | Not yet |
+| `no-shotgun-surgery` | No shotgun surgery: a type's public method never itself does a job to something the program models when a public method of another type, found by searching the program for the name of that thing, already does that same job to the same thing | Not yet |
+| `construction-in-its-home` | Construction in its home: a function never decides a value that a new instance of a data type the program declares holds when the function also does work other than building that instance | Not yet |
+| `make-illegal-states-unrepresentable` | Make illegal states unrepresentable: a type whose instances exist only in the program's memory never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type | Not yet |
+| `composition-over-inheritance` | Composition over inheritance: a class never inherits from another class that gives the inheriting class a public method or field outside the job of the inheriting class | Not yet |
 | `single-source-of-truth` | Single source of truth: a class never stores a value in a field when that value must always equal the result of a computation on a single other value that the class holds, in another field or in a field of a held object | Not yet |
 | `single-writer` | Single writer: a value that a module holds at its top level is never changed after that module has loaded by code in another module, or by two or more functions of that module that are not all methods of one class | Not yet |
-| `no-disinformation` | No disinformation: a function, method or class is never named with a verb, noun or qualifier that its code makes false | Not yet |
-| `claim-check` | Claim check: a stored record never crosses into work that runs later or in another process through a call that serializes it, whether passed whole, as a copy of all its fields, or as a task parameter | Not yet |
-| `constructor-injection` | Constructor injection: a method whose parameters its own class decides never takes an object it uses as a service, rather than as data the one call works on, as a parameter | Not yet |
-| `result-parts-named` | Result parts named: a function never returns values that answer different questions in a form the program chooses where callers find each by position or by an unchecked key | Not yet |
-| `validator-depends-on-its-data` | Validator depends on its data: code that a data type runs to accept or reject a value as an instance is built decides only from that instance's values and constants, so it parses the same anywhere and its tests need no setup. | Not yet |
-| `no-recheck-of-guaranteed-condition` | No recheck of guaranteed condition: a check never tests a condition that earlier code, or validation in the value's type, already makes true, so one place owns each guarantee. | Not yet |
-| `discriminated-unions` | Discriminated unions: a union of record types that a parser builds from outside data lets the parser pick the variant only by one named field with a different literal value in each variant, so parsing is fast and its errors name one variant. | Not yet |
-| `no-stamp-coupling` | No stamp coupling: a function whose parameters no framework dictates never takes an object carrying unrelated values for many parts of the program when it reads half of its fields or fewer, so its signature says what it depends on. | Not yet |
-| `high-cohesion` | High cohesion: a module that defines several public classes never defines a public class that is neither the one class the module is about, nor one of a family of classes sharing a base or union type the module defines, nor a class with no behavior of its own that appears only in that class's fields or method signatures | Not yet |
+| `no-disinformation` | No disinformation: a name that the author of a function, method or class chooses never has a verb, noun or qualifier that the code of that function, method or class makes false | Not yet |
+| `claim-check` | Claim check: a record that the program stores and loads again by its id never reaches work that is queued to run later or in another process as a copy of that record | Not yet |
+| `constructor-injection` | Constructor injection: a class never chooses to make the callers of its methods pass in an object that a method uses as a service, rather than as data the one call works on | Not yet |
+| `result-parts-named` | Result parts named: a function never returns values that answer different questions in a form that neither its callers nor a well-known convention set, where callers find each by position or by an unchecked key | Not yet |
+| `validator-depends-on-its-data` | Validator depends on its data: code that a data type runs when an instance is created, to accept or reject it, decides only from that instance's values and constants, so it parses the same anywhere and its tests need no setup. | Not yet |
+| `no-recheck-of-guaranteed-condition` | No recheck of guaranteed condition: a check never tests a condition which code that has already run makes true every time the check runs, so one place owns each guarantee. | Not yet |
+| `discriminated-unions` | Discriminated unions: a tagged union never has two variants whose tag fields can hold the same value, so code that narrows or dispatches on the tag tells every variant apart. | Not yet |
+| `no-stamp-coupling` | No stamp coupling: a function whose parameters no framework dictates never takes an object that carries values for many unrelated parts of the program when the function uses that object only to read some of its fields or plain data those fields hold | Not yet |
+| `high-cohesion` | High cohesion: a module never holds public classes of different concepts that the project, rather than a library that the project uses, put in one module | Not yet |
 | `packages-under-import-contract` | Packages under import contract: a package the change adds is under the project's import-boundary configuration, so the boundary tool keeps it from importing its siblings. | Not yet |
 | `command-query-separation` | Command-query separation: a function that changes data that outlives the call never also returns an answer about any data other than the data the change creates, removes or sets | Not yet |
 | `law-of-demeter` | Law of Demeter: a function never reads, assigns or calls a member of an object that it reaches as a field of a field of another object and whose class the program defines with methods of its own | Not yet |
-| `intention-revealing-names` | Intention-revealing names: a name the program chooses for a function, method or class never consists only of words that could name any code and words that name its caller | Not yet |
+| `intention-revealing-names` | Intention-revealing names: a name the program chooses for a function, method or class never consists only of words that could name any code | Not yet |
 | `one-word-per-concept` | One verb per operation: a function or method never names its operation with a verb other than the one another function or method in the same file, or in a module the file imports, uses for that operation | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
@@ -103,7 +103,6 @@ code skip test files:
 | `no-tuple-fixtures` | A pytest fixture returns or yields one object, never a tuple |
 | `one-form-per-input` | No parameter reconciled from another parameter when missing (`if index is None: index = build(catalog)`) |
 | `typed-dispatch-registries` | A class takes a registry, not a `dict[str, Callable]` |
-| `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
 
 The `python` ruleset has no judge rules yet. Its judge rules, and some pattern rules, are drafts in
 `drafts/python/`, which codeguard doesn't load. A draft moves into a ruleset one rule at a time, in the order in
@@ -124,6 +123,14 @@ flag. Its binding's `triggers` names that code: a change kind built into codegua
 as `fixture` or `import`, or a gate in the ruleset's `gates/`, an ast-grep rule
 such as `mock-use`. A rule ast-grep or the type checker can check is a pattern rule or a checker
 setting, never a judge rule.
+
+### `typescript`
+
+Rules for any TypeScript project. Pattern rules (ast-grep); they skip test files:
+
+| Rule | Checks |
+|---|---|
+| `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
 
 ## Use a ruleset
 
@@ -146,6 +153,8 @@ packages:
 - `rules.<id>` overrides `paths`, `exclude_paths` or `severity`. `exclude_paths: []`
   brings test files back into an app rule.
 - `codeguard update` moves `ref` to the newest tag.
+- A project gets only the rulesets it lists under `rulesets`. List `typescript` to add
+  the TypeScript pattern rules.
 
 Diagnostics name a rule by package, ruleset and id: `betterwithranch/python/no-del-param`.
 
@@ -156,7 +165,7 @@ project that sets `ast-grep` in its config must pick a version in that range.
 
 ```
 codeguard-package.yaml       # name, rulesets, and supported ast-grep and codeguard versions
-general/, python/            # one directory per ruleset
+general/, python/, typescript/ # one directory per ruleset
   rules/pattern/<id>.yml     # ast-grep rules
   gates/<id>.yml             # ast-grep rules that decide when a judge rule runs
   rule-tests/<id>-test.yml   # tests for both, with __snapshots__/
