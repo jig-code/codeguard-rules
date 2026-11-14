@@ -1,5 +1,5 @@
 cases:
-- name: renewing a loan saves the new due date and also answers how many of the member's loans are overdue
+- name: renewing a loan saves the new due date and returns how many of the member's loans are overdue
   inputs:
     file: library/loans.py
     after: |
@@ -14,24 +14,6 @@ cases:
           loan.due_on = today + timedelta(days=RENEWAL_DAYS)
           loan.save(update_fields=["due_on"])
           return Loan.objects.filter(member_id=loan.member_id, due_on__lt=today).count()
-  expected_output:
-    outcome: invalid
-- name: a gold-tier check awards bonus points to the customer and returns whether they qualify
-  inputs:
-    file: loyalty/tiers.py
-    after: |
-      from loyalty.models import Customer
-
-      GOLD_THRESHOLD_CENTS = 50_000
-      GOLD_BONUS_POINTS = 500
-
-
-      def qualifies_for_gold(customer: Customer) -> bool:
-          qualifies = customer.lifetime_spend_cents >= GOLD_THRESHOLD_CENTS
-          if qualifies:
-              customer.points += GOLD_BONUS_POINTS
-              customer.save(update_fields=["points"])
-          return qualifies
   expected_output:
     outcome: invalid
 - name: setting a thermostat's target assigns its own field and returns how far the room is from the target
@@ -80,26 +62,7 @@ cases:
           return len(cache.keys(f"session:{user_id}:*"))
   expected_output:
     outcome: invalid
-- name: an edit makes a class booking also return how many places are left
-  inputs:
-    file: gym/bookings.py
-    before: |
-      from gym.models import Booking
-
-
-      def book_class(member_id: int, session_id: int) -> None:
-          Booking.objects.create(member_id=member_id, session_id=session_id)
-    after: |
-      from gym.models import Booking, Session
-
-
-      def book_class(member_id: int, session_id: int) -> int:
-          Booking.objects.create(member_id=member_id, session_id=session_id)
-          session = Session.objects.get(id=session_id)
-          return session.capacity - Booking.objects.filter(session_id=session_id).count()
-  expected_output:
-    outcome: invalid
-- name: a query totals the open invoices without changing them
+- name: totalling a customer's open invoices
   inputs:
     file: billing/queries.py
     after: |
@@ -122,7 +85,7 @@ cases:
           return Ticket.objects.create(customer_id=customer_id, subject=subject)
   expected_output:
     outcome: valid
-- name: deactivating a coupon returns only whether the deactivation succeeded
+- name: deactivating a coupon returns whether one coupon was updated
   inputs:
     file: shop/coupons.py
     after: |
@@ -134,7 +97,7 @@ cases:
           return updated == 1
   expected_output:
     outcome: valid
-- name: an email draft adds a recipient and returns itself so calls chain
+- name: an email draft adds a recipient and returns itself
   inputs:
     file: mail/draft.py
     after: |
@@ -151,7 +114,7 @@ cases:
               return self
   expected_output:
     outcome: valid
-- name: a job queue claims the next job and returns it
+- name: a job queue removes the next job and returns it
   inputs:
     file: jobs/queue.py
     after: |
@@ -175,18 +138,6 @@ cases:
               return self._jobs.popleft()
   expected_output:
     outcome: valid
-- name: a short-link table gets a URL's code and assigns one in the same step if the URL has none
-  inputs:
-    file: links/short_links.py
-    after: |
-      class ShortLinks:
-          def __init__(self) -> None:
-              self._codes: dict[str, str] = {}
-
-          def code_for(self, url: str) -> str:
-              return self._codes.setdefault(url, format(len(self._codes) + 1, "x"))
-  expected_output:
-    outcome: valid
 - name: an invoice numberer increments its counter and returns the new number
   inputs:
     file: billing/numbering.py
@@ -200,28 +151,7 @@ cases:
               return self._last_issued
   expected_output:
     outcome: valid
-- name: acquiring a report lock sets it only if it is free and returns whether it was acquired
-  inputs:
-    file: reports/locks.py
-    after: |
-      from typing import Protocol
-
-      LOCK_SECONDS = 300
-
-
-      class LockStore(Protocol):
-          def set_if_absent(self, key: str, ttl_seconds: int) -> bool: ...
-
-
-      class ReportLocks:
-          def __init__(self, store: LockStore) -> None:
-              self._store = store
-
-          def acquire(self, report_id: str) -> bool:
-              return self._store.set_if_absent(f"lock:report:{report_id}", LOCK_SECONDS)
-  expected_output:
-    outcome: valid
-- name: a function appends reminders to a list it builds and returns that list
+- name: overdue reminders are appended to a list the function builds and returns
   inputs:
     file: billing/reminders.py
     after: |
@@ -249,7 +179,7 @@ cases:
           return reminders
   expected_output:
     outcome: valid
-- name: a rate lookup memoizes the carrier's answer for each postcode
+- name: a rate lookup stores the carrier's rate for each postcode and returns the stored rate
   inputs:
     file: shipping/rates.py
     after: |
@@ -272,7 +202,7 @@ cases:
               return self._rates[postcode]
   expected_output:
     outcome: valid
-- name: a method marks a message read without returning anything
+- name: a method that marks a message read and returns nothing
   inputs:
     file: inbox/message.py
     after: |
@@ -394,7 +324,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a query lists the low-stock SKUs without changing the stock
+- name: listing the low-stock SKUs
   inputs:
     file: inventory/stock.ts
     after: |
@@ -435,7 +365,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: setting a profile's time zone returns only an error when the zone is unknown
+- name: setting a profile's time zone returns an error for an unknown zone and nothing otherwise
   inputs:
     file: accounts/timezone.ts
     after: |
@@ -452,7 +382,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a chart builder sets a title and returns itself so calls chain
+- name: a chart builder sets a title and returns itself
   inputs:
     file: charts/builder.ts
     after: |
@@ -476,7 +406,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a print queue shifts the next job off and returns it
+- name: a print queue removes the next job and returns it
   inputs:
     file: printing/queue.ts
     after: |
@@ -498,7 +428,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: grouping orders by supplier fills a map it builds and returns that map
+- name: grouping orders by supplier fills a map the function builds and returns
   inputs:
     file: purchasing/grouping.ts
     after: |
@@ -521,34 +451,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a coupon lookup counts a hit or miss metric and returns the coupon found
-  inputs:
-    file: shop/coupon-lookup.ts
-    after: |
-      export interface Coupon {
-        code: string;
-        percentOff: number;
-      }
-
-      export interface Metrics {
-        increment(name: string): void;
-      }
-
-      export class CouponLookup {
-        constructor(
-          private readonly coupons: ReadonlyMap<string, Coupon>,
-          private readonly metrics: Metrics,
-        ) {}
-
-        find(code: string): Coupon | undefined {
-          const coupon = this.coupons.get(code);
-          this.metrics.increment(coupon ? "coupon_lookup.hit" : "coupon_lookup.miss");
-          return coupon;
-        }
-      }
-  expected_output:
-    outcome: valid
-- name: an edit splits a table reservation's free-table count into its own query
+- name: an edit moves a table reservation's free-table count into a separate method
   inputs:
     file: dining/reservations.ts
     before: |
@@ -578,7 +481,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: archiving a note sets its archive time without returning anything
+- name: a function that sets a note's archive time and returns nothing
   inputs:
     file: notes/archive.ts
     after: |

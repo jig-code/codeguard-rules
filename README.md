@@ -55,7 +55,7 @@ the languages it runs on.
 | `no-stamp-coupling` | No stamp coupling: a function whose parameters no framework dictates never takes an object carrying unrelated values for many parts of the program when it reads half of its fields or fewer, so its signature says what it depends on. | Not yet |
 | `high-cohesion` | High cohesion: a module that defines several public classes never defines a public class that is neither the one class the module is about, nor one of a family of classes sharing a base or union type the module defines, nor a class with no behavior of its own that appears only in that class's fields or method signatures | Not yet |
 | `packages-under-import-contract` | Packages under import contract: a package the change adds is under the project's import-boundary configuration, so the boundary tool keeps it from importing its siblings. | Not yet |
-| `command-query-separation` | Command-query separation: a function either changes state or returns an answer, not both, so asking never changes anything. | Not yet |
+| `command-query-separation` | Command-query separation: a function that changes data that outlives the call never also returns an answer about any data other than the data the change creates, removes or sets | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
