@@ -48,7 +48,7 @@ the languages it runs on.
 | `no-disinformation` | No disinformation: a function, method or class is never named with a verb, noun or qualifier that its code makes false | Not yet |
 | `claim-check` | Claim check: a stored record never crosses into work that runs later or in another process through a call that serializes it, whether passed whole, as a copy of all its fields, or as a task parameter | Not yet |
 | `constructor-injection` | Constructor injection: a method whose parameters its own class decides never takes an object it uses as a service, rather than as data the one call works on, as a parameter | Not yet |
-| `result-parts-named` | Result parts named: a function's result names what each of its parts means, so a return the change adds doesn't hand back parts that answer different questions in a tuple or an unchecked map | Not yet |
+| `result-parts-named` | Result parts named: a function never returns values that answer different questions in a form the program chooses where callers find each by position or by an unchecked key | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
