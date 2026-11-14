@@ -85,6 +85,7 @@ code skip test files:
 | Rule | Checks |
 |---|---|
 | `all-only-in-init` | `__all__` only in `__init__.py` or a `.pyi` stub |
+| `builder-pattern` | Builder builds in steps: a class named `...Builder` has a method that stores a part of its product on the instance, or returns a new builder that holds the part, before a separate call returns the product |
 | `no-assert-in-fixtures` | No `assert` inside a pytest fixture |
 | `no-asserting-action-helpers` | No test helper that asserts and then returns a call |
 | `no-clock-moves-in-fixtures` | No sleep or clock tick inside a pytest fixture |
@@ -139,6 +140,7 @@ Pattern rules (ast-grep). They start as `warning`s and skip test files. The
 
 | Rule | Checks |
 |---|---|
+| `builder-pattern` | Builder builds in steps: a class named `...Builder` has a method that stores a part of its product on the instance, or returns a new builder that holds the part, before a separate call returns the product |
 | `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
 | `union-declares-discriminator` | Union declares discriminator: a `z.union` of two or more object schemas defined in the file is a `z.discriminatedUnion` |
 

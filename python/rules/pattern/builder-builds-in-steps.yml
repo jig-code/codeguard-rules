@@ -1,0 +1,55 @@
+id: builder-builds-in-steps
+language: python
+severity: warning
+message: This Builder class has no method that stores a part of its product.
+note: |
+  A class named ...Builder assembles its product step by step: methods that store parts
+  on the instance, or return a new builder holding them, then a separate call such as
+  build() that returns the product. This class makes its product in one call. Give it
+  methods that store the parts, or name it for what it makes (a factory, or a function
+  such as make_invoice).
+metadata:
+  why: >-
+    A class named ...Builder promises that its product is assembled step by step; one that
+    makes its product in one call is a constructor under a misleading name.
+utils:
+  stores-part:
+    any:
+    - kind: assignment
+      has:
+        field: left
+        any:
+        - pattern: self.$_
+        - kind: subscript
+          has: {field: value, pattern: self.$_}
+    - kind: augmented_assignment
+      has: {field: left, pattern: self.$_}
+    - kind: call
+      all:
+      - pattern: self.$_.$M($$$)
+      - has:
+          field: function
+          has: {field: attribute, regex: ^(append|extend|add|update|insert|setdefault)$}
+  returns-new-builder:
+    kind: return_statement
+    has:
+      any:
+      - pattern: replace(self, $$$)
+      - pattern: $MODULE.replace(self, $$$)
+      - pattern: type(self)($$$)
+      - kind: call
+        has: {field: function, regex: Builder$}
+  part-method:
+    kind: function_definition
+    not:
+      has: {field: name, regex: ^(__init__|__call__|build|create|make)$}
+    has:
+      stopBy: end
+      any:
+      - matches: stores-part
+      - matches: returns-new-builder
+rule:
+  kind: class_definition
+  has: {field: name, regex: Builder$}
+  not:
+    has: {field: body, matches: part-method, stopBy: end}
