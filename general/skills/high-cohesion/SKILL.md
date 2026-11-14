@@ -1,12 +1,12 @@
 ---
 name: high-cohesion
-description: A module never holds public classes of different concepts that the project, rather than a library that the project uses, put in one module.
+description: A module never holds public types of different concepts that the project, rather than a library that the project uses, put in one module.
 ---
 
 # High Cohesion
 
-A module never holds public classes of different concepts that the project, rather than
-a library that the project uses, put in one module.
+A module never holds public types of different concepts that the project, rather than a
+library that the project uses, put in one module.
 
 ## Why
 
