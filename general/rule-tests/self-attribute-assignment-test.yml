@@ -10,6 +10,16 @@ valid:
   class ExampleMailer:
       def send(self, invoice):
           invoice.sent = True
+# Item of a list the object holds
+- |
+  class ExampleMailer:
+      def replace_first(self, message):
+          self.outbox[0] = message
+# setattr on another object
+- |
+  class ExampleMailer:
+      def mark(self, invoice):
+          setattr(invoice, "sent", True)
 invalid:
 # Assignment in __init__
 - |
@@ -26,3 +36,29 @@ invalid:
   class ExampleMailer:
       def bind(self, customer):
           self.email: str = customer.email
+# Unpacked assignment to two attributes
+- |
+  class ExampleMailer:
+      def bind(self, customer):
+          self.customer, self.email = customer, customer.email
+# Augmented assignment
+- |
+  class ExampleMailer:
+      def queue(self, message):
+          self.outbox.append(message)
+          self.queued_count += 1
+# object.__setattr__ in a frozen class
+- |
+  class ExampleMailer:
+      def __post_init__(self):
+          object.__setattr__(self, "email", self.customer.email)
+# setattr on self
+- |
+  class ExampleMailer:
+      def bind(self, customer):
+          setattr(self, "email", customer.email)
+# Assignment through the instance dictionary
+- |
+  class ExampleMailer:
+      def bind(self, customer):
+          self.__dict__["email"] = customer.email

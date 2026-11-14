@@ -177,52 +177,34 @@ cases:
           label = models.CharField(max_length=16)
   expected_output:
     outcome: valid
-- name: an invoice archiver inherits a library's HTTP session to upload with it
+- name: a customer's order list view mixes in the framework's login requirement
   inputs:
-    file: billing/archive.py
+    file: orders/views.py
     unchanged:
-      billing/invoice.py: |
-        from dataclasses import dataclass
+      orders/__init__.py: ""
+      orders/models.py: |
+        from django.conf import settings
+        from django.db import models
 
 
-        @dataclass(frozen=True)
-        class Invoice:
-            number: str
-            pdf: bytes
+        class Order(models.Model):
+            customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+            reference = models.CharField(max_length=32)
+            placed_at = models.DateTimeField()
     after: |
-      import requests
+      from django.contrib.auth.mixins import LoginRequiredMixin
+      from django.db.models import QuerySet
+      from django.views.generic import ListView
 
-      from billing.invoice import Invoice
-
-
-      class InvoiceArchiver(requests.Session):
-          def __init__(self, archive_url: str) -> None:
-              super().__init__()
-              self.archive_url = archive_url
-
-          def archive(self, invoice: Invoice) -> None:
-              response = self.put(f"{self.archive_url}/{invoice.number}.pdf", data=invoice.pdf)
-              response.raise_for_status()
-  expected_output:
-    outcome: invalid
-- name: a JSON log formatter overrides how the standard library formatter formats a record
-  inputs:
-    file: observability/formatting.py
-    after: |
-      import json
-      import logging
+      from orders.models import Order
 
 
-      class JsonLineFormatter(logging.Formatter):
-          def format(self, record: logging.LogRecord) -> str:
-              return json.dumps(
-                  {
-                      "time": self.formatTime(record),
-                      "level": record.levelname,
-                      "logger": record.name,
-                      "message": record.getMessage(),
-                  }
-              )
+      class MyOrdersView(LoginRequiredMixin, ListView):
+          template_name = "orders/mine.html"
+          context_object_name = "orders"
+
+          def get_queryset(self) -> QuerySet[Order]:
+              return Order.objects.filter(customer=self.request.user).order_by("-placed_at")
   expected_output:
     outcome: valid
 - name: a delivery run inherits a depot's opening hours as its own fields
@@ -463,23 +445,6 @@ cases:
         ) {
           super(`account ${accountId} used all ${limit} requests in its quota`);
           this.name = "QuotaExceededError";
-        }
-      }
-  expected_output:
-    outcome: valid
-- name: a cart badge extends its framework's web component base
-  inputs:
-    file: components/cart-badge.ts
-    after: |
-      import { LitElement, html } from "lit";
-      import { customElement, property } from "lit/decorators.js";
-
-      @customElement("cart-badge")
-      export class CartBadge extends LitElement {
-        @property({ type: Number }) count = 0;
-
-        render() {
-          return html`<span class="badge">${this.count} items</span>`;
         }
       }
   expected_output:

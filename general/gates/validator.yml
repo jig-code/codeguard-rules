@@ -5,7 +5,7 @@ rule:
   - kind: decorated_definition
     has:
       kind: decorator
-      regex: (field_|model_|root_)?validator\b
+      regex: (field_|model_|root_)?validator\b|\bvalidates(_schema)?\b
   - kind: function_definition
     inside:
       kind: block
@@ -14,7 +14,25 @@ rule:
     has:
       field: name
       regex: ^(__post_init__|__attrs_post_init__|model_post_init|clean|clean_\w+)$
+  - kind: function_definition
+    inside:
+      kind: block
+      inside:
+        kind: class_definition
+    all:
+    - has:
+        field: name
+        regex: ^(__init__|__new__)$
+    - has:
+        field: body
+        has:
+          kind: raise_statement
+          stopBy: end
   - kind: keyword_argument
     has:
       field: name
       regex: ^validators?$
+  - kind: call
+    has:
+      field: function
+      regex: ^(\w+\.)?(After|Before|Wrap|Plain)Validator$

@@ -1,0 +1,157 @@
+id: module-value-write
+language: python
+rule:
+  all:
+  - any:
+    - all:
+      - any:
+        - kind: assignment
+        - kind: augmented_assignment
+      - has:
+          field: left
+          all:
+          - any:
+            - kind: attribute
+            - kind: subscript
+          - has:
+              nthChild: 1
+              any:
+              - kind: identifier
+                pattern: $N
+              - all:
+                - any:
+                  - kind: attribute
+                  - kind: subscript
+                - has:
+                    nthChild: 1
+                    any:
+                    - kind: identifier
+                      pattern: $N
+                    - all:
+                      - any:
+                        - kind: attribute
+                        - kind: subscript
+                      - has:
+                          nthChild: 1
+                          kind: identifier
+                          pattern: $N
+    - all:
+      - kind: delete_statement
+      - has:
+          stopBy:
+            not:
+              kind: expression_list
+          all:
+          - any:
+            - kind: attribute
+            - kind: subscript
+          - has:
+              nthChild: 1
+              any:
+              - kind: identifier
+                pattern: $N
+              - all:
+                - any:
+                  - kind: attribute
+                  - kind: subscript
+                - has:
+                    nthChild: 1
+                    any:
+                    - kind: identifier
+                      pattern: $N
+                    - all:
+                      - any:
+                        - kind: attribute
+                        - kind: subscript
+                      - has:
+                          nthChild: 1
+                          kind: identifier
+                          pattern: $N
+    - all:
+      - kind: call
+      - has:
+          field: function
+          all:
+          - kind: attribute
+          - has:
+              field: object
+              any:
+              - kind: identifier
+                pattern: $N
+              - all:
+                - any:
+                  - kind: attribute
+                  - kind: subscript
+                - has:
+                    nthChild: 1
+                    any:
+                    - kind: identifier
+                      pattern: $N
+                    - all:
+                      - any:
+                        - kind: attribute
+                        - kind: subscript
+                      - has:
+                          nthChild: 1
+                          kind: identifier
+                          pattern: $N
+          - has:
+              field: attribute
+              regex: ^(append|extend|insert|add|update|setdefault|pop|popitem|clear|remove|discard|appendleft|sort|reverse)$
+    - all:
+      - kind: call
+      - has:
+          field: function
+          kind: identifier
+          regex: ^(setattr|delattr)$
+      - has:
+          field: arguments
+          has:
+            nthChild: 1
+            any:
+            - kind: identifier
+              pattern: $N
+            - all:
+              - any:
+                - kind: attribute
+                - kind: subscript
+              - has:
+                  nthChild: 1
+                  any:
+                  - kind: identifier
+                    pattern: $N
+                  - all:
+                    - any:
+                      - kind: attribute
+                      - kind: subscript
+                    - has:
+                        nthChild: 1
+                        kind: identifier
+                        pattern: $N
+  - any:
+    - inside:
+        kind: module
+        stopBy: end
+        has:
+          all:
+          - any:
+            - kind: import_statement
+            - kind: import_from_statement
+          - has:
+              kind: identifier
+              pattern: $N
+              stopBy: end
+    - all:
+      - inside:
+          kind: function_definition
+          stopBy: end
+      - inside:
+          kind: module
+          stopBy: end
+          has:
+            kind: expression_statement
+            has:
+              kind: assignment
+              has:
+                field: left
+                pattern: $N
