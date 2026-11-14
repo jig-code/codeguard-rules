@@ -1,6 +1,6 @@
-id: no-middle-man-typescript
+id: no-middle-man
 valid:
-  # A method that does work of its own
+  # A method that counts the items of what the collaborator returns
   - |
     class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
@@ -29,7 +29,7 @@ valid:
       }
     }
 
-  # One forwarding method
+  # A class with one forwarding method
   - |
     class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
@@ -39,7 +39,7 @@ valid:
       }
     }
 
-  # An interface the forwarding adapts to
+  # A class that implements an interface, its methods all forwarding
   - |
     class ExampleStore implements Store {
       constructor(private readonly repository: ExampleRepository) {}
@@ -67,8 +67,35 @@ valid:
       }
     }
 
+  # A method with a statement before its forwarding call
+  - |
+    class ExampleService {
+      constructor(private readonly repository: ExampleRepository, private readonly log: Logger) {}
+
+      get(id: string) {
+        this.log.info(id);
+        return this.repository.get(id);
+      }
+
+      save(example: Example) {
+        this.repository.save(example);
+      }
+    }
+
+  # A forwarding function held in a field, beside a forwarding method
+  - |
+    class ExampleService {
+      constructor(private readonly repository: ExampleRepository) {}
+
+      get = (id: string) => this.repository.get(id);
+
+      save(example: Example) {
+        this.repository.save(example);
+      }
+    }
+
 invalid:
-  # Returned and bare forwarding calls
+  # A returned and a bare forwarding call to the same collaborator
   - |
     class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
@@ -82,7 +109,7 @@ invalid:
       }
     }
 
-  # Awaited calls in exported async methods
+  # An exported class whose async methods await the same collaborator
   - |
     export class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
@@ -93,5 +120,20 @@ invalid:
 
       async save(example: Example) {
         await this.repository.save(example);
+      }
+    }
+
+  # A comment in a forwarding method
+  - |
+    class ExampleService {
+      constructor(private readonly repository: ExampleRepository) {}
+
+      get(id: string) {
+        // Reads through to the store.
+        return this.repository.get(id);
+      }
+
+      save(example: Example) {
+        this.repository.save(example);
       }
     }

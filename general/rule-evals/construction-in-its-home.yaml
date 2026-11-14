@@ -1,5 +1,5 @@
 cases:
-- name: a lending service builds a loan from the book and member fields among its other work
+- name: a lending service builds a loan from the book and member fields while it stores and mails the loan
   inputs:
     file: library/lending.py
     unchanged:
@@ -18,8 +18,8 @@ cases:
       from datetime import date, timedelta
 
       from library.models import Loan
-      from library.repositories import LoanRepository
       from library.mail import Mailer
+      from library.repositories import LoanRepository
 
 
       class LendingService:
@@ -33,7 +33,7 @@ cases:
               self.mailer.send_due_date(member.email, loan.due_on)
   expected_output:
     outcome: invalid
-- name: a lending service has the loan's own constructor build it and then stores and mails it
+- name: a lending service calls the loan's alternative constructor and then stores and mails the loan
   inputs:
     file: library/lending.py
     unchanged:
@@ -56,8 +56,8 @@ cases:
       from datetime import date
 
       from library.models import Loan
-      from library.repositories import LoanRepository
       from library.mail import Mailer
+      from library.repositories import LoanRepository
 
 
       class LendingService:
@@ -71,7 +71,7 @@ cases:
               self.mailer.send_due_date(member.email, loan.due_on)
   expected_output:
     outcome: valid
-- name: a Stripe mapping module translates a charge payload into a payment
+- name: a payment mapping function translates a charge payload into a payment
   inputs:
     file: payments/stripe_mapping.py
     unchanged:
@@ -103,7 +103,7 @@ cases:
           )
   expected_output:
     outcome: valid
-- name: a helpdesk intake function gives the ticket's priority a parameter default and passes it to the field
+- name: a helpdesk intake function gives the ticket's priority a parameter default and passes that default to the ticket
   inputs:
     file: helpdesk/intake.py
     unchanged:
@@ -128,7 +128,7 @@ cases:
           return ticket
   expected_output:
     outcome: invalid
-- name: the ticket declares its priority default and the intake function leaves the field out
+- name: a ticket declares its priority default and an intake function leaves the field out
   inputs:
     file: helpdesk/intake.py
     unchanged:
@@ -178,14 +178,13 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a fine calculation returns the fine it worked out as its answer
+- name: a fine function returns the fine it works out
   inputs:
     file: library/fines.py
     unchanged:
       library/__init__.py: ""
       library/models.py: |
         from dataclasses import dataclass
-        from datetime import date
         from decimal import Decimal
 
 
@@ -203,7 +202,7 @@ cases:
       def fine_for(due_on: date, returned_on: date) -> Fine:
           days_late = max((returned_on - due_on).days, 0)
           amount = min(Decimal("0.25") * days_late, Decimal("10.00"))
-          return Fine(days_late=days_late, amount=Decimal(amount))
+          return Fine(days_late=days_late, amount=amount)
   expected_output:
     outcome: valid
 - name: a loan period constant changes
@@ -215,7 +214,7 @@ cases:
       LOAN_DAYS = 28
   expected_output:
     outcome: skipped
-- name: a check-in service builds a boarding pass from the booking's fields among its other work
+- name: a check-in service builds a boarding pass from the booking's fields while it marks the check-in and prints the pass
   inputs:
     file: checkin/service.ts
     unchanged:
@@ -229,7 +228,7 @@ cases:
         }
     after: |
       import { BoardingPass } from "../boarding/pass";
-      import type { Booking, BookingStore, PassPrinter } from "./ports";
+      import type { BookingStore, PassPrinter } from "./ports";
 
       export class CheckInService {
         constructor(private readonly bookings: BookingStore, private readonly printer: PassPrinter) {}
@@ -243,7 +242,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a check-in service has the boarding pass's static constructor build it from the booking
+- name: a check-in service calls the boarding pass's static constructor with the booking
   inputs:
     file: checkin/service.ts
     unchanged:
@@ -276,7 +275,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a profile handler fills in a missing theme with light when it builds the stored profile
+- name: a profile handler fills in a missing theme with light while it builds and stores the profile
   inputs:
     file: profiles/handler.ts
     unchanged:
@@ -305,7 +304,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a cart totals function returns a literal of the totals it worked out
+- name: a cart totals function returns an object literal of the totals it works out
   inputs:
     file: cart/totals.ts
     after: |
