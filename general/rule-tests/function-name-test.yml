@@ -1,0 +1,38 @@
+id: function-name
+valid:
+# Function body
+- |
+  total = order.total
+# Parameter name
+- |
+  order
+# Call of a function
+- |
+  submit(order)
+# Class name
+- |
+  class Order:
+      pass
+# Name assigned a value that is not a lambda
+- |
+  submit = make_submitter()
+# Lambda passed as an argument
+- |
+  orders.sort(key=lambda order: order.total)
+invalid:
+# Module function name
+- |
+  def submit(order):
+      return order
+# Method name
+- |
+  class Order:
+      def submit(self):
+          pass
+# Async function name
+- |
+  async def submit(order):
+      return order
+# Name assigned a lambda
+- |
+  submit = lambda order: order

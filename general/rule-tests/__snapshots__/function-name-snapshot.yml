@@ -1,0 +1,52 @@
+id: function-name
+snapshots:
+  "async def submit(order):\n    return order\n":
+    labels:
+    - source: submit
+      style: primary
+      start: 10
+      end: 16
+    - source: |-
+        async def submit(order):
+            return order
+      style: secondary
+      start: 0
+      end: 41
+  "class Order:\n    def submit(self):\n        pass\n":
+    labels:
+    - source: submit
+      style: primary
+      start: 21
+      end: 27
+    - source: |-
+        def submit(self):
+                pass
+      style: secondary
+      start: 17
+      end: 47
+  "def submit(order):\n    return order\n":
+    labels:
+    - source: submit
+      style: primary
+      start: 4
+      end: 10
+    - source: |-
+        def submit(order):
+            return order
+      style: secondary
+      start: 0
+      end: 35
+  "submit = lambda order: order\n":
+    labels:
+    - source: submit
+      style: primary
+      start: 0
+      end: 6
+    - source: "lambda order: order"
+      style: secondary
+      start: 9
+      end: 28
+    - source: "submit = lambda order: order"
+      style: secondary
+      start: 0
+      end: 28

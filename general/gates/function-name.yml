@@ -1,0 +1,14 @@
+id: function-name
+language: python
+rule:
+  kind: identifier
+  any:
+  - inside:
+      kind: function_definition
+      field: name
+  - inside:
+      kind: assignment
+      field: left
+      has:
+        field: right
+        kind: lambda
