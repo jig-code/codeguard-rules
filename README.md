@@ -50,7 +50,7 @@ the languages it runs on.
 | `constructor-injection` | Constructor injection: a method whose parameters its own class decides never takes an object it uses as a service, rather than as data the one call works on, as a parameter | Not yet |
 | `result-parts-named` | Result parts named: a function never returns values that answer different questions in a form the program chooses where callers find each by position or by an unchecked key | Not yet |
 | `validator-depends-on-its-data` | Validator depends on its data: code that a data type runs to accept or reject a value as an instance is built decides only from that instance's values and constants, so it parses the same anywhere and its tests need no setup. | Not yet |
-| `no-recheck-of-guaranteed-condition` | No recheck of guaranteed condition: a check doesn't re-test what earlier code or a validator already guarantees, so one place owns each guarantee. | Not yet |
+| `no-recheck-of-guaranteed-condition` | No recheck of guaranteed condition: a check never tests a condition that earlier code, or validation in the value's type, already makes true, so one place owns each guarantee. | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
