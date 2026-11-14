@@ -2,6 +2,13 @@ id: function-name
 language: python
 rule:
   kind: identifier
-  inside:
-    kind: function_definition
-    field: name
+  any:
+  - inside:
+      kind: function_definition
+      field: name
+  - inside:
+      kind: assignment
+      field: left
+      has:
+        field: right
+        kind: lambda
