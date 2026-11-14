@@ -1,14 +1,7 @@
 id: multi-class-module
 snapshots:
-  ? |
-    @dataclass
-    class Order:
-        pass
-
-
-    class Invoice:
-        pass
-  : labels:
+  "@dataclass\nclass Order:\n    pass\n\n\nclass Invoice:\n    pass\n":
+    labels:
     - source: |-
         @dataclass
         class Order:
@@ -47,13 +40,8 @@ snapshots:
       style: secondary
       start: 0
       end: 59
-  ? |
-    Status = Enum("Status", "OPEN SHIPPED")
-
-
-    class Order:
-        pass
-  : labels:
+  "Status = Enum(\"Status\", \"OPEN SHIPPED\")\n\n\nclass Order:\n    pass\n":
+    labels:
     - source: Status = Enum("Status", "OPEN SHIPPED")
       style: primary
       start: 0
@@ -93,15 +81,8 @@ snapshots:
       style: secondary
       start: 0
       end: 64
-  ? |
-    class Order:
-        pass
-
-
-    @dataclass
-    class Invoice:
-        pass
-  : labels:
+  "class Order:\n    pass\n\n\n@dataclass\nclass Invoice:\n    pass\n":
+    labels:
     - source: |-
         class Order:
             pass
@@ -140,13 +121,8 @@ snapshots:
       style: secondary
       start: 0
       end: 59
-  ? |
-    class Order:
-        pass
-
-
-    Line = NamedTuple("Line", [("sku", str)])
-  : labels:
+  "class Order:\n    pass\n\n\nLine = NamedTuple(\"Line\", [(\"sku\", str)])\n":
+    labels:
     - source: |-
         class Order:
             pass
@@ -186,14 +162,8 @@ snapshots:
       style: secondary
       start: 0
       end: 66
-  ? |
-    class Order:
-        pass
-
-
-    class Invoice:
-        pass
-  : labels:
+  "class Order:\n    pass\n\n\nclass Invoice:\n    pass\n":
+    labels:
     - source: |-
         class Order:
             pass

@@ -1,9 +1,7 @@
 id: no-field-tuple-asserts
 snapshots:
-  ? |
-    def test_line():
-        assert (result.line.sku, result.line.qty) == (expected.sku, expected.qty)
-  : labels:
+  "def test_line():\n    assert (result.line.sku, result.line.qty) == (expected.sku, expected.qty)\n":
+    labels:
     - source: assert (result.line.sku, result.line.qty) == (expected.sku, expected.qty)
       style: primary
       start: 21
@@ -40,10 +38,8 @@ snapshots:
       style: secondary
       start: 28
       end: 94
-  ? |
-    def test_total():
-        assert ("a", 1) == (result.name, result.total)
-  : labels:
+  "def test_total():\n    assert (\"a\", 1) == (result.name, result.total)\n":
+    labels:
     - source: assert ("a", 1) == (result.name, result.total)
       style: primary
       start: 22
@@ -72,10 +68,8 @@ snapshots:
       style: secondary
       start: 29
       end: 68
-  ? |
-    def test_total():
-        assert ("a", 1, True) == (result.name, result.total, result.paid)
-  : labels:
+  "def test_total():\n    assert (\"a\", 1, True) == (result.name, result.total, result.paid)\n":
+    labels:
     - source: assert ("a", 1, True) == (result.name, result.total, result.paid)
       style: primary
       start: 22
@@ -104,10 +98,8 @@ snapshots:
       style: secondary
       start: 29
       end: 87
-  ? |
-    def test_total():
-        assert ((result.name, result.total) == ("a", 1)), "total"
-  : labels:
+  "def test_total():\n    assert ((result.name, result.total) == (\"a\", 1)), \"total\"\n":
+    labels:
     - source: assert ((result.name, result.total) == ("a", 1)), "total"
       style: primary
       start: 22
@@ -140,10 +132,8 @@ snapshots:
       style: secondary
       start: 30
       end: 69
-  ? |
-    def test_total():
-        assert (result.name, result.total) == ("a", 1)
-  : labels:
+  "def test_total():\n    assert (result.name, result.total) == (\"a\", 1)\n":
+    labels:
     - source: assert (result.name, result.total) == ("a", 1)
       style: primary
       start: 22
@@ -172,10 +162,8 @@ snapshots:
       style: secondary
       start: 29
       end: 68
-  ? |
-    def test_total():
-        assert (result.name, result.total) == (EXPECTED_NAME, ExampleTotal.ONE)
-  : labels:
+  "def test_total():\n    assert (result.name, result.total) == (EXPECTED_NAME, ExampleTotal.ONE)\n":
+    labels:
     - source: assert (result.name, result.total) == (EXPECTED_NAME, ExampleTotal.ONE)
       style: primary
       start: 22
@@ -204,10 +192,8 @@ snapshots:
       style: secondary
       start: 29
       end: 93
-  ? |
-    def test_total():
-        assert (result.name, result.total) == (expected.name, expected.total)
-  : labels:
+  "def test_total():\n    assert (result.name, result.total) == (expected.name, expected.total)\n":
+    labels:
     - source: assert (result.name, result.total) == (expected.name, expected.total)
       style: primary
       start: 22
@@ -244,10 +230,8 @@ snapshots:
       style: secondary
       start: 29
       end: 91
-  ? |
-    def test_total():
-        assert (result.name, result.total) in {("a", 1), ("b", 2)}
-  : labels:
+  "def test_total():\n    assert (result.name, result.total) in {(\"a\", 1), (\"b\", 2)}\n":
+    labels:
     - source: assert (result.name, result.total) in {("a", 1), ("b", 2)}
       style: primary
       start: 22
@@ -256,7 +240,7 @@ snapshots:
       style: secondary
       start: 22
       end: 80
-    - source: '{("a", 1), ("b", 2)}'
+    - source: "{(\"a\", 1), (\"b\", 2)}"
       style: secondary
       start: 60
       end: 80
@@ -276,10 +260,8 @@ snapshots:
       style: secondary
       start: 29
       end: 80
-  ? |
-    def test_total():
-        assert (result.name, result.total, result.paid) == ("a", 1, True)
-  : labels:
+  "def test_total():\n    assert (result.name, result.total, result.paid) == (\"a\", 1, True)\n":
+    labels:
     - source: assert (result.name, result.total, result.paid) == ("a", 1, True)
       style: primary
       start: 22
@@ -308,10 +290,8 @@ snapshots:
       style: secondary
       start: 29
       end: 87
-  ? |
-    def test_total():
-        assert not (result.name, result.total) != ("a", 1)
-  : labels:
+  "def test_total():\n    assert not (result.name, result.total) != (\"a\", 1)\n":
+    labels:
     - source: assert not (result.name, result.total) != ("a", 1)
       style: primary
       start: 22
@@ -344,10 +324,8 @@ snapshots:
       style: secondary
       start: 33
       end: 72
-  ? |
-    def test_total():
-        assert ready and (result.name, result.total) == ("a", 1)
-  : labels:
+  "def test_total():\n    assert ready and (result.name, result.total) == (\"a\", 1)\n":
+    labels:
     - source: assert ready and (result.name, result.total) == ("a", 1)
       style: primary
       start: 22

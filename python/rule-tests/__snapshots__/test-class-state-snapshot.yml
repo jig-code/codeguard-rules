@@ -1,8 +1,7 @@
 id: test-class-state
 snapshots:
-  ? |
-    TestCart.added_skus.extend(skus)
-  : labels:
+  "TestCart.added_skus.extend(skus)\n":
+    labels:
     - source: TestCart.added_skus.extend(skus)
       style: primary
       start: 0
@@ -19,9 +18,8 @@ snapshots:
       style: secondary
       start: 0
       end: 26
-  ? |
-    TestCart.last_cart = cart
-  : labels:
+  "TestCart.last_cart = cart\n":
+    labels:
     - source: TestCart.last_cart = cart
       style: primary
       start: 0
@@ -34,10 +32,8 @@ snapshots:
       style: secondary
       start: 0
       end: 18
-  ? |
-    class CartTests(TestCase):
-        seen = {}
-  : labels:
+  "class CartTests(TestCase):\n    seen = {}\n":
+    labels:
     - source: seen = {}
       style: primary
       start: 31
@@ -56,10 +52,8 @@ snapshots:
       style: secondary
       start: 31
       end: 40
-  ? |
-    class TestCart:
-        added_skus = []
-  : labels:
+  "class TestCart:\n    added_skus = []\n":
+    labels:
     - source: added_skus = []
       style: primary
       start: 20
@@ -78,9 +72,8 @@ snapshots:
       style: secondary
       start: 20
       end: 35
-  ? |
-    cls.count += 1
-  : labels:
+  "cls.count += 1\n":
+    labels:
     - source: cls.count += 1
       style: primary
       start: 0
@@ -93,9 +86,8 @@ snapshots:
       style: secondary
       start: 0
       end: 9
-  ? |
-    cls.last_cart = cart
-  : labels:
+  "cls.last_cart = cart\n":
+    labels:
     - source: cls.last_cart = cart
       style: primary
       start: 0
@@ -108,9 +100,8 @@ snapshots:
       style: secondary
       start: 0
       end: 13
-  ? |
-    cls.seen.add(sku)
-  : labels:
+  "cls.seen.add(sku)\n":
+    labels:
     - source: cls.seen.add(sku)
       style: primary
       start: 0
@@ -127,9 +118,8 @@ snapshots:
       style: secondary
       start: 0
       end: 12
-  ? |
-    self.added_skus.append("BOOK-1")
-  : labels:
+  "self.added_skus.append(\"BOOK-1\")\n":
+    labels:
     - source: self.added_skus.append("BOOK-1")
       style: primary
       start: 0
@@ -146,9 +136,8 @@ snapshots:
       style: secondary
       start: 0
       end: 22
-  ? |
-    self.totals["BOOK-1"] = 3
-  : labels:
+  "self.totals[\"BOOK-1\"] = 3\n":
+    labels:
     - source: self.totals["BOOK-1"] = 3
       style: primary
       start: 0
@@ -161,10 +150,9 @@ snapshots:
       style: secondary
       start: 0
       end: 21
-  ? |
-    type(self).seen.update({"a": 1})
-  : labels:
-    - source: 'type(self).seen.update({"a": 1})'
+  "type(self).seen.update({\"a\": 1})\n":
+    labels:
+    - source: "type(self).seen.update({\"a\": 1})"
       style: primary
       start: 0
       end: 32

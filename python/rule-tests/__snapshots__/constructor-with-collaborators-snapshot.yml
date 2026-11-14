@@ -1,8 +1,7 @@
 id: constructor-with-collaborators
 snapshots:
-  ? |
-    invoice = ExampleInvoice(lines=[ExampleLine(sku="a")])
-  : labels:
+  "invoice = ExampleInvoice(lines=[ExampleLine(sku=\"a\")])\n":
+    labels:
     - source: ExampleInvoice(lines=[ExampleLine(sku="a")])
       style: primary
       start: 10
@@ -11,7 +10,7 @@ snapshots:
       style: secondary
       start: 10
       end: 24
-    - source: '[ExampleLine(sku="a")]'
+    - source: "[ExampleLine(sku=\"a\")]"
       style: secondary
       start: 31
       end: 53
@@ -23,9 +22,8 @@ snapshots:
       style: secondary
       start: 25
       end: 53
-  ? |
-    invoice = ExampleInvoice(lines=[line for line in order.lines])
-  : labels:
+  "invoice = ExampleInvoice(lines=[line for line in order.lines])\n":
+    labels:
     - source: ExampleInvoice(lines=[line for line in order.lines])
       style: primary
       start: 10
@@ -34,7 +32,7 @@ snapshots:
       style: secondary
       start: 10
       end: 24
-    - source: '[line for line in order.lines]'
+    - source: "[line for line in order.lines]"
       style: secondary
       start: 31
       end: 61
@@ -46,9 +44,8 @@ snapshots:
       style: secondary
       start: 25
       end: 61
-  ? |
-    invoice = ExampleInvoice(order_id=order.id)
-  : labels:
+  "invoice = ExampleInvoice(order_id=order.id)\n":
+    labels:
     - source: ExampleInvoice(order_id=order.id)
       style: primary
       start: 10
@@ -69,9 +66,8 @@ snapshots:
       style: secondary
       start: 25
       end: 42
-  ? |
-    invoice = ExampleInvoice(total=price * quantity)
-  : labels:
+  "invoice = ExampleInvoice(total=price * quantity)\n":
+    labels:
     - source: ExampleInvoice(total=price * quantity)
       style: primary
       start: 10
@@ -92,9 +88,8 @@ snapshots:
       style: secondary
       start: 25
       end: 47
-  ? |
-    service = ExampleService(ExampleRules.default(), ExamplePrinter(gateway))
-  : labels:
+  "service = ExampleService(ExampleRules.default(), ExamplePrinter(gateway))\n":
+    labels:
     - source: ExampleService(ExampleRules.default(), ExamplePrinter(gateway))
       style: primary
       start: 10
@@ -111,9 +106,8 @@ snapshots:
       style: secondary
       start: 25
       end: 47
-  ? |
-    service = ExampleService(gateway)
-  : labels:
+  "service = ExampleService(gateway)\n":
+    labels:
     - source: ExampleService(gateway)
       style: primary
       start: 10
@@ -130,9 +124,8 @@ snapshots:
       style: secondary
       start: 25
       end: 32
-  ? |
-    service = ExampleService(gateway=gateway)
-  : labels:
+  "service = ExampleService(gateway=gateway)\n":
+    labels:
     - source: ExampleService(gateway=gateway)
       style: primary
       start: 10
@@ -153,9 +146,8 @@ snapshots:
       style: secondary
       start: 25
       end: 40
-  ? |
-    service = examples.ExampleService(gateway)
-  : labels:
+  "service = examples.ExampleService(gateway)\n":
+    labels:
     - source: examples.ExampleService(gateway)
       style: primary
       start: 10

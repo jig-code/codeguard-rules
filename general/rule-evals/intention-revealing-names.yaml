@@ -54,7 +54,7 @@ cases:
               return cls(start=today - timedelta(days=30), end=today, include_refunds=True)
   expected_output:
     outcome: invalid
-- name: a function named for marking shipments delivered does so
+- name: a function named for marking shipments delivered marks each shipment delivered
   inputs:
     file: shipping/tracking.py
     after: |
@@ -110,7 +110,7 @@ cases:
               self.stdout.write(f"imported {count} orders")
   expected_output:
     outcome: valid
-- name: a constant is added
+- name: an edit that only adds a constant
   inputs:
     file: shipping/constants.py
     after: |
@@ -133,7 +133,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a function named for refunding cancelled orders does so
+- name: a function named for refunding cancelled orders refunds each cancelled order
   inputs:
     file: orders/refunds.ts
     after: |
@@ -149,3 +149,26 @@ cases:
       }
   expected_output:
     outcome: valid
+- name: a static constructor is named for the checkout page that calls it
+  inputs:
+    file: orders/order.ts
+    after: |
+      export interface CartItem {
+        sku: string;
+        quantity: number;
+        priceCents: number;
+      }
+
+      export class Order {
+        private constructor(
+          readonly items: readonly CartItem[],
+          readonly totalCents: number,
+        ) {}
+
+        static forCheckoutPage(items: readonly CartItem[]): Order {
+          const totalCents = items.reduce((sum, item) => sum + item.quantity * item.priceCents, 0);
+          return new Order(items, totalCents);
+        }
+      }
+  expected_output:
+    outcome: invalid

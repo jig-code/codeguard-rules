@@ -1,9 +1,7 @@
 id: self-free-function
 snapshots:
-  ? |
-    async def example_key(example_line):
-        return example_line.position
-  : labels:
+  "async def example_key(example_line):\n    return example_line.position\n":
+    labels:
     - source: |-
         async def example_key(example_line):
             return example_line.position
@@ -18,69 +16,56 @@ snapshots:
       style: secondary
       start: 22
       end: 34
-  ? |
-    class ExampleComposer:
-        @classmethod
-        def example_key(cls, example_line: ExampleLine) -> int:
-            return example_line.position
-  : labels:
+  "class ExampleComposer:\n    @classmethod\n    def example_key(cls, example_line: ExampleLine) -> int:\n        return example_line.position\n":
+    labels:
     - source: |-
         def example_key(cls, example_line: ExampleLine) -> int:
                 return example_line.position
       style: primary
       start: 44
       end: 136
-    - source: 'example_line: ExampleLine'
+    - source: "example_line: ExampleLine"
       style: secondary
       start: 65
       end: 90
-    - source: 'example_line: ExampleLine'
+    - source: "example_line: ExampleLine"
       style: secondary
       start: 65
       end: 90
-  ? |
-    class ExampleComposer:
-        @staticmethod
-        def example_key(example_line: ExampleLine) -> int:
-            return example_line.position
-  : labels:
+  "class ExampleComposer:\n    @staticmethod\n    def example_key(example_line: ExampleLine) -> int:\n        return example_line.position\n":
+    labels:
     - source: |-
         def example_key(example_line: ExampleLine) -> int:
                 return example_line.position
       style: primary
       start: 45
       end: 132
-    - source: 'example_line: ExampleLine'
+    - source: "example_line: ExampleLine"
       style: secondary
       start: 61
       end: 86
-    - source: 'example_line: ExampleLine'
+    - source: "example_line: ExampleLine"
       style: secondary
       start: 61
       end: 86
-  ? |
-    class ExampleComposer:
-        def example_is_heavy(self, example_shipment: ExampleShipment) -> bool:
-            return example_shipment.weight_kg > 30
-  : labels:
+  "class ExampleComposer:\n    def example_is_heavy(self, example_shipment: ExampleShipment) -> bool:\n        return example_shipment.weight_kg > 30\n":
+    labels:
     - source: |-
         def example_is_heavy(self, example_shipment: ExampleShipment) -> bool:
                 return example_shipment.weight_kg > 30
       style: primary
       start: 27
       end: 144
-    - source: 'example_shipment: ExampleShipment'
+    - source: "example_shipment: ExampleShipment"
       style: secondary
       start: 54
       end: 87
-    - source: 'example_shipment: ExampleShipment'
+    - source: "example_shipment: ExampleShipment"
       style: secondary
       start: 54
       end: 87
-  ? |
-    def example_key(example_line):
-        return example_line.position
-  : labels:
+  "def example_key(example_line):\n    return example_line.position\n":
+    labels:
     - source: |-
         def example_key(example_line):
             return example_line.position
@@ -95,46 +80,40 @@ snapshots:
       style: secondary
       start: 16
       end: 28
-  ? |
-    def example_key(example_line: ExampleLine) -> int:
-        return example_line.position
-  : labels:
+  "def example_key(example_line: ExampleLine) -> int:\n    return example_line.position\n":
+    labels:
     - source: |-
         def example_key(example_line: ExampleLine) -> int:
             return example_line.position
       style: primary
       start: 0
       end: 83
-    - source: 'example_line: ExampleLine'
+    - source: "example_line: ExampleLine"
       style: secondary
       start: 16
       end: 41
-    - source: 'example_line: ExampleLine'
+    - source: "example_line: ExampleLine"
       style: secondary
       start: 16
       end: 41
-  ? |
-    def example_label(example_line: ExampleLine | None = None) -> str:
-        return example_line.sku
-  : labels:
+  "def example_label(example_line: ExampleLine | None = None) -> str:\n    return example_line.sku\n":
+    labels:
     - source: |-
         def example_label(example_line: ExampleLine | None = None) -> str:
             return example_line.sku
       style: primary
       start: 0
       end: 94
-    - source: 'example_line: ExampleLine | None = None'
+    - source: "example_line: ExampleLine | None = None"
       style: secondary
       start: 18
       end: 57
-    - source: 'example_line: ExampleLine | None = None'
+    - source: "example_line: ExampleLine | None = None"
       style: secondary
       start: 18
       end: 57
-  ? |
-    def example_label(example_line=None):
-        return example_line.sku
-  : labels:
+  "def example_label(example_line=None):\n    return example_line.sku\n":
+    labels:
     - source: |-
         def example_label(example_line=None):
             return example_line.sku
@@ -149,12 +128,8 @@ snapshots:
       style: secondary
       start: 18
       end: 35
-  ? |
-    def example_summary(example_lines):
-        def example_key(example_line):
-            return example_line.position
-        return sorted(example_lines, key=example_key)
-  : labels:
+  "def example_summary(example_lines):\n    def example_key(example_line):\n        return example_line.position\n    return sorted(example_lines, key=example_key)\n":
+    labels:
     - source: |-
         def example_summary(example_lines):
             def example_key(example_line):

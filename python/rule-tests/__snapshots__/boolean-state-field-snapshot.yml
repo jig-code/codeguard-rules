@@ -1,11 +1,8 @@
 id: boolean-state-field
 snapshots:
-  ? |
-    @dataclass
-    class Order:
-        is_shipped: bool = False
-  : labels:
-    - source: 'is_shipped: bool = False'
+  "@dataclass\nclass Order:\n    is_shipped: bool = False\n":
+    labels:
+    - source: "is_shipped: bool = False"
       style: primary
       start: 28
       end: 52
@@ -15,11 +12,11 @@ snapshots:
       style: secondary
       start: 11
       end: 52
-    - source: 'is_shipped: bool = False'
+    - source: "is_shipped: bool = False"
       style: secondary
       start: 28
       end: 52
-    - source: 'is_shipped: bool = False'
+    - source: "is_shipped: bool = False"
       style: secondary
       start: 28
       end: 52
@@ -27,10 +24,8 @@ snapshots:
       style: secondary
       start: 40
       end: 44
-  ? |
-    class Order(Base):
-        is_paid = Column(Boolean, default=False)
-  : labels:
+  "class Order(Base):\n    is_paid = Column(Boolean, default=False)\n":
+    labels:
     - source: Column(Boolean, default=False)
       style: primary
       start: 33
@@ -43,11 +38,9 @@ snapshots:
       style: secondary
       start: 40
       end: 47
-  ? |
-    class Order(Base):
-        is_paid: Mapped[bool] = mapped_column(default=False)
-  : labels:
-    - source: 'is_paid: Mapped[bool] = mapped_column(default=False)'
+  "class Order(Base):\n    is_paid: Mapped[bool] = mapped_column(default=False)\n":
+    labels:
+    - source: "is_paid: Mapped[bool] = mapped_column(default=False)"
       style: primary
       start: 23
       end: 75
@@ -57,11 +50,11 @@ snapshots:
       style: secondary
       start: 0
       end: 75
-    - source: 'is_paid: Mapped[bool] = mapped_column(default=False)'
+    - source: "is_paid: Mapped[bool] = mapped_column(default=False)"
       style: secondary
       start: 23
       end: 75
-    - source: 'is_paid: Mapped[bool] = mapped_column(default=False)'
+    - source: "is_paid: Mapped[bool] = mapped_column(default=False)"
       style: secondary
       start: 23
       end: 75
@@ -69,11 +62,9 @@ snapshots:
       style: secondary
       start: 32
       end: 44
-  ? |
-    class Order(BaseModel):
-        is_paid: bool | None = None
-  : labels:
-    - source: 'is_paid: bool | None = None'
+  "class Order(BaseModel):\n    is_paid: bool | None = None\n":
+    labels:
+    - source: "is_paid: bool | None = None"
       style: primary
       start: 28
       end: 55
@@ -83,11 +74,11 @@ snapshots:
       style: secondary
       start: 0
       end: 55
-    - source: 'is_paid: bool | None = None'
+    - source: "is_paid: bool | None = None"
       style: secondary
       start: 28
       end: 55
-    - source: 'is_paid: bool | None = None'
+    - source: "is_paid: bool | None = None"
       style: secondary
       start: 28
       end: 55
@@ -95,10 +86,8 @@ snapshots:
       style: secondary
       start: 37
       end: 48
-  ? |
-    class Order(models.Model):
-        is_paid = models.BooleanField(default=False)
-  : labels:
+  "class Order(models.Model):\n    is_paid = models.BooleanField(default=False)\n":
+    labels:
     - source: models.BooleanField(default=False)
       style: primary
       start: 41
@@ -107,11 +96,8 @@ snapshots:
       style: secondary
       start: 41
       end: 60
-  ? |
-    class Order:
-        def cancel(self):
-            self.is_active = False
-  : labels:
+  "class Order:\n    def cancel(self):\n        self.is_active = False\n":
+    labels:
     - source: self.is_active = False
       style: primary
       start: 43
@@ -120,13 +106,12 @@ snapshots:
       style: secondary
       start: 43
       end: 57
-    - source: 'False'
+    - source: "False"
       style: secondary
       start: 60
       end: 65
-  ? |
-    order.is_shipped = True
-  : labels:
+  "order.is_shipped = True\n":
+    labels:
     - source: order.is_shipped = True
       style: primary
       start: 0
@@ -135,7 +120,7 @@ snapshots:
       style: secondary
       start: 0
       end: 16
-    - source: 'True'
+    - source: "True"
       style: secondary
       start: 19
       end: 23

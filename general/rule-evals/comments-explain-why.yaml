@@ -1,5 +1,5 @@
 cases:
-- name: comments narrate each step of a total
+- name: comments over each step of an invoice total
   inputs:
     file: billing/totals.py
     after: |
@@ -18,7 +18,7 @@ cases:
           return total
   expected_output:
     outcome: invalid
-- name: a docstring rewords the method's name and signature
+- name: a docstring on an invoice's total method
   inputs:
     file: billing/invoice.py
     after: |
@@ -34,7 +34,7 @@ cases:
               return sum(self.line_cents)
   expected_output:
     outcome: invalid
-- name: a comment keeps the old retry as commented-out code
+- name: an old retry loop kept as comments above a label request
   inputs:
     file: shipping/carrier.py
     after: |
@@ -51,7 +51,7 @@ cases:
           return response.content
   expected_output:
     outcome: invalid
-- name: a comment gives the carrier's batch limit
+- name: a comment on the carrier's batch limit
   inputs:
     file: shipping/batches.py
     after: |
@@ -67,7 +67,7 @@ cases:
           return list(batched(parcels, BATCH_SIZE))
   expected_output:
     outcome: valid
-- name: a docstring says which error the function raises and when
+- name: a docstring on the error a label function raises
   inputs:
     file: shipping/labels.py
     after: |
@@ -84,7 +84,7 @@ cases:
           return client.label(shipment.id, shipment.address)
   expected_output:
     outcome: valid
-- name: a TODO names the tracker issue it waits on
+- name: a TODO on a surcharge with the tracker issue it waits on
   inputs:
     file: shipping/rates.py
     after: |
@@ -109,7 +109,7 @@ cases:
           return sum(weights, Decimal(0))
   expected_output:
     outcome: skipped
-- name: comments narrate a loop that counts unread messages
+- name: comments over each step of an unread-message count
   inputs:
     file: inbox/count.ts
     after: |
@@ -127,7 +127,36 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a comment gives the gateway's idle timeout
+- name: a doc comment on a user lookup function
+  inputs:
+    file: users/lookup.ts
+    after: |
+      import type { User } from "./user";
+
+      const users = new Map<string, User>();
+
+      /** Gets the user for the given id. */
+      export function getUser(id: string): User | undefined {
+        return users.get(id);
+      }
+  expected_output:
+    outcome: invalid
+- name: an old cache check kept as comments above a price fetch
+  inputs:
+    file: pricing/fetch.ts
+    after: |
+      import type { Price } from "./price";
+
+      export async function fetchPrice(sku: string): Promise<Price> {
+        // const cached = cache.get(sku);
+        // if (cached) return cached;
+        const response = await fetch(`https://prices.example.com/v1/${sku}`);
+        if (!response.ok) throw new Error(`price service answered ${response.status}`);
+        return (await response.json()) as Price;
+      }
+  expected_output:
+    outcome: invalid
+- name: a comment on the gateway's idle timeout
   inputs:
     file: http/client.ts
     after: |

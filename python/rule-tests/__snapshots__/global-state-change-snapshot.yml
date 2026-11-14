@@ -1,8 +1,7 @@
 id: global-state-change
 snapshots:
-  ? |
-    Order.max_items = 2
-  : labels:
+  "Order.max_items = 2\n":
+    labels:
     - source: Order.max_items = 2
       style: primary
       start: 0
@@ -15,9 +14,8 @@ snapshots:
       style: secondary
       start: 0
       end: 15
-  ? |
-    billing.tax.rate = 0
-  : labels:
+  "billing.tax.rate = 0\n":
+    labels:
     - source: billing.tax.rate = 0
       style: primary
       start: 0
@@ -30,9 +28,8 @@ snapshots:
       style: secondary
       start: 0
       end: 16
-  ? |
-    connection = sqlite3.connect("orders.db")
-  : labels:
+  "connection = sqlite3.connect(\"orders.db\")\n":
+    labels:
     - source: sqlite3.connect("orders.db")
       style: primary
       start: 13
@@ -41,18 +38,14 @@ snapshots:
       style: secondary
       start: 13
       end: 28
-  ? |
-    def test_counts():
-        global CALLS
-        CALLS = 0
-  : labels:
+  "def test_counts():\n    global CALLS\n    CALLS = 0\n":
+    labels:
     - source: global CALLS
       style: primary
       start: 23
       end: 35
-  ? |
-    handle = open("orders.csv")
-  : labels:
+  "handle = open(\"orders.csv\")\n":
+    labels:
     - source: open("orders.csv")
       style: primary
       start: 9
@@ -61,9 +54,8 @@ snapshots:
       style: secondary
       start: 9
       end: 13
-  ? |
-    logging.getLogger("billing").setLevel(logging.DEBUG)
-  : labels:
+  "logging.getLogger(\"billing\").setLevel(logging.DEBUG)\n":
+    labels:
     - source: logging.getLogger("billing").setLevel(logging.DEBUG)
       style: primary
       start: 0
@@ -72,9 +64,8 @@ snapshots:
       style: secondary
       start: 0
       end: 37
-  ? |
-    monkeypatch.setenv("PAYMENTS_MODE", "live")
-  : labels:
+  "monkeypatch.setenv(\"PAYMENTS_MODE\", \"live\")\n":
+    labels:
     - source: monkeypatch.setenv("PAYMENTS_MODE", "live")
       style: primary
       start: 0
@@ -83,9 +74,8 @@ snapshots:
       style: secondary
       start: 0
       end: 18
-  ? |
-    os.chdir(tmp_path)
-  : labels:
+  "os.chdir(tmp_path)\n":
+    labels:
     - source: os.chdir(tmp_path)
       style: primary
       start: 0
@@ -94,23 +84,20 @@ snapshots:
       style: secondary
       start: 0
       end: 8
-  ? |
-    os.environ.update({"PAYMENTS_MODE": "live"})
-  : labels:
+  "os.environ.update({\"PAYMENTS_MODE\": \"live\"})\n":
+    labels:
     - source: os.environ
       style: primary
       start: 0
       end: 10
-  ? |
-    os.environ["PAYMENTS_MODE"] = "live"
-  : labels:
+  "os.environ[\"PAYMENTS_MODE\"] = \"live\"\n":
+    labels:
     - source: os.environ
       style: primary
       start: 0
       end: 10
-  ? |
-    patcher.start()
-  : labels:
+  "patcher.start()\n":
+    labels:
     - source: patcher.start()
       style: primary
       start: 0
@@ -119,9 +106,8 @@ snapshots:
       style: secondary
       start: 0
       end: 13
-  ? |
-    plugins.register(CsvExporter)
-  : labels:
+  "plugins.register(CsvExporter)\n":
+    labels:
     - source: plugins.register(CsvExporter)
       style: primary
       start: 0
@@ -130,9 +116,8 @@ snapshots:
       style: secondary
       start: 0
       end: 16
-  ? |
-    setattr(billing.tax, "RATE", 0)
-  : labels:
+  "setattr(billing.tax, \"RATE\", 0)\n":
+    labels:
     - source: setattr(billing.tax, "RATE", 0)
       style: primary
       start: 0
@@ -141,9 +126,8 @@ snapshots:
       style: secondary
       start: 0
       end: 7
-  ? |
-    settings.PAYMENTS_MODE = "live"
-  : labels:
+  "settings.PAYMENTS_MODE = \"live\"\n":
+    labels:
     - source: settings.PAYMENTS_MODE = "live"
       style: primary
       start: 0
@@ -156,16 +140,14 @@ snapshots:
       style: secondary
       start: 0
       end: 22
-  ? |
-    sys.modules["billing.tax"] = fake_tax
-  : labels:
+  "sys.modules[\"billing.tax\"] = fake_tax\n":
+    labels:
     - source: sys.modules
       style: primary
       start: 0
       end: 11
-  ? |
-    sys.path.insert(0, "plugins")
-  : labels:
+  "sys.path.insert(0, \"plugins\")\n":
+    labels:
     - source: sys.path
       style: primary
       start: 0
