@@ -39,7 +39,7 @@ the languages it runs on.
 | `fail-fast` | Fail fast: code never turns an error an operation reports, data the program requires but finds missing, or a state the program's own rules make impossible into a result with which the work carries on as if it had not occurred | Not yet |
 | `no-shared-mutable-state` | Call data stays local: code never keeps the input, working values or results that only one call, request or job needs in state that every call, request or job sees | Not yet |
 | `liskov-substitution` | Liskov substitution: a subclass's method never breaks a promise that the base method of the same name makes in its signature, body or documentation about the arguments it accepts and uses, what it returns, the errors it raises or the work it does | Not yet |
-| `no-shotgun-surgery` | No shotgun surgery: one type owns each job on a concept, so a type the change adds or edits doesn't do a job another type already does to the same concept | Not yet |
+| `no-shotgun-surgery` | No shotgun surgery: a type's public method never itself does a job to something the program models when a public method of another type already does that same job to the same thing | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
