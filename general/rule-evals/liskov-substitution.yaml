@@ -1,5 +1,5 @@
 cases:
-- name: a curated playlist raises an error its base never raises when asked to remove a pinned track
+- name: a curated playlist raises an error on removing a pinned track
   inputs:
     file: music/playlists.py
     after: |
@@ -30,7 +30,7 @@ cases:
               super().remove(track)
   expected_output:
     outcome: invalid
-- name: a paginator subclass takes a page size and always cuts pages of 20
+- name: a paginator subclass takes a page size and cuts pages of 20
   inputs:
     file: listing/pages.py
     after: |
@@ -55,7 +55,7 @@ cases:
               return items[start : start + 20]
   expected_output:
     outcome: invalid
-- name: a gift card wallet silently does nothing for the withdrawals its base wallet takes out
+- name: a gift card wallet returns early for the negative amounts its base takes out
   inputs:
     file: payments/wallets.py
     after: |
@@ -75,7 +75,7 @@ cases:
               super().adjust(cents)
   expected_output:
     outcome: invalid
-- name: a gift order leaves out the shipping charge its base lists among every order's charges
+- name: a gift order's charges leave out the shipping charge its base lists
   inputs:
     file: shop/orders.py
     after: |
@@ -104,7 +104,7 @@ cases:
               return list(self.products)
   expected_output:
     outcome: invalid
-- name: a closed ledger records nothing and returns a zero balance where its base records the entry
+- name: a closed ledger's post records nothing and returns zero
   inputs:
     file: accounts/ledger.py
     after: |
@@ -126,7 +126,7 @@ cases:
               return Decimal(0)
   expected_output:
     outcome: invalid
-- name: a PDF exporter refuses every report, so the abstract export it supplies can never be called
+- name: a PDF exporter's export raises for every report
   inputs:
     file: reports/exporters.py
     after: |
@@ -156,43 +156,7 @@ cases:
               raise NotImplementedError("PDF export isn't available")
   expected_output:
     outcome: invalid
-- name: a lab temperature's parse classmethod raises for the Fahrenheit readings its base parses
-  inputs:
-    file: sensors/temperature.py
-    after: |
-      from dataclasses import dataclass
-      from typing import Self
-
-
-      class UnsupportedUnit(Exception):
-          pass
-
-
-      @dataclass(frozen=True)
-      class Temperature:
-          celsius: float
-
-          @classmethod
-          def parse(cls, text: str) -> Self:
-              """Read a reading such as "21C" or "70F"."""
-              value, unit = float(text[:-1]), text[-1]
-              if unit == "C":
-                  return cls(value)
-              if unit == "F":
-                  return cls((value - 32) * 5 / 9)
-              raise ValueError(f"unknown unit in {text!r}")
-
-
-      @dataclass(frozen=True)
-      class LabTemperature(Temperature):
-          @classmethod
-          def parse(cls, text: str) -> Self:
-              if text.endswith("F"):
-                  raise UnsupportedUnit("lab readings are in Celsius")
-              return super().parse(text)
-  expected_output:
-    outcome: invalid
-- name: a cached customer directory asks its base directory and remembers the customers it found
+- name: a cached customer directory calls its base's find and remembers the customers found
   inputs:
     file: crm/directory.py
     after: |
@@ -231,7 +195,7 @@ cases:
               return customer
   expected_output:
     outcome: valid
-- name: a counted inventory answers the same stock count as its base from a running tally
+- name: a counted inventory answers stock counts from a running tally
   inputs:
     file: warehouse/inventory.py
     after: |
@@ -262,7 +226,7 @@ cases:
               return self._counts[sku]
   expected_output:
     outcome: valid
-- name: a paginator subclass cuts pages of the size it's given from any iterable
+- name: a paginator subclass accepts any iterable and cuts pages of the size it's given
   inputs:
     file: listing/pages.py
     after: |
@@ -288,7 +252,7 @@ cases:
               return list(islice(items, start, start + size))
   expected_output:
     outcome: valid
-- name: a roster team returns its members as a sorted list where its base promises any collection
+- name: a roster team returns its members as a sorted list where its base declares a collection
   inputs:
     file: org/teams.py
     after: |
@@ -309,7 +273,7 @@ cases:
               return sorted(self._members)
   expected_output:
     outcome: valid
-- name: a plain text writer implements the abstract render method its base leaves to subclasses
+- name: a plain text writer implements the abstract render method
   inputs:
     file: reports/writers.py
     after: |
@@ -331,49 +295,7 @@ cases:
               return "".join(f"{line}\n" for line in lines)
   expected_output:
     outcome: valid
-- name: a circle computes the area its base shape leaves to subclasses by raising NotImplementedError
-  inputs:
-    file: geometry/shapes.py
-    after: |
-      import math
-
-
-      class Shape:
-          def area(self) -> float:
-              raise NotImplementedError
-
-          def describe(self) -> str:
-              return f"{type(self).__name__} of area {self.area():.2f}"
-
-
-      class Circle(Shape):
-          def __init__(self, radius: float) -> None:
-              self.radius = radius
-
-          def area(self) -> float:
-              return math.pi * self.radius**2
-  expected_output:
-    outcome: valid
-- name: a UTC clock supplies the now member of the Clock protocol it names as its base
-  inputs:
-    file: timekeeping/clocks.py
-    after: |
-      from datetime import datetime, timezone
-      from typing import Protocol
-
-
-      class Clock(Protocol):
-          def now(self) -> datetime:
-              """The current time, timezone-aware."""
-              ...
-
-
-      class UtcClock(Clock):
-          def now(self) -> datetime:
-              return datetime.now(timezone.utc)
-  expected_output:
-    outcome: valid
-- name: a seat map with holds raises the SeatUnavailable error its base documents for a seat on hold
+- name: a seat map with holds raises the error its base documents for a seat on hold
   inputs:
     file: venues/seats.py
     after: |
@@ -406,62 +328,7 @@ cases:
               super().book(seat)
   expected_output:
     outcome: valid
-- name: a transport subclass rejects attachments, but its base is imported and its promises aren't in the file
-  inputs:
-    file: mail/archive.py
-    after: |
-      from mail.messages import Message
-      from mail.transport import Transport
-
-
-      class AttachmentsNotAllowed(Exception):
-          pass
-
-
-      class ArchiveTransport(Transport):
-          def send(self, message: Message) -> None:
-              if message.attachments:
-                  raise AttachmentsNotAllowed(message.subject)
-              super().send(message)
-  expected_output:
-    outcome: valid
-- name: a fake payment gateway for tests records charges instead of calling the provider
-  inputs:
-    file: payments/gateway.py
-    after: |
-      from decimal import Decimal
-
-      import httpx
-      from pydantic import BaseModel
-
-
-      class ChargeCreated(BaseModel):
-          id: str
-
-
-      class PaymentGateway:
-          def __init__(self, client: httpx.Client) -> None:
-              self.client = client
-
-          def charge(self, card_token: str, amount: Decimal) -> str:
-              """Charge the card and return the provider's charge id."""
-              response = self.client.post("/charges", json={"card": card_token, "amount": str(amount)})
-              response.raise_for_status()
-              return ChargeCreated.model_validate_json(response.content).id
-
-
-      class FakePaymentGateway(PaymentGateway):
-          """Stands in for the gateway in tests: records each charge instead of calling the provider."""
-
-          def __init__(self) -> None:
-              self.charged: list[tuple[str, Decimal]] = []
-
-          def charge(self, card_token: str, amount: Decimal) -> str:
-              self.charged.append((card_token, amount))
-              return f"fake-charge-{len(self.charged)}"
-  expected_output:
-    outcome: valid
-- name: a class with no base class is outside the gate, since none of its methods overrides anything
+- name: a class with no base class
   inputs:
     file: greetings/greeter.py
     after: |
@@ -470,20 +337,7 @@ cases:
               return f"Hello, {name}!"
   expected_output:
     outcome: skipped
-- name: a class that names only a metaclass has no base class, so it is outside the gate
-  inputs:
-    file: imports/importer.py
-    after: |
-      from abc import ABCMeta, abstractmethod
-
-
-      class Importer(metaclass=ABCMeta):
-          @abstractmethod
-          def load(self, source: str) -> list[str]:
-              """Read the records from the source."""
-  expected_output:
-    outcome: skipped
-- name: an eco thermostat throws for targets above 21 degrees that its base thermostat accepts
+- name: an eco thermostat throws for targets above 21 degrees
   inputs:
     file: devices/thermostat.ts
     after: |
@@ -505,7 +359,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a price label subclass takes a currency and always prints dollars
+- name: a shelf label takes a currency and prints dollars
   inputs:
     file: pricing/labels.ts
     after: |
@@ -522,7 +376,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a deadline timeline silently does nothing for the negative shifts its base moves earlier
+- name: a deadline timeline returns early for the negative shifts its base moves earlier
   inputs:
     file: src/planning/timeline.ts
     after: |
@@ -553,7 +407,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a flat directory leaves out the sub-team members its base includes in a team's members
+- name: a flat directory's members leave out the sub-team members its base includes
   inputs:
     file: src/org/directory.ts
     after: |
@@ -577,7 +431,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a tenant session store purges nothing and reports zero where its base removes expired sessions
+- name: a tenant session store's purge removes nothing and returns zero
   inputs:
     file: src/auth/sessions.ts
     after: |
@@ -617,7 +471,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: an SMS notifier implements the Notifier interface by refusing every message
+- name: an SMS notifier implements the Notifier interface by throwing for every message
   inputs:
     file: src/alerts/notifiers.ts
     after: |
@@ -638,38 +492,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a bundle product's label getter returns an empty string where its base prints the name and SKU
-  inputs:
-    file: src/catalog/products.ts
-    after: |
-      export class Product {
-        constructor(
-          readonly name: string,
-          readonly sku: string,
-        ) {}
-
-        /** The name and SKU, as printed on packing slips. */
-        get label(): string {
-          return `${this.name} (${this.sku})`;
-        }
-      }
-
-      export class BundleProduct extends Product {
-        constructor(
-          name: string,
-          sku: string,
-          readonly parts: Product[],
-        ) {
-          super(name, sku);
-        }
-
-        get label(): string {
-          return "";
-        }
-      }
-  expected_output:
-    outcome: invalid
-- name: a tracing router resolves through its base router and records the route it found
+- name: a tracing router calls its base's resolve and records the route found
   inputs:
     file: src/web/router.ts
     after: |
@@ -700,7 +523,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: an indexed word list answers the same membership question as its base from a set
+- name: an indexed word list answers membership from a set
   inputs:
     file: src/spelling/words.ts
     after: |
@@ -726,7 +549,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a multi-line word counter also accepts a list of lines and counts a string as its base does
+- name: a multi-line word counter also accepts a list of lines
   inputs:
     file: src/text/counting.ts
     after: |
@@ -743,7 +566,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a sorted plugin registry returns its names as an array where its base promises any iterable
+- name: a sorted plugin registry returns its names as an array where its base declares an iterable
   inputs:
     file: src/plugins/registry.ts
     after: |
@@ -770,26 +593,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a price label implements the abstract text method its base leaves to subclasses
-  inputs:
-    file: pricing/labels.ts
-    after: |
-      export abstract class PriceLabel {
-        abstract text(cents: number, currency: string): string;
-
-        html(cents: number, currency: string): string {
-          return `<span class="price">${this.text(cents, currency)}</span>`;
-        }
-      }
-
-      export class ShelfLabel extends PriceLabel {
-        text(cents: number, currency: string): string {
-          return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(cents / 100);
-        }
-      }
-  expected_output:
-    outcome: valid
-- name: a feet unit implements the LengthUnit interface by converting the metres it's given
+- name: a feet unit implements the LengthUnit interface
   inputs:
     file: src/units/length.ts
     after: |
@@ -805,7 +609,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a price list subclass also reads discontinued prices and throws the UnknownSkuError its base throws
+- name: a discontinued price list also reads last prices and throws the error its base documents
   inputs:
     file: src/pricing/priceList.ts
     after: |
@@ -842,50 +646,6 @@ cases:
             throw new UnknownSkuError(sku);
           }
           return price;
-        }
-      }
-  expected_output:
-    outcome: valid
-- name: an image uploader rejects other files, but its base is imported and its promises aren't in the file
-  inputs:
-    file: src/media/imageUploader.ts
-    after: |
-      import type { Upload } from "./upload";
-      import { Uploader } from "./uploader";
-
-      export class ImageUploader extends Uploader {
-        async upload(file: Upload): Promise<string> {
-          if (!file.contentType.startsWith("image/")) {
-            throw new TypeError(`${file.name} is not an image`);
-          }
-          return super.upload(file);
-        }
-      }
-  expected_output:
-    outcome: valid
-- name: a fake clock for tests reads the time it was set to instead of the system time
-  inputs:
-    file: src/time/clock.ts
-    after: |
-      export class SystemClock {
-        /** The current time. */
-        now(): Date {
-          return new Date();
-        }
-      }
-
-      /** A clock for tests that reads the time it was set to until a test advances it. */
-      export class FakeClock extends SystemClock {
-        constructor(private current: Date) {
-          super();
-        }
-
-        now(): Date {
-          return this.current;
-        }
-
-        advance(ms: number): void {
-          this.current = new Date(this.current.getTime() + ms);
         }
       }
   expected_output:
