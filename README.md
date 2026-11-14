@@ -47,7 +47,7 @@ the languages it runs on.
 | `single-writer` | Single writer: a value that a module holds at its top level is never changed after that module has loaded by code in another module, or by two or more functions of that module that are not all methods of one class | Not yet |
 | `no-disinformation` | No disinformation: a function, method or class is never named with a verb, noun or qualifier that its code makes false | Not yet |
 | `claim-check` | Claim check: a stored record never crosses into work that runs later or in another process through a call that serializes it, whether passed whole, as a copy of all its fields, or as a task parameter | Not yet |
-| `constructor-injection` | Constructor injection: a method's collaborators come through its object's constructor, so a method the change adds or edits doesn't take a client, repository, provider or other collaborator as a parameter on each call | Not yet |
+| `constructor-injection` | Constructor injection: a method whose parameters its own class decides never takes an object it uses as a service, rather than as data the one call works on, as a parameter | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
