@@ -1,0 +1,166 @@
+cases:
+- name: comments over each step of an invoice total
+  inputs:
+    file: billing/totals.py
+    after: |
+      from decimal import Decimal
+
+      from billing.models import InvoiceLine
+
+
+      def invoice_total(lines: list[InvoiceLine]) -> Decimal:
+          # start the total at zero
+          total = Decimal(0)
+          # loop over the lines and add each amount
+          for line in lines:
+              total += line.amount
+          # return the total
+          return total
+  expected_output:
+    outcome: invalid
+- name: an old retry loop kept as comments above a label request
+  inputs:
+    file: shipping/carrier.py
+    after: |
+      import httpx
+
+      CARRIER_URL = "https://carrier.example.com/v2/labels"
+
+
+      def request_label(client: httpx.Client, payload: dict[str, str]) -> bytes:
+          # for attempt in range(3):
+          #     response = client.post(CARRIER_URL, json=payload)
+          response = client.post(CARRIER_URL, json=payload, timeout=10)
+          response.raise_for_status()
+          return response.content
+  expected_output:
+    outcome: invalid
+- name: a comment on the carrier's batch limit
+  inputs:
+    file: shipping/batches.py
+    after: |
+      from itertools import batched
+
+      from shipping.models import Parcel
+
+      # The carrier API rejects requests with more than 50 parcels.
+      BATCH_SIZE = 50
+
+
+      def parcel_batches(parcels: list[Parcel]) -> list[tuple[Parcel, ...]]:
+          return list(batched(parcels, BATCH_SIZE))
+  expected_output:
+    outcome: valid
+- name: a docstring on the error a label function raises
+  inputs:
+    file: shipping/labels.py
+    after: |
+      from shipping.carrier import CarrierClient
+      from shipping.models import Shipment
+
+
+      def fetch_label(client: CarrierClient, shipment: Shipment) -> bytes:
+          """Return the shipping label as PDF bytes.
+
+          Raises CarrierError when the carrier rejects the address; the shipment is
+          left unlabelled so it can be retried after the address is fixed.
+          """
+          return client.label(shipment.id, shipment.address)
+  expected_output:
+    outcome: valid
+- name: a TODO on a surcharge with the tracker issue it waits on
+  inputs:
+    file: shipping/rates.py
+    after: |
+      from decimal import Decimal
+
+      # TODO(#412): drop the surcharge once the carrier ships its v3 rate API.
+      FUEL_SURCHARGE = Decimal("0.08")
+
+
+      def with_surcharge(rate: Decimal) -> Decimal:
+          return rate * (1 + FUEL_SURCHARGE)
+  expected_output:
+    outcome: valid
+- name: a function with no comments or docstring
+  inputs:
+    file: shipping/weights.py
+    after: |
+      from decimal import Decimal
+
+
+      def total_weight(weights: list[Decimal]) -> Decimal:
+          return sum(weights, Decimal(0))
+  expected_output:
+    outcome: skipped
+- name: comments over each step of an unread-message count
+  inputs:
+    file: inbox/count.ts
+    after: |
+      import type { Message } from "./message";
+
+      export function unreadCount(messages: Message[]): number {
+        // set the count to zero
+        let count = 0;
+        // go through each message
+        for (const message of messages) {
+          // if it is unread, increment the count
+          if (!message.readAt) count++;
+        }
+        return count;
+      }
+  expected_output:
+    outcome: invalid
+- name: an old cache check kept as comments above a price fetch
+  inputs:
+    file: pricing/fetch.ts
+    after: |
+      import type { Price } from "./price";
+
+      export async function fetchPrice(sku: string): Promise<Price> {
+        // const cached = cache.get(sku);
+        // if (cached) return cached;
+        const response = await fetch(`https://prices.example.com/v1/${sku}`);
+        if (!response.ok) throw new Error(`price service answered ${response.status}`);
+        return (await response.json()) as Price;
+      }
+  expected_output:
+    outcome: invalid
+- name: a comment on the gateway's idle timeout
+  inputs:
+    file: http/client.ts
+    after: |
+      // The payment gateway closes idle sockets after 35 seconds.
+      export const KEEP_ALIVE_MS = 30_000;
+  expected_output:
+    outcome: valid
+- name: a doc comment on the error a label function rejects with
+  inputs:
+    file: shipping/labels.ts
+    after: |
+      import type { CarrierClient } from "./carrier";
+      import type { Shipment } from "./shipment";
+
+      /**
+       * Returns the shipping label as PDF bytes.
+       *
+       * Rejects with CarrierError when the carrier rejects the address; the shipment
+       * stays unlabelled so it can be retried after the address is fixed.
+       */
+      export function fetchLabel(client: CarrierClient, shipment: Shipment): Promise<Uint8Array> {
+        return client.label(shipment.id, shipment.address);
+      }
+  expected_output:
+    outcome: valid
+- name: a TODO on an exported surcharge constant with the tracker issue it waits on
+  inputs:
+    file: shipping/rates.ts
+    after: |
+      // TODO(#412): drop the surcharge once the carrier ships its v3 rate API.
+      export const FUEL_SURCHARGE = 0.08;
+
+      export function withSurcharge(rateCents: number): number {
+        return Math.round(rateCents * (1 + FUEL_SURCHARGE));
+      }
+  expected_output:
+    outcome: valid

@@ -1,0 +1,63 @@
+id: prose-comment
+valid:
+# noqa directive
+- |
+  value = compute()  # noqa: E501
+# type directive
+- |
+  value = compute()  # type: ignore[assignment]
+# pragma directive
+- |
+  if TYPE_CHECKING:  # pragma: no cover
+      pass
+# pyright directive
+- |
+  value = compute()  # pyright: ignore[reportAny]
+# Shebang
+- |
+  #!/usr/bin/env python
+# Encoding declaration
+- |
+  # -*- coding: utf-8 -*-
+# Docstring
+- |
+  def total():
+      """Return the total."""
+# Module docstring after a shebang
+- |
+  #!/usr/bin/env python
+  """Totals for invoices."""
+# String assigned to a name
+- |
+  LABEL = "total"
+# String passed to a call
+- |
+  print("total")
+invalid:
+# Line comment
+- |
+  # Stripe rejects longer values.
+  LIMIT = 500
+# Trailing comment
+- |
+  LIMIT = 500  # Stripe's limit
+# Comment inside a function
+- |
+  def total():
+      # add the lines
+      return 1
+# Commented-out code
+- |
+  # total = sum(lines)
+  total = 0
+# String statement after the first statement of a function
+- |
+  def total():
+      lines = []
+      """add the lines"""
+      return sum(lines)
+# String statement as the first statement of a block that is not a body of a function or class
+- |
+  if lines:
+      """add the lines"""
+      total = sum(lines)
