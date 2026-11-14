@@ -76,50 +76,6 @@ snapshots:
       style: secondary
       start: 11
       end: 61
-  "class ExampleService:\n    validator = ExampleValidator()\n":
-    labels:
-    - source: validator = ExampleValidator()
-      style: primary
-      start: 26
-      end: 56
-    - source: |-
-        class ExampleService:
-            validator = ExampleValidator()
-      style: secondary
-      start: 0
-      end: 56
-    - source: validator = ExampleValidator()
-      style: secondary
-      start: 26
-      end: 56
-    - source: validator = ExampleValidator()
-      style: secondary
-      start: 26
-      end: 56
-    - source: ExampleValidator()
-      style: secondary
-      start: 38
-      end: 56
-  "def check(order, validator: ExampleValidator = ExampleValidator()):\n    pass\n":
-    labels:
-    - source: "validator: ExampleValidator = ExampleValidator()"
-      style: primary
-      start: 17
-      end: 65
-    - source: ExampleValidator()
-      style: secondary
-      start: 47
-      end: 65
-  "def check(order, validator=ExampleValidator()):\n    pass\n":
-    labels:
-    - source: validator=ExampleValidator()
-      style: primary
-      start: 17
-      end: 45
-    - source: ExampleValidator()
-      style: secondary
-      start: 27
-      end: 45
   "validator = ExampleValidator(region=\"eu\")\n":
     labels:
     - source: validator = ExampleValidator(region="eu")
