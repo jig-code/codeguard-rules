@@ -1,7 +1,23 @@
 id: subclass-override
 language: python
 rule:
-  kind: function_definition
+  any:
+  - kind: function_definition
+  - kind: assignment
+    all:
+    - has:
+        field: left
+        kind: identifier
+    - has:
+        field: right
+        kind: lambda
+    - inside:
+        kind: expression_statement
+        inside:
+          kind: block
+          inside:
+            kind: class_definition
+            field: body
   inside:
     kind: class_definition
     stopBy: end
