@@ -53,7 +53,7 @@ the languages it runs on.
 | `no-recheck-of-guaranteed-condition` | No recheck of guaranteed condition: a check never tests a condition that earlier code, or validation in the value's type, already makes true, so one place owns each guarantee. | Not yet |
 | `discriminated-unions` | Discriminated unions: a union of record types that a parser builds from outside data lets the parser pick the variant only by one named field with a different literal value in each variant, so parsing is fast and its errors name one variant. | Not yet |
 | `no-stamp-coupling` | No stamp coupling: a function whose parameters no framework dictates never takes an object carrying unrelated values for many parts of the program when it reads half of its fields or fewer, so its signature says what it depends on. | Not yet |
-| `high-cohesion` | High cohesion: a module's public classes belong to its one concept, so knowledge sits where its next change will look. | Not yet |
+| `high-cohesion` | High cohesion: a module that defines several public classes never defines a public class that is neither the one class the module is about, nor one of a family of classes sharing a base or union type the module defines, nor a class with no behavior of its own that appears only in that class's fields or method signatures | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
