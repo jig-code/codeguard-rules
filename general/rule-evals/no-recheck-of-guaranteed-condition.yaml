@@ -1,5 +1,5 @@
 cases:
-- name: an assertion re-tests that the customer was found after a check already raised
+- name: an assertion tests the customer is found after a check that raises when the customer is missing
   inputs:
     file: billing/invoices.py
     after: |
@@ -15,7 +15,7 @@ cases:
           return invoices.create(customer.id, total_cents)
   expected_output:
     outcome: invalid
-- name: a service re-checks a positive amount the model's field constraint already guarantees
+- name: a refund tests the amount is positive where the model's field requires a positive amount
   inputs:
     file: payments/refunds.py
     after: |
@@ -37,7 +37,7 @@ cases:
           return gateway.refund(request.payment_id, request.amount)
   expected_output:
     outcome: invalid
-- name: a branch re-tests the status its enclosing branch already decided
+- name: a branch tests the status inside a branch on the same status
   inputs:
     file: shipping/dispatch.py
     after: |
@@ -69,26 +69,6 @@ cases:
           users.save(user)
   expected_output:
     outcome: valid
-- name: a function checks an optional field before using it
-  inputs:
-    file: shipping/labels.py
-    after: |
-      from dataclasses import dataclass
-
-
-      @dataclass(frozen=True)
-      class Address:
-          line1: str
-          city: str
-          postcode: str | None = None
-
-
-      def label(address: Address) -> str:
-          if address.postcode is None:
-              raise ValueError("a label needs a postcode")
-          return f"{address.line1}\n{address.city} {address.postcode}"
-  expected_output:
-    outcome: valid
 - name: a function checks a parameter's type that only its annotation states
   inputs:
     file: reports/paging.py
@@ -99,7 +79,7 @@ cases:
           return -(-total // per_page)
   expected_output:
     outcome: valid
-- name: a service checks the amount against a limit the field constraint doesn't cover
+- name: a refund tests the amount against a limit where the model's field requires a positive amount
   inputs:
     file: payments/refunds.py
     after: |
@@ -134,7 +114,7 @@ cases:
           return sum(prices, Decimal(0))
   expected_output:
     outcome: skipped
-- name: a handler re-checks a positive amount the zod schema already guarantees
+- name: a handler tests the amount is positive after parsing with a schema that requires a positive amount
   inputs:
     file: payments/refund.ts
     after: |
@@ -155,7 +135,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a handler throws when a map lookup misses
+- name: a handler throws when a lookup misses
   inputs:
     file: accounts/deactivate.ts
     after: |

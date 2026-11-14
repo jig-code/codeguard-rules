@@ -1,49 +1,36 @@
 cases:
-- name: a read-only storage raises on delete, which its base storage carries out
+- name: a curated playlist raises an error on removing a pinned track
   inputs:
-    file: files/storage.py
+    file: music/playlists.py
     after: |
-      from pathlib import Path
+      from dataclasses import dataclass, field
 
 
-      class Storage:
-          def __init__(self, root: Path) -> None:
-              self.root = root
-
-          def delete(self, name: str) -> None:
-              (self.root / name).unlink(missing_ok=True)
+      class PlaylistLocked(Exception):
+          pass
 
 
-      class ReadOnlyStorage(Storage):
-          def delete(self, name: str) -> None:
-              raise PermissionError(f"{self.root} is read-only")
+      @dataclass
+      class Playlist:
+          tracks: list[str] = field(default_factory=list)
+
+          def remove(self, track: str) -> None:
+              """Remove the track if the playlist has it."""
+              if track in self.tracks:
+                  self.tracks.remove(track)
+
+
+      @dataclass
+      class CuratedPlaylist(Playlist):
+          pinned: set[str] = field(default_factory=set)
+
+          def remove(self, track: str) -> None:
+              if track in self.pinned:
+                  raise PlaylistLocked(f"{track} is pinned to this playlist")
+              super().remove(track)
   expected_output:
     outcome: invalid
-- name: an audited storage records the delete and then has its base storage carry it out
-  inputs:
-    file: files/storage.py
-    after: |
-      import logging
-      from pathlib import Path
-
-      log = logging.getLogger(__name__)
-
-
-      class Storage:
-          def __init__(self, root: Path) -> None:
-              self.root = root
-
-          def delete(self, name: str) -> None:
-              (self.root / name).unlink(missing_ok=True)
-
-
-      class AuditedStorage(Storage):
-          def delete(self, name: str) -> None:
-              log.info("deleting %s from %s", name, self.root)
-              super().delete(name)
-  expected_output:
-    outcome: valid
-- name: a paginator subclass takes a page size and always cuts pages of 20
+- name: a paginator subclass takes a page size and cuts pages of 20
   inputs:
     file: listing/pages.py
     after: |
@@ -54,39 +41,70 @@ cases:
 
       class Paginator:
           def page(self, items: Sequence[T], number: int, size: int) -> Sequence[T]:
+              if number < 1:
+                  raise ValueError("pages are numbered from 1")
               start = (number - 1) * size
               return items[start : start + size]
 
 
       class CatalogPaginator(Paginator):
           def page(self, items: Sequence[T], number: int, size: int) -> Sequence[T]:
+              if number < 1:
+                  raise ValueError("pages are numbered from 1")
               start = (number - 1) * 20
               return items[start : start + 20]
   expected_output:
     outcome: invalid
-- name: a paginator subclass cuts pages of the size it's given from any iterable
+- name: a gift card wallet returns early for the negative amounts its base takes out
   inputs:
-    file: listing/pages.py
+    file: payments/wallets.py
     after: |
-      from itertools import islice
-      from typing import Iterable, Sequence, TypeVar
+      class Wallet:
+          def __init__(self) -> None:
+              self.balance_cents = 0
 
-      T = TypeVar("T")
-
-
-      class Paginator:
-          def page(self, items: Sequence[T], number: int, size: int) -> Sequence[T]:
-              start = (number - 1) * size
-              return items[start : start + size]
+          def adjust(self, cents: int) -> None:
+              """Add cents to the balance; a negative amount takes them out."""
+              self.balance_cents += cents
 
 
-      class StreamPaginator(Paginator):
-          def page(self, items: Iterable[T], number: int, size: int) -> Sequence[T]:
-              start = (number - 1) * size
-              return list(islice(items, start, start + size))
+      class GiftCardWallet(Wallet):
+          def adjust(self, cents: int) -> None:
+              if cents <= 0:
+                  return
+              super().adjust(cents)
   expected_output:
-    outcome: valid
-- name: a ledger subclass posts nothing and returns no balance where its base records the entry
+    outcome: invalid
+- name: a gift order's charges leave out the shipping charge its base lists
+  inputs:
+    file: shop/orders.py
+    after: |
+      from dataclasses import dataclass
+      from decimal import Decimal
+
+
+      @dataclass(frozen=True)
+      class Charge:
+          label: str
+          amount: Decimal
+
+
+      class Order:
+          def __init__(self, products: list[Charge], shipping: Decimal) -> None:
+              self.products = products
+              self.shipping = shipping
+
+          def charges(self) -> list[Charge]:
+              """Every charge on the order: its products, then its shipping."""
+              return [*self.products, Charge("shipping", self.shipping)]
+
+
+      class GiftOrder(Order):
+          def charges(self) -> list[Charge]:
+              return list(self.products)
+  expected_output:
+    outcome: invalid
+- name: a closed ledger's post records nothing and returns zero
   inputs:
     file: accounts/ledger.py
     after: |
@@ -105,45 +123,221 @@ cases:
 
       class ClosedLedger(Ledger):
           def post(self, amount: Decimal) -> Decimal:
-              pass
+              return Decimal(0)
   expected_output:
     outcome: invalid
-- name: a report writer implements the abstract render method its base leaves to subclasses
+- name: a PDF exporter's export raises for every report
+  inputs:
+    file: reports/exporters.py
+    after: |
+      from abc import ABC, abstractmethod
+      from dataclasses import dataclass
+
+
+      @dataclass(frozen=True)
+      class Report:
+          title: str
+          lines: list[str]
+
+
+      class Exporter(ABC):
+          @abstractmethod
+          def export(self, report: Report) -> bytes:
+              """Return the report encoded in this exporter's format."""
+
+
+      class TextExporter(Exporter):
+          def export(self, report: Report) -> bytes:
+              return "".join(f"{line}\n" for line in [report.title, *report.lines]).encode("utf-8")
+
+
+      class PdfExporter(Exporter):
+          def export(self, report: Report) -> bytes:
+              raise NotImplementedError("PDF export isn't available")
+  expected_output:
+    outcome: invalid
+- name: a cached customer directory calls its base's find and remembers the customers found
+  inputs:
+    file: crm/directory.py
+    after: |
+      from dataclasses import dataclass
+
+
+      @dataclass(frozen=True)
+      class Customer:
+          id: str
+          name: str
+
+
+      class CustomerDirectory:
+          def __init__(self, customers: tuple[Customer, ...]) -> None:
+              self.customers = customers
+
+          def find(self, customer_id: str) -> Customer | None:
+              """The customer with the id, or None when there is none."""
+              for customer in self.customers:
+                  if customer.id == customer_id:
+                      return customer
+              return None
+
+
+      class CachedCustomerDirectory(CustomerDirectory):
+          def __init__(self, customers: tuple[Customer, ...]) -> None:
+              super().__init__(customers)
+              self._found: dict[str, Customer] = {}
+
+          def find(self, customer_id: str) -> Customer | None:
+              if customer_id in self._found:
+                  return self._found[customer_id]
+              customer = super().find(customer_id)
+              if customer is not None:
+                  self._found[customer_id] = customer
+              return customer
+  expected_output:
+    outcome: valid
+- name: a counted inventory answers stock counts from a running tally
+  inputs:
+    file: warehouse/inventory.py
+    after: |
+      from collections import Counter
+
+
+      class Inventory:
+          def __init__(self) -> None:
+              self.skus: list[str] = []
+
+          def add(self, sku: str) -> None:
+              self.skus.append(sku)
+
+          def count(self, sku: str) -> int:
+              return self.skus.count(sku)
+
+
+      class CountedInventory(Inventory):
+          def __init__(self) -> None:
+              super().__init__()
+              self._counts: Counter[str] = Counter()
+
+          def add(self, sku: str) -> None:
+              super().add(sku)
+              self._counts[sku] += 1
+
+          def count(self, sku: str) -> int:
+              return self._counts[sku]
+  expected_output:
+    outcome: valid
+- name: a paginator subclass accepts any iterable and cuts pages of the size it's given
+  inputs:
+    file: listing/pages.py
+    after: |
+      from itertools import islice
+      from typing import Iterable, Sequence, TypeVar
+
+      T = TypeVar("T")
+
+
+      class Paginator:
+          def page(self, items: Sequence[T], number: int, size: int) -> Sequence[T]:
+              if number < 1:
+                  raise ValueError("pages are numbered from 1")
+              start = (number - 1) * size
+              return items[start : start + size]
+
+
+      class StreamPaginator(Paginator):
+          def page(self, items: Iterable[T], number: int, size: int) -> Sequence[T]:
+              if number < 1:
+                  raise ValueError("pages are numbered from 1")
+              start = (number - 1) * size
+              return list(islice(items, start, start + size))
+  expected_output:
+    outcome: valid
+- name: a roster team returns its members as a sorted list where its base declares a collection
+  inputs:
+    file: org/teams.py
+    after: |
+      from collections.abc import Collection
+
+
+      class Team:
+          def __init__(self, members: set[str]) -> None:
+              self._members = members
+
+          def members(self) -> Collection[str]:
+              return frozenset(self._members)
+
+
+      class RosterTeam(Team):
+          def members(self) -> list[str]:
+              """The members in alphabetical order, for printing the roster."""
+              return sorted(self._members)
+  expected_output:
+    outcome: valid
+- name: a plain text writer implements the abstract render method
   inputs:
     file: reports/writers.py
     after: |
       from abc import ABC, abstractmethod
+      from pathlib import Path
 
 
       class ReportWriter(ABC):
           @abstractmethod
-          def render(self, rows: list[dict[str, str]]) -> str:
-              """Return the rows as one document."""
+          def render(self, lines: list[str]) -> str:
+              """Return the lines as one document."""
 
-          def write(self, path: str, rows: list[dict[str, str]]) -> None:
-              with open(path, "w") as out:
-                  out.write(self.render(rows))
+          def write(self, path: Path, lines: list[str]) -> None:
+              path.write_text(self.render(lines), encoding="utf-8")
 
 
-      class MarkdownWriter(ReportWriter):
-          def render(self, rows: list[dict[str, str]]) -> str:
-              if not rows:
-                  return ""
-              header = "| " + " | ".join(rows[0]) + " |"
-              lines = ["| " + " | ".join(row.values()) + " |" for row in rows]
-              return "\n".join([header, *lines])
+      class PlainTextWriter(ReportWriter):
+          def render(self, lines: list[str]) -> str:
+              return "".join(f"{line}\n" for line in lines)
   expected_output:
     outcome: valid
-- name: a report writer with no base class renders rows
+- name: a seat map with holds raises the error its base documents for a seat on hold
   inputs:
-    file: reports/plain.py
+    file: venues/seats.py
     after: |
-      class PlainWriter:
-          def render(self, rows: list[dict[str, str]]) -> str:
-              return "\n".join(", ".join(row.values()) for row in rows)
+      class SeatUnavailable(Exception):
+          pass
+
+
+      class SeatMap:
+          def __init__(self) -> None:
+              self.booked: set[str] = set()
+
+          def book(self, seat: str) -> None:
+              """Book the seat. Raises SeatUnavailable if the seat is booked or on hold."""
+              if seat in self.booked:
+                  raise SeatUnavailable(seat)
+              self.booked.add(seat)
+
+
+      class HoldingSeatMap(SeatMap):
+          def __init__(self) -> None:
+              super().__init__()
+              self.held: set[str] = set()
+
+          def hold(self, seat: str) -> None:
+              self.held.add(seat)
+
+          def book(self, seat: str) -> None:
+              if seat in self.held:
+                  raise SeatUnavailable(seat)
+              super().book(seat)
+  expected_output:
+    outcome: valid
+- name: a class with no base class
+  inputs:
+    file: greetings/greeter.py
+    after: |
+      class Greeter:
+          def greet(self, name: str) -> str:
+              return f"Hello, {name}!"
   expected_output:
     outcome: skipped
-- name: an eco thermostat throws for targets above 21 degrees that its base thermostat accepts
+- name: an eco thermostat throws for targets above 21 degrees
   inputs:
     file: devices/thermostat.ts
     after: |
@@ -165,27 +359,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a logging thermostat logs the target and then has its base thermostat set it
-  inputs:
-    file: devices/thermostat.ts
-    after: |
-      export class Thermostat {
-        protected target = 20;
-
-        setTarget(celsius: number): void {
-          this.target = Math.round(celsius * 2) / 2;
-        }
-      }
-
-      export class LoggingThermostat extends Thermostat {
-        setTarget(celsius: number): void {
-          console.info(`target set to ${celsius}°C`);
-          super.setTarget(celsius);
-        }
-      }
-  expected_output:
-    outcome: valid
-- name: a price label subclass takes a currency and always prints dollars
+- name: a shelf label takes a currency and prints dollars
   inputs:
     file: pricing/labels.ts
     after: |
@@ -202,21 +376,276 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a price label implements the abstract text method its base leaves to subclasses
+- name: a deadline timeline returns early for the negative shifts its base moves earlier
   inputs:
-    file: pricing/labels.ts
+    file: src/planning/timeline.ts
     after: |
-      export abstract class PriceLabel {
-        abstract text(cents: number, currency: string): string;
+      export class Timeline {
+        private readonly starts = new Map<string, Date>();
 
-        html(cents: number, currency: string): string {
-          return `<span class="price">${this.text(cents, currency)}</span>`;
+        add(title: string, startsAt: Date): void {
+          this.starts.set(title, startsAt);
+        }
+
+        /** Moves the event by the given minutes; negative minutes move it earlier. */
+        shift(title: string, minutes: number): void {
+          const start = this.starts.get(title);
+          if (start === undefined) {
+            throw new Error(`no event named ${title}`);
+          }
+          this.starts.set(title, new Date(start.getTime() + minutes * 60_000));
         }
       }
 
-      export class ShelfLabel extends PriceLabel {
-        text(cents: number, currency: string): string {
-          return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(cents / 100);
+      export class DeadlineTimeline extends Timeline {
+        shift(title: string, minutes: number): void {
+          if (minutes <= 0) {
+            return;
+          }
+          super.shift(title, minutes);
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: a flat directory's members leave out the sub-team members its base includes
+  inputs:
+    file: src/org/directory.ts
+    after: |
+      export interface Team {
+        name: string;
+        members: string[];
+        subTeams: Team[];
+      }
+
+      export class Directory {
+        /** Every member of the team, including the members of its sub-teams. */
+        members(team: Team): string[] {
+          return [...team.members, ...team.subTeams.flatMap((sub) => this.members(sub))];
+        }
+      }
+
+      export class FlatDirectory extends Directory {
+        members(team: Team): string[] {
+          return [...team.members];
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: a tenant session store's purge removes nothing and returns zero
+  inputs:
+    file: src/auth/sessions.ts
+    after: |
+      export interface Session {
+        userId: string;
+        expiresAt: Date;
+      }
+
+      export class SessionStore {
+        protected readonly sessions = new Map<string, Session>();
+
+        save(id: string, session: Session): void {
+          this.sessions.set(id, session);
+        }
+
+        /** Removes every session that expired before `now` and returns how many it removed. */
+        purgeExpired(now: Date): number {
+          let removed = 0;
+          for (const [id, session] of this.sessions) {
+            if (session.expiresAt < now) {
+              this.sessions.delete(id);
+              removed += 1;
+            }
+          }
+          return removed;
+        }
+      }
+
+      export class TenantSessionStore extends SessionStore {
+        constructor(readonly tenant: string) {
+          super();
+        }
+
+        purgeExpired(_now: Date): number {
+          return 0;
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: an SMS notifier implements the Notifier interface by throwing for every message
+  inputs:
+    file: src/alerts/notifiers.ts
+    after: |
+      export interface Recipient {
+        name: string;
+        phone: string;
+      }
+
+      export interface Notifier {
+        /** Delivers the text to the recipient. */
+        notify(recipient: Recipient, text: string): Promise<void>;
+      }
+
+      export class SmsNotifier implements Notifier {
+        async notify(_recipient: Recipient, _text: string): Promise<void> {
+          throw new Error("SMS delivery is unavailable");
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: a tracing router calls its base's resolve and records the route found
+  inputs:
+    file: src/web/router.ts
+    after: |
+      export interface Route {
+        name: string;
+        pattern: RegExp;
+      }
+
+      export class Router {
+        constructor(protected readonly routes: Route[]) {}
+
+        /** The first route whose pattern matches the path, or undefined when none does. */
+        resolve(path: string): Route | undefined {
+          return this.routes.find((route) => route.pattern.test(path));
+        }
+      }
+
+      export class TracingRouter extends Router {
+        readonly resolved: string[] = [];
+
+        resolve(path: string): Route | undefined {
+          const route = super.resolve(path);
+          if (route !== undefined) {
+            this.resolved.push(route.name);
+          }
+          return route;
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: an indexed word list answers membership from a set
+  inputs:
+    file: src/spelling/words.ts
+    after: |
+      export class WordList {
+        constructor(protected readonly words: readonly string[]) {}
+
+        contains(word: string): boolean {
+          return this.words.includes(word);
+        }
+      }
+
+      export class IndexedWordList extends WordList {
+        private readonly index: ReadonlySet<string>;
+
+        constructor(words: readonly string[]) {
+          super(words);
+          this.index = new Set(words);
+        }
+
+        contains(word: string): boolean {
+          return this.index.has(word);
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a multi-line word counter also accepts a list of lines
+  inputs:
+    file: src/text/counting.ts
+    after: |
+      export class WordCounter {
+        count(text: string): number {
+          return text.split(/\s+/).filter((word) => word.length > 0).length;
+        }
+      }
+
+      export class MultiLineWordCounter extends WordCounter {
+        count(text: string | readonly string[]): number {
+          return super.count(typeof text === "string" ? text : text.join("\n"));
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a sorted plugin registry returns its names as an array where its base declares an iterable
+  inputs:
+    file: src/plugins/registry.ts
+    after: |
+      export interface Plugin {
+        start(): void;
+      }
+
+      export class PluginRegistry {
+        protected readonly plugins = new Map<string, Plugin>();
+
+        register(name: string, plugin: Plugin): void {
+          this.plugins.set(name, plugin);
+        }
+
+        names(): Iterable<string> {
+          return this.plugins.keys();
+        }
+      }
+
+      export class SortedPluginRegistry extends PluginRegistry {
+        names(): string[] {
+          return [...this.plugins.keys()].sort();
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a feet unit implements the LengthUnit interface
+  inputs:
+    file: src/units/length.ts
+    after: |
+      export interface LengthUnit {
+        /** Converts a length in metres to this unit. */
+        fromMetres(metres: number): number;
+      }
+
+      export class Feet implements LengthUnit {
+        fromMetres(metres: number): number {
+          return metres / 0.3048;
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a discontinued price list also reads last prices and throws the error its base documents
+  inputs:
+    file: src/pricing/priceList.ts
+    after: |
+      export class UnknownSkuError extends Error {
+        constructor(readonly sku: string) {
+          super(`no price for ${sku}`);
+        }
+      }
+
+      export class PriceList {
+        constructor(protected readonly prices: ReadonlyMap<string, number>) {}
+
+        /** The price in cents. Throws UnknownSkuError when the SKU has no price. */
+        priceCents(sku: string): number {
+          const price = this.prices.get(sku);
+          if (price === undefined) {
+            throw new UnknownSkuError(sku);
+          }
+          return price;
+        }
+      }
+
+      export class DiscontinuedPriceList extends PriceList {
+        constructor(
+          prices: ReadonlyMap<string, number>,
+          private readonly lastPrices: ReadonlyMap<string, number>,
+        ) {
+          super(prices);
+        }
+
+        priceCents(sku: string): number {
+          const price = this.prices.get(sku) ?? this.lastPrices.get(sku);
+          if (price === undefined) {
+            throw new UnknownSkuError(sku);
+          }
+          return price;
         }
       }
   expected_output:

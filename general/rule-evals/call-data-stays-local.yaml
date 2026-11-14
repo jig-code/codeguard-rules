@@ -1,0 +1,460 @@
+cases:
+- name: a duplicate check for one import's rows adds the SKUs to a module-level set
+  inputs:
+    file: catalog/importer.py
+    after: |
+      from catalog.models import ProductRow
+
+      _seen_skus: set[str] = set()
+
+
+      def duplicate_skus(rows: list[ProductRow]) -> list[str]:
+          """Return the SKUs that appear more than once in this import's rows."""
+          duplicates: list[str] = []
+          for row in rows:
+              if row.sku in _seen_skus:
+                  duplicates.append(row.sku)
+              _seen_skus.add(row.sku)
+          return duplicates
+  expected_output:
+    outcome: invalid
+- name: a duplicate check keeps the SKUs it has seen in a local set
+  inputs:
+    file: catalog/importer.py
+    after: |
+      import logging
+
+      from catalog.models import ProductRow
+
+      log = logging.getLogger(__name__)
+
+
+      def duplicate_skus(rows: list[ProductRow]) -> list[str]:
+          seen: set[str] = set()
+          duplicates: list[str] = []
+          for row in rows:
+              if row.sku in seen:
+                  duplicates.append(row.sku)
+              seen.add(row.sku)
+          log.info("found %d duplicate SKUs", len(duplicates))
+          return duplicates
+  expected_output:
+    outcome: valid
+- name: a duplicate check adds SKUs to a module-level set whose comment says it holds every import's SKUs
+  inputs:
+    file: catalog/importer.py
+    after: |
+      from catalog.models import ProductRow
+
+      # Every SKU imported since the process started. A SKU that any earlier import
+      # already brought in is a duplicate, whichever import it came from.
+      _skus_from_every_import: set[str] = set()
+
+
+      def duplicate_skus(rows: list[ProductRow]) -> list[str]:
+          """Return the SKUs in rows that this or any earlier import already brought in."""
+          duplicates: list[str] = []
+          for row in rows:
+              if row.sku in _skus_from_every_import:
+                  duplicates.append(row.sku)
+              _skus_from_every_import.add(row.sku)
+          return duplicates
+  expected_output:
+    outcome: valid
+- name: a module-level reading-time estimator adds each article's word count to a total on itself
+  inputs:
+    file: blog/reading_time.py
+    after: |
+      from blog.models import Article
+
+
+      class ReadingTimeEstimator:
+          def __init__(self, words_per_minute: int) -> None:
+              self.words_per_minute = words_per_minute
+              self.words_counted = 0
+
+          def minutes(self, article: Article) -> int:
+              self.words_counted += len(article.body.split())
+              return max(1, self.words_counted // self.words_per_minute)
+
+
+      estimator = ReadingTimeEstimator(words_per_minute=230)
+  expected_output:
+    outcome: invalid
+- name: a module-level reading-time estimator counts each article's words inside the call
+  inputs:
+    file: blog/reading_time.py
+    after: |
+      from blog.models import Article
+
+
+      class ReadingTimeEstimator:
+          def __init__(self, words_per_minute: int) -> None:
+              self.words_per_minute = words_per_minute
+
+          def minutes(self, article: Article) -> int:
+              return max(1, len(article.body.split()) // self.words_per_minute)
+
+
+      estimator = ReadingTimeEstimator(words_per_minute=230)
+  expected_output:
+    outcome: valid
+- name: a shortage check clears and refills a module-level stock map on each call
+  inputs:
+    file: warehouse/shortages.py
+    after: |
+      from warehouse.models import Order, StockLevel
+
+      _stock_by_sku: dict[str, int] = {}
+
+
+      def short_skus(order: Order, levels: list[StockLevel]) -> list[str]:
+          _stock_by_sku.clear()
+          _stock_by_sku.update({level.sku: level.on_hand for level in levels})
+          return [line.sku for line in order.lines if _stock_by_sku[line.sku] < line.quantity]
+  expected_output:
+    outcome: invalid
+- name: a before-request hook sets a global to the current request's client address
+  inputs:
+    file: api/limits.py
+    after: |
+      from flask import Flask, request
+
+      app = Flask(__name__)
+
+      _client_address: str | None = None
+
+
+      @app.before_request
+      def remember_client() -> None:
+          global _client_address
+          _client_address = request.remote_addr
+
+
+      def rate_limit_key(endpoint: str) -> str:
+          return f"{endpoint}:{_client_address}"
+  expected_output:
+    outcome: invalid
+- name: a before-request hook keeps the client address on the request context object
+  inputs:
+    file: api/limits.py
+    after: |
+      from flask import Flask, g, request
+
+      app = Flask(__name__)
+
+
+      @app.before_request
+      def remember_client() -> None:
+          g.client_address = request.remote_addr
+
+
+      def rate_limit_key(endpoint: str, client_address: str) -> str:
+          return f"{endpoint}:{client_address}"
+  expected_output:
+    outcome: valid
+- name: units are registered into a module-level map at import and only read afterwards
+  inputs:
+    file: measures/units.py
+    after: |
+      from measures.models import Unit
+
+      _units_by_symbol: dict[str, Unit] = {}
+
+
+      def _register(unit: Unit) -> None:
+          _units_by_symbol[unit.symbol] = unit
+
+
+      _register(Unit(symbol="kg", grams=1000))
+      _register(Unit(symbol="lb", grams=453.59237))
+      _register(Unit(symbol="oz", grams=28.349523125))
+
+
+      def unit_for(symbol: str) -> Unit:
+          return _units_by_symbol[symbol]
+  expected_output:
+    outcome: valid
+- name: an invoice number sequence behind a lock hands each call the next number
+  inputs:
+    file: billing/numbers.py
+    after: |
+      import threading
+
+      _numbering_lock = threading.Lock()
+      _last_invoice_number = 0
+
+
+      def next_invoice_number() -> int:
+          global _last_invoice_number
+          with _numbering_lock:
+              _last_invoice_number += 1
+              return _last_invoice_number
+  expected_output:
+    outcome: valid
+- name: exchange rates are memoized in a module dict keyed by date and currency
+  inputs:
+    file: money/rates.py
+    after: |
+      from datetime import date
+      from decimal import Decimal
+
+      from money.ecb import fetch_rate
+
+      _rates: dict[tuple[date, str], Decimal] = {}
+
+
+      def rate_on(day: date, currency: str) -> Decimal:
+          key = (day, currency)
+          if key not in _rates:
+              _rates[key] = fetch_rate(day, currency)
+          return _rates[key]
+  expected_output:
+    outcome: valid
+- name: a label function that touches no module-level state
+  inputs:
+    file: transit/labels.py
+    after: |
+      from transit.models import Journey
+
+
+      def zone_label(journey: Journey) -> str:
+          return f"{journey.zones} zones"
+  expected_output:
+    outcome: skipped
+- name: middleware sets the request's locale on a module-level context object
+  inputs:
+    file: web/locale.ts
+    after: |
+      import type { NextFunction, Request, Response } from "express";
+
+      const requestContext = { locale: "en-GB" };
+
+      export function localeMiddleware(req: Request<{ locale: string }>, _res: Response, next: NextFunction): void {
+        requestContext.locale = req.params.locale;
+        next();
+      }
+
+      export function formatPrice(cents: number, currency: string): string {
+        return new Intl.NumberFormat(requestContext.locale, { style: "currency", currency }).format(cents / 100);
+      }
+  expected_output:
+    outcome: invalid
+- name: middleware keeps the request's locale on the response's locals
+  inputs:
+    file: web/locale.ts
+    after: |
+      import type { NextFunction, Request, Response } from "express";
+
+      export function localeMiddleware(req: Request<{ locale: string }>, res: Response, next: NextFunction): void {
+        res.locals.locale = req.params.locale;
+        next();
+      }
+
+      export function formatPrice(locale: string, cents: number, currency: string): string {
+        return new Intl.NumberFormat(locale, { style: "currency", currency }).format(cents / 100);
+      }
+  expected_output:
+    outcome: valid
+- name: a module-level receipt printer object pushes each sale's lines onto a list on itself
+  inputs:
+    file: till/receipts.ts
+    after: |
+      import type { Sale } from "./models";
+
+      export const receiptPrinter = {
+        lines: [] as string[],
+
+        print(sale: Sale): string {
+          for (const item of sale.items) {
+            this.lines.push(`${item.name.padEnd(24)}${item.price.toFixed(2)}`);
+          }
+          return this.lines.join("\n");
+        },
+      };
+  expected_output:
+    outcome: invalid
+- name: a module-level receipt printer object builds each receipt inside the call
+  inputs:
+    file: till/receipts.ts
+    after: |
+      import type { Sale } from "./models";
+
+      export const receiptPrinter = {
+        columnWidth: 24,
+
+        print(sale: Sale): string {
+          return sale.items
+            .map((item) => `${item.name.padEnd(this.columnWidth)}${item.price.toFixed(2)}`)
+            .join("\n");
+        },
+      };
+  expected_output:
+    outcome: valid
+- name: a seat check clears and refills a module-level map on each call
+  inputs:
+    file: booking/seats.ts
+    after: |
+      import type { Booking, Seat } from "./models";
+
+      const seatsById = new Map<string, Seat>();
+
+      export function takenSeats(booking: Booking, seats: Seat[]): string[] {
+        seatsById.clear();
+        for (const seat of seats) {
+          seatsById.set(seat.id, seat);
+        }
+        return booking.seatIds.filter((id) => {
+          const seat = seatsById.get(id);
+          if (seat === undefined) {
+            throw new Error(`Unknown seat ${id}`);
+          }
+          return seat.taken;
+        });
+      }
+  expected_output:
+    outcome: invalid
+- name: a repeated-tag check for one batch of posts adds the tags to a module-level set
+  inputs:
+    file: posts/tags.ts
+    after: |
+      import type { Post } from "./models";
+
+      const tagsSeen = new Set<string>();
+
+      /** Returns the tags that appear on more than one of these posts. */
+      export function repeatedTags(posts: Post[]): string[] {
+        const repeated: string[] = [];
+        for (const post of posts) {
+          for (const tag of post.tags) {
+            if (tagsSeen.has(tag)) {
+              repeated.push(tag);
+            }
+            tagsSeen.add(tag);
+          }
+        }
+        return repeated;
+      }
+  expected_output:
+    outcome: invalid
+- name: a signup check adds emails to a module-level set whose comment says it holds every signup's email
+  inputs:
+    file: accounts/signup.ts
+    after: |
+      // Every email address signed up since the server started. An address that any
+      // earlier signup used is taken, whichever signup it came from.
+      const emailsFromEverySignup = new Set<string>();
+
+      export function claimEmail(email: string): boolean {
+        if (emailsFromEverySignup.has(email)) {
+          return false;
+        }
+        emailsFromEverySignup.add(email);
+        return true;
+      }
+  expected_output:
+    outcome: valid
+- name: slugs are memoized in a module-level map keyed by title
+  inputs:
+    file: posts/slugs.ts
+    after: |
+      const slugsByTitle = new Map<string, string>();
+
+      export function slugFor(title: string): string {
+        const cached = slugsByTitle.get(title);
+        if (cached !== undefined) {
+          return cached;
+        }
+        const slug = title
+          .normalize("NFKD")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+        slugsByTitle.set(title, slug);
+        return slug;
+      }
+  expected_output:
+    outcome: valid
+- name: webhook handlers are registered into a module-level map at import and only read afterwards
+  inputs:
+    file: webhooks/dispatch.ts
+    after: |
+      import { onChargeRefunded, onChargeSucceeded } from "./charges";
+      import type { WebhookEvent } from "./models";
+
+      type Handler = (event: WebhookEvent) => Promise<void>;
+
+      const handlersByType = new Map<string, Handler>();
+
+      function register(type: string, handler: Handler): void {
+        handlersByType.set(type, handler);
+      }
+
+      register("charge.succeeded", onChargeSucceeded);
+      register("charge.refunded", onChargeRefunded);
+
+      export async function dispatch(event: WebhookEvent): Promise<void> {
+        const handler = handlersByType.get(event.type);
+        if (handler === undefined) {
+          throw new Error(`No handler for webhook ${event.type}`);
+        }
+        await handler(event);
+      }
+  expected_output:
+    outcome: valid
+- name: an order number sequence hands each call the next number
+  inputs:
+    file: orders/numbers.ts
+    after: |
+      let lastOrderNumber = 100000;
+
+      export function nextOrderNumber(): number {
+        lastOrderNumber += 1;
+        return lastOrderNumber;
+      }
+  expected_output:
+    outcome: valid
+- name: a component keeps its draft comment in React state
+  inputs:
+    file: comments/CommentBox.tsx
+    after: |
+      import { useState } from "react";
+
+      export function CommentBox({ onSubmit }: { onSubmit: (text: string) => void }) {
+        const [draft, setDraft] = useState("");
+
+        return (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              onSubmit(draft);
+              setDraft("");
+            }}
+          >
+            <textarea value={draft} onChange={(event) => setDraft(event.target.value)} />
+            <button type="submit">Post</button>
+          </form>
+        );
+      }
+  expected_output:
+    outcome: valid
+- name: a browser app keeps its basket in a module-level store
+  inputs:
+    file: shop/basketStore.ts
+    after: |
+      import { create } from "zustand";
+      import type { Product } from "./models";
+
+      interface BasketState {
+        products: Product[];
+        add: (product: Product) => void;
+        empty: () => void;
+      }
+
+      export const useBasket = create<BasketState>()((set) => ({
+        products: [],
+        add: (product) => set((state) => ({ products: [...state.products, product] })),
+        empty: () => set({ products: [] }),
+      }));
+  expected_output:
+    outcome: valid
