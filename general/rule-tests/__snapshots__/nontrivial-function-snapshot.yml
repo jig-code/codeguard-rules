@@ -1,5 +1,22 @@
 id: nontrivial-function
 snapshots:
+  "async def total(client, order_id):\n    order = await client.fetch(order_id)\n    return order.subtotal + order.tax\n":
+    labels:
+    - source: |-
+        async def total(client, order_id):
+            order = await client.fetch(order_id)
+            return order.subtotal + order.tax
+      style: primary
+      start: 0
+      end: 113
+  "class Order:\n    @property\n    def total(self):\n        return self.subtotal + self.tax\n":
+    labels:
+    - source: |-
+        def total(self):
+                return self.subtotal + self.tax
+      style: primary
+      start: 31
+      end: 87
   "class Order:\n    def total(self):\n        for line in self.lines:\n            yield line.total\n":
     labels:
     - source: |-
@@ -26,6 +43,14 @@ snapshots:
       style: primary
       start: 0
       end: 38
+  "def display_name(self):\n    return f\"{self.first_name} {self.last_name}\"\n":
+    labels:
+    - source: |-
+        def display_name(self):
+            return f"{self.first_name} {self.last_name}"
+      style: primary
+      start: 0
+      end: 72
   "def first(orders):\n    return orders[0]\n":
     labels:
     - source: |-
@@ -118,6 +143,16 @@ snapshots:
       style: primary
       start: 0
       end: 51
+  "def totals(orders):\n    def total(order):\n        return order.subtotal + order.tax\n    return [total(order) for order in orders]\n":
+    labels:
+    - source: |-
+        def totals(orders):
+            def total(order):
+                return order.subtotal + order.tax
+            return [total(order) for order in orders]
+      style: primary
+      start: 0
+      end: 129
   "def totals(orders):\n    return [order.total for order in orders]\n":
     labels:
     - source: |-
