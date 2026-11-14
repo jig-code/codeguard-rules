@@ -32,6 +32,7 @@ the languages it runs on.
 | Rule | Checks | Validated |
 |---|---|---|
 | `dry` | Don't Repeat Yourself: code the change adds doesn't state a computation, process, set or outside shape again when the file or a module it imports already states it | Not yet |
+| `domain-logic-separate-from-io` | Domain logic separate from I/O: a function whose own code applies business rules never reads or changes anything outside the program's memory, directly or through a function it calls | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
@@ -40,7 +41,7 @@ runs on each provider before it merges. One check follows, and doesn't hold up t
   show it flags what it should. Until then it's a `warning`: its findings print but don't
   block. Once validated, its binding's `severity` moves it to `error`.
 
-Its evals have cases in each language, reported apart as `dry (python)` and
+A rule's evals have cases in each language, reported apart, such as `dry (python)` and
 `dry (typescript)`. Gates in `general/gates/` are ast-grep rules for one language each;
 on a TypeScript file, every trigger fires.
 
@@ -148,9 +149,13 @@ task eval                # codeguard eval: judge each judge rule eval case with 
 ```
 
 `CODEGUARD=<path>` runs another codeguard build, such as a checkout's `.venv/bin/codeguard`.
-`task eval` calls Gemini on Vertex AI, so it needs Google Cloud Application Default
-Credentials with the Vertex AI User role, `GOOGLE_CLOUD_PROJECT`, and
-`GOOGLE_CLOUD_LOCATION=global`.
+`task eval` calls Gemini on Vertex AI. codeguard signs in with the project in
+`CODEGUARD_JUDGE__GEMINI__PROJECT` and exactly one of `CODEGUARD_JUDGE__GEMINI__API_KEY`
+or `CODEGUARD_JUDGE__GEMINI__CREDENTIALS_FILE` (a service account key with the Vertex AI
+User role); `CODEGUARD_JUDGE__GEMINI__LOCATION` defaults to `global`. A Claude Code
+session here signs in with `CODEGUARD_JUDGE__GEMINI__PROJECT=730802237087` and
+`CODEGUARD_JUDGE__GEMINI__API_KEY=proxy-injected`: the session's network proxy supplies
+the real key, so that value is a placeholder, never the key.
 
 A Claude Code session here installs codeguard at the commit CI pins (`CODEGUARD_REF`
 in `.github/workflows/ci.yaml`) when it starts, through `.claude/hooks/session-start.sh`,
@@ -188,8 +193,10 @@ with GitHub's OIDC token by assuming the role in the repository variable
 `BEDROCK_MODEL`, passed to `codeguard eval --model`. The `gemini` leg runs each
 binding's model on Vertex AI in the `global` location, the only one that serves
 `gemini-4-argon`: the job signs in with `google-github-actions/auth` using the secret
-`GOOGLE_CREDENTIALS` (a service account key with the Vertex AI User role), and bills
-the project in the variable `GOOGLE_CLOUD_PROJECT`. codeguard's README, under "Judge with Gemini on Google
+`GOOGLE_CREDENTIALS` (a service account key with the Vertex AI User role), and the eval
+step passes the key file that step writes as `CODEGUARD_JUDGE__GEMINI__CREDENTIALS_FILE`
+and the project in the variable `GOOGLE_CLOUD_PROJECT` as
+`CODEGUARD_JUDGE__GEMINI__PROJECT`. codeguard's README, under "Judge with Gemini on Google
 Cloud", has the setup.
 CI runs the codeguard commit in `CODEGUARD_REF` in `.github/workflows/ci.yaml`, so
 moving to a new commit is a change here, which judges every rule.
