@@ -1,18 +1,13 @@
 ---
 name: domain-logic-separate-from-io
-description: A function that makes a domain decision does no I/O. A function makes a domain decision when its own code applies the program's rules to values; I/O reads or changes anything outside the program's memory, done by the function itself or by a function of the program it calls.
+description: A function whose own code applies business rules to values never reads or changes anything outside the program's memory, whether the function does so directly or through another function of the program that the function calls.
 ---
 
 # Domain Logic Separate from I/O
 
-A function that makes a domain decision does no I/O. A function makes a domain decision
-when its own code applies the program's rules to values, such as whether an order may be
-refunded or what a fee comes to; a function that gets that answer by calling a function
-that applies the rules, and acts on the answer, makes no decision of its own. I/O reads
-or changes anything outside the program's memory, such as a database, a file, another
-service, a queue, the clock or a random source, whether the function does it itself or
-calls a function of the program that does; handling what the outside system answered,
-such as a status, an error or a missing record, is part of the I/O.
+A function whose own code applies business rules to values never reads or changes
+anything outside the program's memory, whether the function does so directly or through
+another function of the program that the function calls.
 
 ## Why
 

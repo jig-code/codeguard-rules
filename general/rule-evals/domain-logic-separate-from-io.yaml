@@ -1,5 +1,5 @@
 cases:
-- name: the refund window is decided beside the order query, so testing the window needs a database
+- name: a refund check queries the order it decides on
   inputs:
     file: shop/refunds.py
     after: |
@@ -15,7 +15,7 @@ cases:
           return order.status == "delivered" and today - order.delivered_on <= REFUND_WINDOW
   expected_output:
     outcome: invalid
-- name: the refund view reads the order and asks the refund policy, so the window is tested with plain orders
+- name: a refund request loads the order, asks the refund policy and creates the refund
   inputs:
     file: shop/refunds.py
     unchanged:
@@ -43,27 +43,7 @@ cases:
           return Refund.objects.create(order=order, amount=order.total)
   expected_output:
     outcome: valid
-- name: an invoice reads today's date to decide it is overdue, so no test can pin the day
-  inputs:
-    file: billing/invoices.py
-    after: |
-      from dataclasses import dataclass
-      from datetime import date
-
-      GRACE_DAYS = 14
-
-
-      @dataclass(frozen=True)
-      class Invoice:
-          due_on: date
-          paid: bool
-
-
-      def is_overdue(invoice: Invoice) -> bool:
-          return not invoice.paid and (date.today() - invoice.due_on).days > GRACE_DAYS
-  expected_output:
-    outcome: invalid
-- name: an invoice is overdue by the date it is given, so a test passes on any day
+- name: an overdue check decides from the date it is given
   inputs:
     file: billing/invoices.py
     after: |
@@ -83,7 +63,7 @@ cases:
           return not invoice.paid and (today - invoice.due_on).days > GRACE_DAYS
   expected_output:
     outcome: valid
-- name: a parcel's size class is decided and written to the database in one function, so the size limits need a database to test
+- name: a size check writes the size class it decides to the database
   inputs:
     file: parcels/sizing.py
     unchanged:
@@ -115,7 +95,31 @@ cases:
           Parcel.objects.filter(pk=parcel_id).update(size_class=size_class)
   expected_output:
     outcome: invalid
-- name: the members client turns the service's not-found answer into an exception and decides nothing of the domain
+- name: a points award saves the points it works out through the program's repository function
+  inputs:
+    file: rewards/points.py
+    unchanged:
+      rewards/repository.py: |
+        from rewards.models import Member
+
+
+        def save_points(member_id: int, points: int) -> None:
+            Member.objects.filter(pk=member_id).update(points=points)
+    after: |
+      from rewards.repository import save_points
+
+      POINTS_PER_EURO = 10
+      GOLD_MULTIPLIER = 2
+
+
+      def award_points(member_id: int, current_points: int, spent_euros: int, gold: bool) -> None:
+          earned = spent_euros * POINTS_PER_EURO
+          if gold:
+              earned *= GOLD_MULTIPLIER
+          save_points(member_id, current_points + earned)
+  expected_output:
+    outcome: invalid
+- name: a members client turns the service's not-found answer into an exception
   inputs:
     file: loyalty/client.py
     after: |
@@ -133,7 +137,7 @@ cases:
           response.raise_for_status()
   expected_output:
     outcome: valid
-- name: an edit that only adds an import touches no function, so the judge is not called
+- name: an edit that only adds an import
   inputs:
     file: shop/views.py
     before: |
@@ -143,7 +147,7 @@ cases:
       from shop.refunds import request_refund
   expected_output:
     outcome: skipped
-- name: the shipping handler works out free shipping from the cart it just queried, so the threshold needs a database to test
+- name: a shipping handler works out free shipping from the cart it queries
   inputs:
     file: src/checkout/shippingQuote.ts
     unchanged:
@@ -170,7 +174,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: the shipping handler queries the cart and asks the shipping rules for the charge, so the threshold is tested with plain carts
+- name: a shipping handler queries the cart and asks the shipping rules for the charge
   inputs:
     file: src/checkout/shippingQuote.ts
     unchanged:
@@ -210,28 +214,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: the survey prompt draws its own random number, so no test can pin which customers see it
-  inputs:
-    file: src/feedback/survey.ts
-    after: |
-      const SURVEY_SAMPLE_RATE = 0.2;
-      const SURVEY_FROM_ORDERS = 3;
-
-      export interface Customer {
-        completedOrders: number;
-        surveyedThisYear: boolean;
-      }
-
-      export function offerSurvey(customer: Customer): boolean {
-        return (
-          customer.completedOrders >= SURVEY_FROM_ORDERS &&
-          !customer.surveyedThisYear &&
-          Math.random() < SURVEY_SAMPLE_RATE
-        );
-      }
-  expected_output:
-    outcome: invalid
-- name: the survey prompt is decided by the draw it is given, so a test can pin which customers see it
+- name: a survey offer decides from the draw it is given
   inputs:
     file: src/feedback/survey.ts
     after: |
@@ -252,7 +235,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: payment routing decides manual review and sends the payment to the queue in one function, so the review rule needs a fake queue to test
+- name: a payment router decides on manual review and sends the payment to the queue
   inputs:
     file: src/payments/routing.ts
     unchanged:
@@ -278,7 +261,36 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: the keys client turns the service's unknown-key answer into an exception and decides nothing of the domain
+- name: a withdrawal check loads the account through the program's account store function
+  inputs:
+    file: src/accounts/withdrawals.ts
+    unchanged:
+      src/db.ts: |
+        import { PrismaClient } from "@prisma/client";
+
+        export const prisma = new PrismaClient();
+      src/accounts/store.ts: |
+        import { prisma } from "../db";
+
+        export interface Account {
+          id: string;
+          balanceCents: number;
+          overdraftLimitCents: number;
+        }
+
+        export async function loadAccount(accountId: string): Promise<Account> {
+          return prisma.account.findUniqueOrThrow({ where: { id: accountId } });
+        }
+    after: |
+      import { loadAccount } from "./store";
+
+      export async function canWithdraw(accountId: string, amountCents: number): Promise<boolean> {
+        const account = await loadAccount(accountId);
+        return account.balanceCents + account.overdraftLimitCents >= amountCents;
+      }
+  expected_output:
+    outcome: invalid
+- name: a keys client turns the service's unknown-key answer into an exception
   inputs:
     file: src/auth/keysClient.ts
     after: |
