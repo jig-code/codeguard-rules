@@ -1,9 +1,7 @@
 id: no-bucket-module-names
 snapshots:
-  ? |
-    def format_example(value: str) -> str:
-        return value.strip()
-  : labels:
+  "def format_example(value: str) -> str:\n    return value.strip()\n":
+    labels:
     - source: |
         def format_example(value: str) -> str:
             return value.strip()

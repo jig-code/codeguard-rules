@@ -1,0 +1,619 @@
+id: union-declares-discriminator
+snapshots:
+  "from typing import Annotated, Literal\nfrom pydantic import BaseModel, Field\n\nclass ExampleA(BaseModel):\n    kind: Literal[\"a\"] = \"a\"\n\nclass ExampleB(BaseModel):\n    kind: Literal[\"b\"] = \"b\"\n\nclass ExampleHolder(BaseModel):\n    value: Annotated[ExampleA | ExampleB, Field(description=\"the example\")]\n":
+    labels:
+    - source: "value: Annotated[ExampleA | ExampleB, Field(description=\"the example\")]"
+      style: primary
+      start: 227
+      end: 298
+    - source: (BaseModel)
+      style: secondary
+      start: 91
+      end: 102
+    - source: ExampleA
+      style: secondary
+      start: 83
+      end: 91
+    - source: |-
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+      style: secondary
+      start: 77
+      end: 132
+    - source: |
+        from typing import Annotated, Literal
+        from pydantic import BaseModel, Field
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: Annotated[ExampleA | ExampleB, Field(description="the example")]
+      style: secondary
+      start: 0
+      end: 299
+    - source: ExampleA
+      style: secondary
+      start: 244
+      end: 252
+    - source: (BaseModel)
+      style: secondary
+      start: 148
+      end: 159
+    - source: ExampleB
+      style: secondary
+      start: 140
+      end: 148
+    - source: |-
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+      style: secondary
+      start: 134
+      end: 189
+    - source: |
+        from typing import Annotated, Literal
+        from pydantic import BaseModel, Field
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: Annotated[ExampleA | ExampleB, Field(description="the example")]
+      style: secondary
+      start: 0
+      end: 299
+    - source: ExampleB
+      style: secondary
+      start: 255
+      end: 263
+    - source: ExampleA | ExampleB
+      style: secondary
+      start: 244
+      end: 263
+    - source: ExampleA | ExampleB
+      style: secondary
+      start: 244
+      end: 263
+    - source: (BaseModel)
+      style: secondary
+      start: 210
+      end: 221
+    - source: |-
+        class ExampleHolder(BaseModel):
+            value: Annotated[ExampleA | ExampleB, Field(description="the example")]
+      style: secondary
+      start: 191
+      end: 298
+    - source: "value: Annotated[ExampleA | ExampleB, Field(description=\"the example\")]"
+      style: secondary
+      start: 227
+      end: 298
+    - source: "value: Annotated[ExampleA | ExampleB, Field(description=\"the example\")]"
+      style: secondary
+      start: 227
+      end: 298
+  "from typing import Literal\nfrom pydantic import BaseModel\n\nclass ExampleA(BaseModel):\n    kind: Literal[\"a\"] = \"a\"\n\n@some_decorator\nclass ExampleB(BaseModel):\n    kind: Literal[\"b\"] = \"b\"\n\nclass ExampleHolder(BaseModel):\n    value: ExampleA | ExampleB\n":
+    labels:
+    - source: "value: ExampleA | ExampleB"
+      style: primary
+      start: 225
+      end: 251
+    - source: (BaseModel)
+      style: secondary
+      start: 73
+      end: 84
+    - source: ExampleA
+      style: secondary
+      start: 65
+      end: 73
+    - source: |-
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+      style: secondary
+      start: 59
+      end: 114
+    - source: |
+        from typing import Literal
+        from pydantic import BaseModel
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        @some_decorator
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB
+      style: secondary
+      start: 0
+      end: 252
+    - source: ExampleA
+      style: secondary
+      start: 232
+      end: 240
+    - source: (BaseModel)
+      style: secondary
+      start: 146
+      end: 157
+    - source: ExampleB
+      style: secondary
+      start: 138
+      end: 146
+    - source: |-
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+      style: secondary
+      start: 132
+      end: 187
+    - source: |-
+        @some_decorator
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+      style: secondary
+      start: 116
+      end: 187
+    - source: |
+        from typing import Literal
+        from pydantic import BaseModel
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        @some_decorator
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB
+      style: secondary
+      start: 0
+      end: 252
+    - source: ExampleB
+      style: secondary
+      start: 243
+      end: 251
+    - source: ExampleA | ExampleB
+      style: secondary
+      start: 232
+      end: 251
+    - source: ExampleA | ExampleB
+      style: secondary
+      start: 232
+      end: 251
+    - source: (BaseModel)
+      style: secondary
+      start: 208
+      end: 219
+    - source: |-
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB
+      style: secondary
+      start: 189
+      end: 251
+    - source: "value: ExampleA | ExampleB"
+      style: secondary
+      start: 225
+      end: 251
+    - source: "value: ExampleA | ExampleB"
+      style: secondary
+      start: 225
+      end: 251
+  "from typing import Literal\nfrom pydantic import BaseModel\n\nclass ExampleA(BaseModel):\n    kind: Literal[\"a\"] = \"a\"\n\nclass ExampleB(BaseModel):\n    kind: Literal[\"b\"] = \"b\"\n\nclass ExampleHolder(BaseModel):\n    value: ExampleA | ExampleB\n":
+    labels:
+    - source: "value: ExampleA | ExampleB"
+      style: primary
+      start: 209
+      end: 235
+    - source: (BaseModel)
+      style: secondary
+      start: 73
+      end: 84
+    - source: ExampleA
+      style: secondary
+      start: 65
+      end: 73
+    - source: |-
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+      style: secondary
+      start: 59
+      end: 114
+    - source: |
+        from typing import Literal
+        from pydantic import BaseModel
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB
+      style: secondary
+      start: 0
+      end: 236
+    - source: ExampleA
+      style: secondary
+      start: 216
+      end: 224
+    - source: (BaseModel)
+      style: secondary
+      start: 130
+      end: 141
+    - source: ExampleB
+      style: secondary
+      start: 122
+      end: 130
+    - source: |-
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+      style: secondary
+      start: 116
+      end: 171
+    - source: |
+        from typing import Literal
+        from pydantic import BaseModel
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB
+      style: secondary
+      start: 0
+      end: 236
+    - source: ExampleB
+      style: secondary
+      start: 227
+      end: 235
+    - source: ExampleA | ExampleB
+      style: secondary
+      start: 216
+      end: 235
+    - source: ExampleA | ExampleB
+      style: secondary
+      start: 216
+      end: 235
+    - source: (BaseModel)
+      style: secondary
+      start: 192
+      end: 203
+    - source: |-
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB
+      style: secondary
+      start: 173
+      end: 235
+    - source: "value: ExampleA | ExampleB"
+      style: secondary
+      start: 209
+      end: 235
+    - source: "value: ExampleA | ExampleB"
+      style: secondary
+      start: 209
+      end: 235
+  "from typing import Literal\nfrom pydantic import BaseModel\n\nclass ExampleA(BaseModel):\n    kind: Literal[\"a\"] = \"a\"\n\nclass ExampleB(BaseModel):\n    kind: Literal[\"b\"] = \"b\"\n\nclass ExampleHolder(BaseModel):\n    value: ExampleA | None | ExampleB = None\n":
+    labels:
+    - source: "value: ExampleA | None | ExampleB = None"
+      style: primary
+      start: 209
+      end: 249
+    - source: (BaseModel)
+      style: secondary
+      start: 73
+      end: 84
+    - source: ExampleA
+      style: secondary
+      start: 65
+      end: 73
+    - source: |-
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+      style: secondary
+      start: 59
+      end: 114
+    - source: |
+        from typing import Literal
+        from pydantic import BaseModel
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: ExampleA | None | ExampleB = None
+      style: secondary
+      start: 0
+      end: 250
+    - source: ExampleA
+      style: secondary
+      start: 216
+      end: 224
+    - source: ExampleA | None
+      style: secondary
+      start: 216
+      end: 231
+    - source: (BaseModel)
+      style: secondary
+      start: 130
+      end: 141
+    - source: ExampleB
+      style: secondary
+      start: 122
+      end: 130
+    - source: |-
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+      style: secondary
+      start: 116
+      end: 171
+    - source: |
+        from typing import Literal
+        from pydantic import BaseModel
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: ExampleA | None | ExampleB = None
+      style: secondary
+      start: 0
+      end: 250
+    - source: ExampleB
+      style: secondary
+      start: 234
+      end: 242
+    - source: ExampleA | None | ExampleB
+      style: secondary
+      start: 216
+      end: 242
+    - source: ExampleA | None | ExampleB
+      style: secondary
+      start: 216
+      end: 242
+    - source: (BaseModel)
+      style: secondary
+      start: 192
+      end: 203
+    - source: |-
+        class ExampleHolder(BaseModel):
+            value: ExampleA | None | ExampleB = None
+      style: secondary
+      start: 173
+      end: 249
+    - source: "value: ExampleA | None | ExampleB = None"
+      style: secondary
+      start: 209
+      end: 249
+    - source: "value: ExampleA | None | ExampleB = None"
+      style: secondary
+      start: 209
+      end: 249
+  "from typing import Literal\nfrom pydantic import BaseModel, Field\n\nclass ExampleA(BaseModel):\n    kind: Literal[\"a\"] = \"a\"\n\nclass ExampleB(BaseModel):\n    kind: Literal[\"b\"] = \"b\"\n\nclass ExampleHolder(BaseModel):\n    value: ExampleA | ExampleB = Field(description=\"the example\")\n":
+    labels:
+    - source: "value: ExampleA | ExampleB = Field(description=\"the example\")"
+      style: primary
+      start: 216
+      end: 277
+    - source: (BaseModel)
+      style: secondary
+      start: 80
+      end: 91
+    - source: ExampleA
+      style: secondary
+      start: 72
+      end: 80
+    - source: |-
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+      style: secondary
+      start: 66
+      end: 121
+    - source: |
+        from typing import Literal
+        from pydantic import BaseModel, Field
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB = Field(description="the example")
+      style: secondary
+      start: 0
+      end: 278
+    - source: ExampleA
+      style: secondary
+      start: 223
+      end: 231
+    - source: (BaseModel)
+      style: secondary
+      start: 137
+      end: 148
+    - source: ExampleB
+      style: secondary
+      start: 129
+      end: 137
+    - source: |-
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+      style: secondary
+      start: 123
+      end: 178
+    - source: |
+        from typing import Literal
+        from pydantic import BaseModel, Field
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB = Field(description="the example")
+      style: secondary
+      start: 0
+      end: 278
+    - source: ExampleB
+      style: secondary
+      start: 234
+      end: 242
+    - source: ExampleA | ExampleB
+      style: secondary
+      start: 223
+      end: 242
+    - source: ExampleA | ExampleB
+      style: secondary
+      start: 223
+      end: 242
+    - source: (BaseModel)
+      style: secondary
+      start: 199
+      end: 210
+    - source: |-
+        class ExampleHolder(BaseModel):
+            value: ExampleA | ExampleB = Field(description="the example")
+      style: secondary
+      start: 180
+      end: 277
+    - source: "value: ExampleA | ExampleB = Field(description=\"the example\")"
+      style: secondary
+      start: 216
+      end: 277
+    - source: "value: ExampleA | ExampleB = Field(description=\"the example\")"
+      style: secondary
+      start: 216
+      end: 277
+  "from typing import Literal, Union\nfrom pydantic import BaseModel\n\nclass ExampleA(BaseModel):\n    kind: Literal[\"a\"] = \"a\"\n\nclass ExampleB(BaseModel):\n    kind: Literal[\"b\"] = \"b\"\n\nclass ExampleHolder(BaseModel):\n    value: Union[ExampleA, None, ExampleB] = None\n":
+    labels:
+    - source: "value: Union[ExampleA, None, ExampleB] = None"
+      style: primary
+      start: 216
+      end: 261
+    - source: (BaseModel)
+      style: secondary
+      start: 80
+      end: 91
+    - source: ExampleA
+      style: secondary
+      start: 72
+      end: 80
+    - source: |-
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+      style: secondary
+      start: 66
+      end: 121
+    - source: |
+        from typing import Literal, Union
+        from pydantic import BaseModel
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: Union[ExampleA, None, ExampleB] = None
+      style: secondary
+      start: 0
+      end: 262
+    - source: ExampleA
+      style: secondary
+      start: 229
+      end: 237
+    - source: (BaseModel)
+      style: secondary
+      start: 137
+      end: 148
+    - source: ExampleB
+      style: secondary
+      start: 129
+      end: 137
+    - source: |-
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+      style: secondary
+      start: 123
+      end: 178
+    - source: |
+        from typing import Literal, Union
+        from pydantic import BaseModel
+
+        class ExampleA(BaseModel):
+            kind: Literal["a"] = "a"
+
+        class ExampleB(BaseModel):
+            kind: Literal["b"] = "b"
+
+        class ExampleHolder(BaseModel):
+            value: Union[ExampleA, None, ExampleB] = None
+      style: secondary
+      start: 0
+      end: 262
+    - source: ExampleB
+      style: secondary
+      start: 245
+      end: 253
+    - source: ExampleB
+      style: secondary
+      start: 245
+      end: 253
+    - source: ExampleA
+      style: secondary
+      start: 229
+      end: 237
+    - source: "[ExampleA, None, ExampleB]"
+      style: secondary
+      start: 228
+      end: 254
+    - source: Union
+      style: secondary
+      start: 223
+      end: 228
+    - source: Union[ExampleA, None, ExampleB]
+      style: secondary
+      start: 223
+      end: 254
+    - source: Union[ExampleA, None, ExampleB]
+      style: secondary
+      start: 223
+      end: 254
+    - source: (BaseModel)
+      style: secondary
+      start: 199
+      end: 210
+    - source: |-
+        class ExampleHolder(BaseModel):
+            value: Union[ExampleA, None, ExampleB] = None
+      style: secondary
+      start: 180
+      end: 261
+    - source: "value: Union[ExampleA, None, ExampleB] = None"
+      style: secondary
+      start: 216
+      end: 261
+    - source: "value: Union[ExampleA, None, ExampleB] = None"
+      style: secondary
+      start: 216
+      end: 261

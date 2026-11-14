@@ -1,12 +1,7 @@
 id: class-module-import
 snapshots:
-  ? |
-    from billing.totals import total
-
-
-    class Invoice:
-        pass
-  : labels:
+  "from billing.totals import total\n\n\nclass Invoice:\n    pass\n":
+    labels:
     - source: from billing.totals import total
       style: primary
       start: 0
@@ -26,14 +21,8 @@ snapshots:
       style: secondary
       start: 0
       end: 59
-  ? |
-    from dataclasses import dataclass
-
-
-    @dataclass
-    class Invoice:
-        number: str
-  : labels:
+  "from dataclasses import dataclass\n\n\n@dataclass\nclass Invoice:\n    number: str\n":
+    labels:
     - source: from dataclasses import dataclass
       style: primary
       start: 0
@@ -61,13 +50,8 @@ snapshots:
       style: secondary
       start: 0
       end: 78
-  ? |
-    import shipping.carriers
-
-
-    class Invoice:
-        pass
-  : labels:
+  "import shipping.carriers\n\n\nclass Invoice:\n    pass\n":
+    labels:
     - source: import shipping.carriers
       style: primary
       start: 0

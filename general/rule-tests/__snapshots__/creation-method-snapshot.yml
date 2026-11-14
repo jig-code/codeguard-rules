@@ -1,11 +1,7 @@
 id: creation-method
 snapshots:
-  ? |
-    class ExampleInvoice:
-        @classmethod
-        def for_checkout(cls, order):
-            return cls()
-  : labels:
+  "class ExampleInvoice:\n    @classmethod\n    def for_checkout(cls, order):\n        return cls()\n":
+    labels:
     - source: |-
         def for_checkout(cls, order):
                 return cls()
@@ -38,12 +34,8 @@ snapshots:
       style: secondary
       start: 47
       end: 59
-  ? |
-    class ExampleInvoice:
-        @staticmethod
-        def create_draft(order):
-            return ExampleInvoice()
-  : labels:
+  "class ExampleInvoice:\n    @staticmethod\n    def create_draft(order):\n        return ExampleInvoice()\n":
+    labels:
     - source: |-
         def create_draft(order):
                 return ExampleInvoice()
@@ -76,11 +68,8 @@ snapshots:
       style: secondary
       start: 48
       end: 60
-  ? |
-    class ExampleInvoiceCreator:
-        def invoice(self, params):
-            return params
-  : labels:
+  "class ExampleInvoiceCreator:\n    def invoice(self, params):\n        return params\n":
+    labels:
     - source: |-
         def invoice(self, params):
                 return params
@@ -98,11 +87,8 @@ snapshots:
       style: secondary
       start: 0
       end: 81
-  ? |
-    class ExampleInvoiceFactory:
-        def admin_invoice(self, params):
-            return params
-  : labels:
+  "class ExampleInvoiceFactory:\n    def admin_invoice(self, params):\n        return params\n":
+    labels:
     - source: |-
         def admin_invoice(self, params):
                 return params
@@ -120,11 +106,8 @@ snapshots:
       style: secondary
       start: 0
       end: 87
-  ? |
-    class ExampleInvoiceService:
-        def create_for_admin(self, params):
-            return params
-  : labels:
+  "class ExampleInvoiceService:\n    def create_for_admin(self, params):\n        return params\n":
+    labels:
     - source: |-
         def create_for_admin(self, params):
                 return params

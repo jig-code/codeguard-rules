@@ -1,39 +1,31 @@
 id: class-import
 snapshots:
-  ? |
-    from .checkout_result import CheckoutResult
-  : labels:
+  "from .checkout_result import CheckoutResult\n":
+    labels:
     - source: from .checkout_result import CheckoutResult
       style: primary
       start: 0
       end: 43
-  ? |
-    from retry.retry_attempt import RetryAttempt as Attempt
-  : labels:
+  "from retry.retry_attempt import RetryAttempt as Attempt\n":
+    labels:
     - source: from retry.retry_attempt import RetryAttempt as Attempt
       style: primary
       start: 0
       end: 55
-  ? |
-    from retry.retry_attempt import build, RetryAttempt
-  : labels:
+  "from retry.retry_attempt import build, RetryAttempt\n":
+    labels:
     - source: from retry.retry_attempt import build, RetryAttempt
       style: primary
       start: 0
       end: 51
-  ? |
-    from retry.retry_attempt_params import RetryAttemptParams
-  : labels:
+  "from retry.retry_attempt_params import RetryAttemptParams\n":
+    labels:
     - source: from retry.retry_attempt_params import RetryAttemptParams
       style: primary
       start: 0
       end: 57
-  ? |
-    from retry.shapes import (
-        RetryAttempt,
-        RetryAttemptParams,
-    )
-  : labels:
+  "from retry.shapes import (\n    RetryAttempt,\n    RetryAttemptParams,\n)\n":
+    labels:
     - source: |-
         from retry.shapes import (
             RetryAttempt,

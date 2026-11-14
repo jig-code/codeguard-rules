@@ -1,10 +1,8 @@
 id: keyed-collection-build
 snapshots:
-  ? |
-    for order in orders:
-        index.update({order.customer_id: order})
-  : labels:
-    - source: 'index.update({order.customer_id: order})'
+  "for order in orders:\n    index.update({order.customer_id: order})\n":
+    labels:
+    - source: "index.update({order.customer_id: order})"
       style: primary
       start: 25
       end: 65
@@ -18,10 +16,8 @@ snapshots:
       style: secondary
       start: 25
       end: 37
-  ? |
-    for order in orders:
-        index[order.customer_id] = order
-  : labels:
+  "for order in orders:\n    index[order.customer_id] = order\n":
+    labels:
     - source: index[order.customer_id] = order
       style: primary
       start: 25
@@ -36,9 +32,8 @@ snapshots:
       style: secondary
       start: 25
       end: 49
-  ? |
-    index = dict((order.customer_id, order) for order in orders)
-  : labels:
+  "index = dict((order.customer_id, order) for order in orders)\n":
+    labels:
     - source: dict((order.customer_id, order) for order in orders)
       style: primary
       start: 8
@@ -51,9 +46,8 @@ snapshots:
       style: secondary
       start: 12
       end: 60
-  ? |
-    index = dict(zip(keys, orders))
-  : labels:
+  "index = dict(zip(keys, orders))\n":
+    labels:
     - source: dict(zip(keys, orders))
       style: primary
       start: 8
@@ -70,16 +64,14 @@ snapshots:
       style: secondary
       start: 12
       end: 31
-  ? |
-    index = {order.customer_id: order for order in orders}
-  : labels:
-    - source: '{order.customer_id: order for order in orders}'
+  "index = {order.customer_id: order for order in orders}\n":
+    labels:
+    - source: "{order.customer_id: order for order in orders}"
       style: primary
       start: 8
       end: 54
-  ? |
-    index.setdefault(order.customer_id, order)
-  : labels:
+  "index.setdefault(order.customer_id, order)\n":
+    labels:
     - source: index.setdefault(order.customer_id, order)
       style: primary
       start: 0
@@ -88,11 +80,8 @@ snapshots:
       style: secondary
       start: 0
       end: 16
-  ? |
-    while pending:
-        order = pending.pop()
-        index[order.customer_id] = order
-  : labels:
+  "while pending:\n    order = pending.pop()\n    index[order.customer_id] = order\n":
+    labels:
     - source: index[order.customer_id] = order
       style: primary
       start: 45

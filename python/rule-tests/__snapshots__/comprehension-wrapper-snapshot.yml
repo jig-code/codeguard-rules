@@ -1,17 +1,14 @@
 id: comprehension-wrapper
 snapshots:
-  ? |
-    class Labeler:
-        def labels(self, shipments):
-            return [self.label(shipment) for shipment in shipments]
-  : labels:
+  "class Labeler:\n    def labels(self, shipments):\n        return [self.label(shipment) for shipment in shipments]\n":
+    labels:
     - source: |-
         def labels(self, shipments):
                 return [self.label(shipment) for shipment in shipments]
       style: primary
       start: 19
       end: 111
-    - source: '[self.label(shipment) for shipment in shipments]'
+    - source: "[self.label(shipment) for shipment in shipments]"
       style: secondary
       start: 63
       end: 111
@@ -23,17 +20,15 @@ snapshots:
       style: secondary
       start: 56
       end: 111
-  ? |
-    def carriers(shipments):
-        return {carrier_of(shipment) for shipment in shipments}
-  : labels:
+  "def carriers(shipments):\n    return {carrier_of(shipment) for shipment in shipments}\n":
+    labels:
     - source: |-
         def carriers(shipments):
             return {carrier_of(shipment) for shipment in shipments}
       style: primary
       start: 0
       end: 84
-    - source: '{carrier_of(shipment) for shipment in shipments}'
+    - source: "{carrier_of(shipment) for shipment in shipments}"
       style: secondary
       start: 36
       end: 84
@@ -45,10 +40,8 @@ snapshots:
       style: secondary
       start: 29
       end: 84
-  ? |
-    def labels(shipments):
-        return (label(shipment) for shipment in shipments)
-  : labels:
+  "def labels(shipments):\n    return (label(shipment) for shipment in shipments)\n":
+    labels:
     - source: |-
         def labels(shipments):
             return (label(shipment) for shipment in shipments)
@@ -67,17 +60,15 @@ snapshots:
       style: secondary
       start: 27
       end: 77
-  ? |
-    def labels(shipments):
-        return [label(shipment) for shipment in shipments]
-  : labels:
+  "def labels(shipments):\n    return [label(shipment) for shipment in shipments]\n":
+    labels:
     - source: |-
         def labels(shipments):
             return [label(shipment) for shipment in shipments]
       style: primary
       start: 0
       end: 77
-    - source: '[label(shipment) for shipment in shipments]'
+    - source: "[label(shipment) for shipment in shipments]"
       style: secondary
       start: 34
       end: 77
@@ -89,10 +80,8 @@ snapshots:
       style: secondary
       start: 27
       end: 77
-  ? |
-    def labels(shipments):
-        return list(map(label, shipments))
-  : labels:
+  "def labels(shipments):\n    return list(map(label, shipments))\n":
+    labels:
     - source: |-
         def labels(shipments):
             return list(map(label, shipments))
@@ -127,10 +116,8 @@ snapshots:
       style: secondary
       start: 27
       end: 61
-  ? |
-    def labels(shipments):
-        return tuple(label(shipment) for shipment in shipments)
-  : labels:
+  "def labels(shipments):\n    return tuple(label(shipment) for shipment in shipments)\n":
+    labels:
     - source: |-
         def labels(shipments):
             return tuple(label(shipment) for shipment in shipments)
@@ -157,25 +144,23 @@ snapshots:
       style: secondary
       start: 27
       end: 82
-  ? |
-    def labels_by_id(shipments):
-        return {shipment.id: label(shipment) for shipment in shipments}
-  : labels:
+  "def labels_by_id(shipments):\n    return {shipment.id: label(shipment) for shipment in shipments}\n":
+    labels:
     - source: |-
         def labels_by_id(shipments):
             return {shipment.id: label(shipment) for shipment in shipments}
       style: primary
       start: 0
       end: 96
-    - source: '{shipment.id: label(shipment) for shipment in shipments}'
+    - source: "{shipment.id: label(shipment) for shipment in shipments}"
       style: secondary
       start: 40
       end: 96
-    - source: 'return {shipment.id: label(shipment) for shipment in shipments}'
+    - source: "return {shipment.id: label(shipment) for shipment in shipments}"
       style: secondary
       start: 33
       end: 96
-    - source: 'return {shipment.id: label(shipment) for shipment in shipments}'
+    - source: "return {shipment.id: label(shipment) for shipment in shipments}"
       style: secondary
       start: 33
       end: 96

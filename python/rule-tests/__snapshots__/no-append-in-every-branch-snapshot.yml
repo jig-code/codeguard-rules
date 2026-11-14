@@ -1,15 +1,7 @@
 id: no-append-in-every-branch
 snapshots:
-  ? |
-    async def collect(items):
-        results = []
-        async for item in items:
-            if item.active:
-                results.append(item.name)
-            else:
-                results.append(item.id)
-        return results
-  : labels:
+  "async def collect(items):\n    results = []\n    async for item in items:\n        if item.active:\n            results.append(item.name)\n        else:\n            results.append(item.id)\n    return results\n":
+    labels:
     - source: |-
         async for item in items:
                 if item.active:
@@ -65,15 +57,8 @@ snapshots:
       style: secondary
       start: 80
       end: 183
-  ? |
-    for item in items:
-        if item.active:
-            results.append(item.name)
-        elif item.pending:
-            results.append(item.label)
-        else:
-            results.append(item.id)
-  : labels:
+  "for item in items:\n    if item.active:\n        results.append(item.name)\n    elif item.pending:\n        results.append(item.label)\n    else:\n        results.append(item.id)\n":
+    labels:
     - source: |-
         for item in items:
             if item.active:
@@ -135,13 +120,8 @@ snapshots:
       style: secondary
       start: 23
       end: 172
-  ? |
-    for item in items:
-        if item.active:
-            results.append(item.name)
-        else:
-            results.append(item.id)
-  : labels:
+  "for item in items:\n    if item.active:\n        results.append(item.name)\n    else:\n        results.append(item.id)\n":
+    labels:
     - source: |-
         for item in items:
             if item.active:
