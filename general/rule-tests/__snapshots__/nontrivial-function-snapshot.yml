@@ -43,6 +43,14 @@ snapshots:
       style: primary
       start: 0
       end: 38
+  "def display_name(self):\n    return f\"{self.first_name} {self.last_name}\"\n":
+    labels:
+    - source: |-
+        def display_name(self):
+            return f"{self.first_name} {self.last_name}"
+      style: primary
+      start: 0
+      end: 72
   "def first(orders):\n    return orders[0]\n":
     labels:
     - source: |-
