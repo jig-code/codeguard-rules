@@ -1,0 +1,96 @@
+id: return-collection
+valid:
+# Returns an attribute
+- |
+  def total():
+      return order.total
+# Returns a named type
+- |
+  def review(order) -> OrderReview:
+      return OrderReview(reason, held)
+# Returns a list comprehension
+- |
+  def totals(orders):
+      return [order.total for order in orders]
+# Returns a dict comprehension
+- |
+  def by_id(orders):
+      return {order.id: order for order in orders}
+# Tuple built but not returned
+- |
+  def ship(order):
+      pair = (order.carrier, order.number)
+      send(pair)
+# Returns a list annotation
+- |
+  def totals(orders) -> list[int]:
+      return result
+# Function annotated to return a named type
+- |
+  def review(order) -> OrderReview:
+      result = build(order)
+      return result
+# Returns a variable that holds a plain value
+- |
+  def total(orders):
+      result = sum(order.total for order in orders)
+      return result
+# Builds a tuple in a variable and returns another value
+- |
+  def ship(order):
+      pair = (order.carrier, order.number)
+      number = order.number
+      send(pair)
+      return number
+invalid:
+# Returns a bare tuple
+- |
+  def review():
+      return reason, held
+# Returns a parenthesized tuple
+- |
+  def review():
+      return (reason, held)
+# Returns a dict literal
+- |
+  def pack(a):
+      return {'a': a}
+# Returns a dict call
+- |
+  def pack(a):
+      return dict(a=a)
+# Function annotated to return a tuple
+- |
+  def review() -> tuple[str, bool]:
+      return result
+# Function annotated to return a dict
+- |
+  def payload() -> dict[str, str]:
+      return result
+# Function annotated to return a tuple, building it in a variable
+- |
+  def review() -> tuple[str, bool]:
+      result = (reason, held)
+      return result
+# Function annotated to return a typing Tuple
+- |
+  def review() -> Tuple[str, bool]:
+      return result
+# Returns a list literal
+- |
+  def review():
+      return [reason, held]
+# Returns a dict built in a variable
+- |
+  def pack(a, b):
+      result = {'a': a, 'b': b}
+      return result
+# Returns a tuple built in a variable
+- |
+  def review():
+      result = reason, held
+      return result
+# Function annotated to return a qualified typing Tuple
+- |
+  def review() -> typing.Tuple[str, bool]:
+      return result
