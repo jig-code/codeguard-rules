@@ -1,13 +1,12 @@
 ---
 name: no-recheck-of-guaranteed-condition
-description: A check that stops the code when a condition fails never tests a condition that code which runs before the check already makes true every time the check runs, including validation that the value's type runs when the value is built.
+description: A check that stops the code when a condition fails never tests a condition which code that has already run makes true every time the check runs.
 ---
 
 # No Recheck of Guaranteed Condition
 
-A check that stops the code when a condition fails never tests a condition that code
-which runs before the check already makes true every time the check runs, including
-validation that the value's type runs when the value is built.
+A check that stops the code when a condition fails never tests a condition which code
+that has already run makes true every time the check runs.
 
 ## Why
 

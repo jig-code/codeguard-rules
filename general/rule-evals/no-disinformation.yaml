@@ -60,22 +60,22 @@ cases:
               return f"<h1>Invoice {escape(invoice.number)}</h1><table>{rows}</table>"
   expected_output:
     outcome: invalid
-- name: a Django model's save hook sets the slug before saving
+- name: an encoder subclass overrides the method its base class calls for objects it can't encode
   inputs:
-    file: blog/models.py
+    file: reports/encoding.py
     after: |
-      from django.db import models
-      from django.utils.text import slugify
+      import json
+      from datetime import date
+      from decimal import Decimal
 
 
-      class Post(models.Model):
-          title = models.CharField(max_length=200)
-          slug = models.SlugField(unique=True)
-
-          def save(self, *args, **kwargs):
-              if not self.slug:
-                  self.slug = slugify(self.title)
-              super().save(*args, **kwargs)
+      class ReportEncoder(json.JSONEncoder):
+          def default(self, o: object) -> object:
+              if isinstance(o, Decimal):
+                  return str(o)
+              if isinstance(o, date):
+                  return o.isoformat()
+              return super().default(o)
   expected_output:
     outcome: valid
 - name: a constant changes
@@ -133,6 +133,22 @@ cases:
           throw new Error(`not an amount: ${text}`);
         }
         return amount;
+      }
+  expected_output:
+    outcome: valid
+- name: a metrics class that records nothing implements the interface's increment method
+  inputs:
+    file: metrics/null-metrics.ts
+    unchanged:
+      metrics/metrics.ts: |
+        export interface Metrics {
+          increment(name: string, by?: number): void;
+        }
+    after: |
+      import { Metrics } from "./metrics";
+
+      export class NullMetrics implements Metrics {
+        increment(_name: string, _by?: number): void {}
       }
   expected_output:
     outcome: valid

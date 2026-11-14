@@ -1,0 +1,26 @@
+id: field-write
+language: python
+rule:
+  inside:
+    kind: function_definition
+    stopBy: end
+  any:
+  - any:
+    - kind: assignment
+    - kind: augmented_assignment
+    has:
+      field: left
+      any:
+      - kind: attribute
+      - kind: subscript
+      - kind: pattern_list
+        has:
+          any:
+          - kind: attribute
+          - kind: subscript
+  - kind: delete_statement
+    has:
+      stopBy: end
+      any:
+      - kind: attribute
+      - kind: subscript

@@ -1,14 +1,7 @@
 id: multi-class-module
 snapshots:
-  ? |
-    @dataclass
-    class Order:
-        pass
-
-
-    class Invoice:
-        pass
-  : labels:
+  "@dataclass\nclass Order:\n    pass\n\n\nclass Invoice:\n    pass\n":
+    labels:
     - source: |-
         @dataclass
         class Order:
@@ -47,13 +40,8 @@ snapshots:
       style: secondary
       start: 0
       end: 59
-  ? |
-    Status = Enum("Status", "OPEN SHIPPED")
-
-
-    class Order:
-        pass
-  : labels:
+  "Status = Enum(\"Status\", \"OPEN SHIPPED\")\n\n\nclass Order:\n    pass\n":
+    labels:
     - source: Status = Enum("Status", "OPEN SHIPPED")
       style: primary
       start: 0
@@ -93,15 +81,8 @@ snapshots:
       style: secondary
       start: 0
       end: 64
-  ? |
-    class Order:
-        pass
-
-
-    @dataclass
-    class Invoice:
-        pass
-  : labels:
+  "class Order:\n    pass\n\n\n@dataclass\nclass Invoice:\n    pass\n":
+    labels:
     - source: |-
         class Order:
             pass
@@ -140,13 +121,8 @@ snapshots:
       style: secondary
       start: 0
       end: 59
-  ? |
-    class Order:
-        pass
-
-
-    Line = NamedTuple("Line", [("sku", str)])
-  : labels:
+  "class Order:\n    pass\n\n\nLine = NamedTuple(\"Line\", [(\"sku\", str)])\n":
+    labels:
     - source: |-
         class Order:
             pass
@@ -186,14 +162,49 @@ snapshots:
       style: secondary
       start: 0
       end: 66
-  ? |
-    class Order:
-        pass
+  "class Order:\n    pass\n\n\nLine = make_dataclass(\"Line\", [(\"sku\", str)])\n":
+    labels:
+    - source: |-
+        class Order:
+            pass
+      style: primary
+      start: 0
+      end: 21
+    - source: Line
+      style: secondary
+      start: 24
+      end: 28
+    - source: make_dataclass
+      style: secondary
+      start: 31
+      end: 45
+    - source: make_dataclass("Line", [("sku", str)])
+      style: secondary
+      start: 31
+      end: 69
+    - source: Line = make_dataclass("Line", [("sku", str)])
+      style: secondary
+      start: 24
+      end: 69
+    - source: Line = make_dataclass("Line", [("sku", str)])
+      style: secondary
+      start: 24
+      end: 69
+    - source: Order
+      style: secondary
+      start: 6
+      end: 11
+    - source: |
+        class Order:
+            pass
 
 
-    class Invoice:
-        pass
-  : labels:
+        Line = make_dataclass("Line", [("sku", str)])
+      style: secondary
+      start: 0
+      end: 70
+  "class Order:\n    pass\n\n\nclass Invoice:\n    pass\n":
+    labels:
     - source: |-
         class Order:
             pass
