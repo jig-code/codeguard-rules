@@ -1,12 +1,12 @@
 ---
 name: composition-over-inheritance
-description: A class never inherits from another class whose job is different from the job of the inheriting class.
+description: A class never inherits from another class that gives the inheriting class a public method or field outside the job of the inheriting class.
 ---
 
 # Composition Over Inheritance
 
-A class never inherits from another class whose job is different from the job of the
-inheriting class.
+A class never inherits from another class that gives the inheriting class a public method
+or field outside the job of the inheriting class.
 
 ## Why
 
