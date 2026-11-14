@@ -1,5 +1,55 @@
 id: item-skip
 snapshots:
+  "def example_valid(example_rows):\n    example_kept = []\n    for example_row in example_rows:\n        if example_row.amount is not None:\n            example_kept.append(example_row)\n    return example_kept\n":
+    labels:
+    - source: |-
+        if example_row.amount is not None:
+                    example_kept.append(example_row)
+      style: primary
+      start: 100
+      end: 179
+    - source: |-
+        for example_row in example_rows:
+                if example_row.amount is not None:
+                    example_kept.append(example_row)
+      style: secondary
+      start: 59
+      end: 179
+    - source: example_kept.append
+      style: secondary
+      start: 147
+      end: 166
+    - source: example_kept.append(example_row)
+      style: secondary
+      start: 147
+      end: 179
+    - source: example_kept.append(example_row)
+      style: secondary
+      start: 147
+      end: 179
+  "def example_valid(example_rows):\n    for example_row in example_rows:\n        if example_row.amount is not None:\n            yield example_row\n":
+    labels:
+    - source: |-
+        if example_row.amount is not None:
+                    yield example_row
+      style: primary
+      start: 78
+      end: 142
+    - source: |-
+        for example_row in example_rows:
+                if example_row.amount is not None:
+                    yield example_row
+      style: secondary
+      start: 37
+      end: 142
+    - source: yield example_row
+      style: secondary
+      start: 125
+      end: 142
+    - source: yield example_row
+      style: secondary
+      start: 125
+      end: 142
   "example_count = sum(1 for example_row in example_rows if example_row.amount)\n":
     labels:
     - source: if example_row.amount
@@ -12,6 +62,16 @@ snapshots:
       style: primary
       start: 63
       end: 98
+  "example_rows = list(filter(None, example_rows))\n":
+    labels:
+    - source: filter(None, example_rows)
+      style: primary
+      start: 20
+      end: 46
+    - source: filter
+      style: secondary
+      start: 20
+      end: 26
   "for example_row in example_rows:\n    if example_row.amount is None:\n        continue\n    example_ledger.post(example_row)\n":
     labels:
     - source: continue

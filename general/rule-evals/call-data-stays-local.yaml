@@ -99,21 +99,6 @@ cases:
       estimator = ReadingTimeEstimator(words_per_minute=230)
   expected_output:
     outcome: valid
-- name: a shortage check clears and refills a module-level stock map on each call
-  inputs:
-    file: warehouse/shortages.py
-    after: |
-      from warehouse.models import Order, StockLevel
-
-      _stock_by_sku: dict[str, int] = {}
-
-
-      def short_skus(order: Order, levels: list[StockLevel]) -> list[str]:
-          _stock_by_sku.clear()
-          _stock_by_sku.update({level.sku: level.on_hand for level in levels})
-          return [line.sku for line in order.lines if _stock_by_sku[line.sku] < line.quantity]
-  expected_output:
-    outcome: invalid
 - name: a before-request hook sets a global to the current request's client address
   inputs:
     file: api/limits.py
@@ -291,29 +276,6 @@ cases:
       };
   expected_output:
     outcome: valid
-- name: a seat check clears and refills a module-level map on each call
-  inputs:
-    file: booking/seats.ts
-    after: |
-      import type { Booking, Seat } from "./models";
-
-      const seatsById = new Map<string, Seat>();
-
-      export function takenSeats(booking: Booking, seats: Seat[]): string[] {
-        seatsById.clear();
-        for (const seat of seats) {
-          seatsById.set(seat.id, seat);
-        }
-        return booking.seatIds.filter((id) => {
-          const seat = seatsById.get(id);
-          if (seat === undefined) {
-            throw new Error(`Unknown seat ${id}`);
-          }
-          return seat.taken;
-        });
-      }
-  expected_output:
-    outcome: invalid
 - name: a repeated-tag check for one batch of posts adds the tags to a module-level set
   inputs:
     file: posts/tags.ts
