@@ -1,0 +1,135 @@
+cases:
+- name: a variant of a tagged union of typed dicts declares its tag as a plain string
+  inputs:
+    file: payments/types.py
+    after: |
+      from typing import Literal, TypedDict
+
+
+      class CardPayment(TypedDict):
+          kind: Literal["card"]
+          card_token: str
+
+
+      class BankPayment(TypedDict):
+          kind: str
+          iban: str
+
+
+      Payment = CardPayment | BankPayment
+  expected_output:
+    outcome: invalid
+- name: two variants of a tagged union of dataclasses share a tag value
+  inputs:
+    file: events/types.py
+    after: |
+      from dataclasses import dataclass
+      from typing import Literal
+
+
+      @dataclass(frozen=True)
+      class OrderPlaced:
+          order_id: str
+          type: Literal["order"] = "order"
+
+
+      @dataclass(frozen=True)
+      class OrderCancelled:
+          order_id: str
+          reason: str
+          type: Literal["order"] = "order"
+
+
+      Event = OrderPlaced | OrderCancelled
+  expected_output:
+    outcome: invalid
+- name: a tagged union of typed dicts gives each variant its own tag value
+  inputs:
+    file: payments/types.py
+    after: |
+      from typing import Literal, TypedDict
+
+
+      class CardPayment(TypedDict):
+          kind: Literal["card"]
+          card_token: str
+
+
+      class BankPayment(TypedDict):
+          kind: Literal["bank"]
+          iban: str
+
+
+      Payment = CardPayment | BankPayment
+  expected_output:
+    outcome: valid
+- name: a union of dataclasses is told apart by class
+  inputs:
+    file: billing/charges.py
+    after: |
+      from dataclasses import dataclass
+      from decimal import Decimal
+
+
+      @dataclass(frozen=True)
+      class FlatFee:
+          amount: Decimal
+
+
+      @dataclass(frozen=True)
+      class Percentage:
+          rate: Decimal
+
+
+      Charge = FlatFee | Percentage
+
+
+      def apply(charge: Charge, subtotal: Decimal) -> Decimal:
+          match charge:
+              case FlatFee(amount=amount):
+                  return subtotal + amount
+              case Percentage(rate=rate):
+                  return subtotal * (1 + rate)
+  expected_output:
+    outcome: valid
+- name: a function formats a price
+  inputs:
+    file: pricing/format.py
+    after: |
+      from decimal import Decimal
+
+
+      def format_price(amount: Decimal, currency: str) -> str:
+          return f"{amount:.2f} {currency}"
+  expected_output:
+    outcome: skipped
+- name: a variant of a tagged union of object types declares its tag as any string
+  inputs:
+    file: payments/types.ts
+    after: |
+      export type CardPayment = { kind: "card"; cardToken: string };
+      export type BankPayment = { kind: string; iban: string };
+
+      export type Payment = CardPayment | BankPayment;
+  expected_output:
+    outcome: invalid
+- name: two variants of a tagged union of object types share a tag value
+  inputs:
+    file: events/types.ts
+    after: |
+      export type OrderPlaced = { type: "order"; orderId: string };
+      export type OrderCancelled = { type: "order"; orderId: string; reason: string };
+
+      export type OrderEvent = OrderPlaced | OrderCancelled;
+  expected_output:
+    outcome: invalid
+- name: a tagged union of object types gives each variant its own tag value
+  inputs:
+    file: payments/types.ts
+    after: |
+      export type CardPayment = { kind: "card"; cardToken: string };
+      export type BankPayment = { kind: "bank"; iban: string };
+
+      export type Payment = CardPayment | BankPayment;
+  expected_output:
+    outcome: valid
