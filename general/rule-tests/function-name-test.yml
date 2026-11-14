@@ -33,6 +33,18 @@ invalid:
 - |
   async def submit(order):
       return order
+# Decorated method name
+- |
+  class Order:
+      @classmethod
+      def submit(cls):
+          pass
+# Nested function name
+- |
+  def submit(order):
+      def stamp():
+          return order
+      return stamp()
 # Name assigned a lambda
 - |
   submit = lambda order: order

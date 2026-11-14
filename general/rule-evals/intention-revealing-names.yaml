@@ -1,0 +1,107 @@
+cases:
+- name: a function named for processing data marks each shipment delivered
+  inputs:
+    file: shipping/tracking.py
+    after: |
+      from datetime import UTC, datetime
+
+      from shipping.models import Shipment
+
+
+      def process_data(shipments: list[Shipment]) -> None:
+          now = datetime.now(UTC)
+          for shipment in shipments:
+              shipment.status = "delivered"
+              shipment.delivered_at = now
+              shipment.save(update_fields=["status", "delivered_at"])
+  expected_output:
+    outcome: invalid
+- name: a function named for marking shipments delivered marks each shipment delivered
+  inputs:
+    file: shipping/tracking.py
+    after: |
+      from datetime import UTC, datetime
+
+      from shipping.models import Shipment
+
+
+      def mark_delivered(shipments: list[Shipment]) -> None:
+          now = datetime.now(UTC)
+          for shipment in shipments:
+              shipment.status = "delivered"
+              shipment.delivered_at = now
+              shipment.save(update_fields=["status", "delivered_at"])
+  expected_output:
+    outcome: valid
+- name: a function named for processing a refund refunds an order
+  inputs:
+    file: orders/refunds.py
+    after: |
+      from orders.models import Order
+      from orders.payments import payments
+
+
+      def process_refund(order: Order) -> None:
+          payments.refund(order.payment_id, order.total_cents)
+          order.status = "refunded"
+          order.save(update_fields=["status"])
+  expected_output:
+    outcome: valid
+- name: a management command's handle method imports the day's orders
+  inputs:
+    file: orders/management/commands/import_orders.py
+    after: |
+      from datetime import date
+
+      from django.core.management.base import BaseCommand
+
+      from orders.importer import import_orders_for
+
+
+      class Command(BaseCommand):
+          help = "Import the day's orders from the warehouse feed."
+
+          def handle(self, *args: object, **options: object) -> None:
+              count = import_orders_for(date.today())
+              self.stdout.write(f"imported {count} orders")
+  expected_output:
+    outcome: valid
+- name: an edit that only adds a constant
+  inputs:
+    file: shipping/constants.py
+    after: |
+      DELIVERY_WINDOW_DAYS = 5
+  expected_output:
+    outcome: skipped
+- name: a function named for handling items refunds each cancelled order
+  inputs:
+    file: orders/refunds.ts
+    after: |
+      import { payments } from "./payments";
+      import type { Order } from "./order";
+
+      export async function handleItems(orders: Order[]): Promise<void> {
+        for (const order of orders) {
+          if (order.status === "cancelled") {
+            await payments.refund(order.paymentId, order.totalCents);
+          }
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: a function named for refunding cancelled orders refunds each cancelled order
+  inputs:
+    file: orders/refunds.ts
+    after: |
+      import { payments } from "./payments";
+      import type { Order } from "./order";
+
+      export async function refundCancelled(orders: Order[]): Promise<void> {
+        for (const order of orders) {
+          if (order.status === "cancelled") {
+            await payments.refund(order.paymentId, order.totalCents);
+          }
+        }
+      }
+  expected_output:
+    outcome: valid
