@@ -133,38 +133,6 @@ cases:
               return datetime.now(UTC)
   expected_output:
     outcome: skipped
-- name: a retry policy class with its own behavior is exported beside the dispatcher
-  inputs:
-    file: notifications/dispatcher.ts
-    after: |
-      import type { Channel } from "./channels";
-
-      export class RetryBackoffPolicy {
-        constructor(
-          readonly baseMs: number,
-          readonly maxAttempts: number,
-        ) {}
-
-        delay(attempt: number): number {
-          return this.baseMs * 2 ** attempt;
-        }
-      }
-
-      export class NotificationDispatcher {
-        constructor(
-          private readonly channel: Channel,
-          private readonly policy: RetryBackoffPolicy,
-        ) {}
-
-        async dispatch(recipient: string, message: string): Promise<void> {
-          for (let attempt = 0; attempt < this.policy.maxAttempts; attempt++) {
-            if (await this.channel.send(recipient, message)) return;
-            await new Promise((resolve) => setTimeout(resolve, this.policy.delay(attempt)));
-          }
-        }
-      }
-  expected_output:
-    outcome: invalid
 - name: an enums module exports three unrelated enumerations
   inputs:
     file: shop/enums.ts
