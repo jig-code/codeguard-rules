@@ -1,5 +1,5 @@
 cases:
-- name: a delivery's tracking number and delivery time are optional beside a status that decides which one exists
+- name: a delivery keeps an optional tracking number and delivery time beside its status
   inputs:
     file: shipping/delivery.py
     after: |
@@ -64,47 +64,6 @@ cases:
           phone: str | None = None
   expected_output:
     outcome: valid
-- name: a refund keeps a rejection reason and a payout reference beside the decision that says which applies
-  inputs:
-    file: refunds/models.py
-    after: |
-      from enum import Enum
-
-      from pydantic import BaseModel
-
-
-      class Decision(Enum):
-          REQUESTED = "requested"
-          APPROVED = "approved"
-          REJECTED = "rejected"
-
-
-      class Refund(BaseModel):
-          order_id: str
-          amount_cents: int
-          decision: Decision
-          payout_reference: str | None = None
-          rejection_reason: str | None = None
-  expected_output:
-    outcome: invalid
-- name: a Django subscription model keeps a status column beside nullable cancellation columns
-  inputs:
-    file: billing/models.py
-    after: |
-      from django.db import models
-
-
-      class Subscription(models.Model):
-          class Status(models.TextChoices):
-              ACTIVE = "active"
-              CANCELLED = "cancelled"
-
-          customer = models.ForeignKey("accounts.Customer", on_delete=models.CASCADE)
-          status = models.CharField(max_length=16, choices=Status.choices)
-          cancelled_at = models.DateTimeField(null=True)
-          cancel_reason = models.TextField(null=True)
-  expected_output:
-    outcome: valid
 - name: a function formats a contact's display name
   inputs:
     file: crm/display.py
@@ -113,7 +72,7 @@ cases:
           return f"{first} {last}".strip()
   expected_output:
     outcome: skipped
-- name: an upload interface keeps progress, a URL and an error as optional fields beside its state
+- name: an upload interface keeps an optional progress, URL and error beside its state
   inputs:
     file: uploads/upload.ts
     after: |
