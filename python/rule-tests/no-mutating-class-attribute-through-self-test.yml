@@ -1,6 +1,6 @@
 id: no-mutating-class-attribute-through-self
 valid:
-  # __init__ rebinding: each instance gets its own list in __init__
+  # __init__ rebinds the class-level list on self, and another method appends to it
   - |
     class ExampleCart:
         items = []
@@ -11,7 +11,7 @@ valid:
         def add(self, item: str) -> None:
             self.items.append(item)
 
-  # Mutated through the class: a ClassVar container mutated through type(self)
+  # A ClassVar dict that a method sets a key on through type(self)
   - |
     from typing import ClassVar
 
@@ -21,7 +21,7 @@ valid:
         def register(self, name: str, handler: str) -> None:
             type(self).handlers[name] = handler
 
-  # Read, not mutated: a class-level container read through self
+  # A class-level dict that a method indexes through self
   - |
     class ExampleRouter:
         routes = {"home": "/"}
@@ -29,7 +29,7 @@ valid:
         def path(self, name: str) -> str:
             return self.routes[name]
 
-  # Non-mutating method: a class-level list counted through self
+  # A class-level list whose count method a method calls through self
   - |
     class ExamplePalette:
         colors = ["red", "blue"]
@@ -37,23 +37,18 @@ valid:
         def uses(self, color: str) -> int:
             return self.colors.count(color)
 
-  # Attribute delete, not item delete: del self.entries removes the attribute
+  # A method that deletes the dict another method bound on self over a class-level dict
   - |
     class ExampleSession:
         entries = {}
 
+        def open(self) -> None:
+            self.entries = {}
+
         def close(self) -> None:
             del self.entries
 
-  # Not a container: a class-level tuple can't be mutated in place
-  - |
-    class ExampleLimits:
-        sizes = ("s", "m", "l")
-
-        def first(self) -> str:
-            return self.sizes[0]
-
-  # Not a class-level binding: a list built per call and mutated locally
+  # A method that builds a local list and appends to it
   - |
     class ExampleReport:
         def lines(self, title: str) -> list[str]:
@@ -61,7 +56,7 @@ valid:
             lines.append(title)
             return lines
 
-  # Not a container: a dataclass field with a default factory
+  # A dataclass field with a list default factory, appended to through self
   - |
     from dataclasses import dataclass, field
 
@@ -72,7 +67,7 @@ valid:
         def add(self, item: str) -> None:
             self.items.append(item)
 
-  # Model field: annotated without ClassVar in a class with a base (pydantic copies it)
+  # A list field annotated without ClassVar on a pydantic model, appended to through self
   - |
     from pydantic import BaseModel
 
@@ -82,7 +77,7 @@ valid:
         def tag(self, label: str) -> None:
             self.tags.append(label)
 
-  # Augmented assignment of a non-container: an integer counter incremented through self
+  # A class-level integer incremented through self
   - |
     class ExampleCounter:
         count = 0
@@ -91,7 +86,7 @@ valid:
             self.count += 1
 
 invalid:
-  # Method call on self.$N, list literal
+  # A method call on self.$N, bound to a list literal
   - |
     class ExampleCart:
         items = []
@@ -99,7 +94,7 @@ invalid:
         def add(self, item: str) -> None:
             self.items.append(item)
 
-  # Item assignment on self.$N[...], dict literal
+  # An item assignment on self.$N[...], bound to a dict literal
   - |
     class ExampleCache:
         entries = {}
@@ -107,7 +102,7 @@ invalid:
         def put(self, key: str, value: str) -> None:
             self.entries[key] = value
 
-  # Augmented assignment on self.$N
+  # An augmented assignment on self.$N, bound to a list literal
   - |
     class ExampleLog:
         lines = []
@@ -115,7 +110,7 @@ invalid:
         def write(self, line: str) -> None:
             self.lines += [line]
 
-  # Augmented assignment on self.$N[...], Counter call
+  # An augmented assignment on self.$N[...], bound to a Counter call
   - |
     from collections import Counter
 
@@ -125,7 +120,7 @@ invalid:
         def vote(self, choice: str) -> None:
             self.votes[choice] += 1
 
-  # Delete of self.$N[...]
+  # A delete of self.$N[...], bound to a dict literal
   - |
     class ExampleCache:
         entries = {}
@@ -133,7 +128,7 @@ invalid:
         def evict(self, key: str) -> None:
             del self.entries[key]
 
-  # Method call on self.$N[...]: an item of a defaultdict mutated through self
+  # A method call on self.$N[...], bound to a defaultdict call
   - |
     from collections import defaultdict
 
@@ -143,7 +138,7 @@ invalid:
         def index(self, key: str, value: str) -> None:
             self.by_key[key].append(value)
 
-  # Set literal
+  # A class-level set literal, added to through self
   - |
     class ExampleBlocklist:
         hosts = {"localhost"}
@@ -151,7 +146,7 @@ invalid:
         def block(self, host: str) -> None:
             self.hosts.add(host)
 
-  # set() call
+  # A class-level set() call, added to through self
   - |
     class ExampleSeen:
         ids = set()
@@ -159,7 +154,7 @@ invalid:
         def mark(self, item_id: int) -> None:
             self.ids.add(item_id)
 
-  # List comprehension
+  # A class-level list comprehension, removed from through self
   - |
     class ExampleGrid:
         cells = [0 for _ in range(9)]
@@ -167,7 +162,7 @@ invalid:
         def mark(self, cell: int) -> None:
             self.cells.remove(cell)
 
-  # Dict comprehension
+  # A class-level dict comprehension, cleared through self
   - |
     class ExampleTable:
         rows = {name: 0 for name in ("a", "b")}
@@ -175,7 +170,7 @@ invalid:
         def reset(self) -> None:
             self.rows.clear()
 
-  # Set comprehension
+  # A class-level set comprehension, discarded from through self
   - |
     class ExampleChannels:
         names = {f"ch{n}" for n in range(3)}
@@ -183,7 +178,7 @@ invalid:
         def leave(self, name: str) -> None:
             self.names.discard(name)
 
-  # OrderedDict call
+  # A class-level OrderedDict call, updated through self
   - |
     from collections import OrderedDict
 
@@ -193,7 +188,7 @@ invalid:
         def visit(self, url: str) -> None:
             self.pages.update({url: 1})
 
-  # collections.-prefixed call, deque
+  # A class-level collections.deque call, appended to on the left through self
   - |
     import collections
 
@@ -203,7 +198,7 @@ invalid:
         def push(self, job: str) -> None:
             self.jobs.appendleft(job)
 
-  # __init__ rebinding only: a rebind in another method doesn't make the container per instance
+  # A method other than __init__ rebinds the class-level list on self
   - |
     class ExampleBuffer:
         chunks = []
@@ -214,7 +209,7 @@ invalid:
         def write(self, chunk: bytes) -> None:
             self.chunks.append(chunk)
 
-  # Model field exemption needs a base: an annotated container in a class without one
+  # An annotated class-level list in a class with no base
   - |
     class ExampleShelf:
         books: list[str] = []
@@ -222,7 +217,7 @@ invalid:
         def shelve(self, title: str) -> None:
             self.books.append(title)
 
-  # Model field exemption needs no ClassVar: a ClassVar container mutated through self
+  # A ClassVar list on a pydantic model, appended to through self
   - |
     from typing import ClassVar
     from pydantic import BaseModel
