@@ -11,4 +11,4 @@ exclude_paths:
   - "**/*.spec.ts"
   - "**/*.spec.tsx"
   - "**/__tests__/**"
-triggers: [union-alias, literal-annotation]
+triggers: [union-alias, literal-annotation, string-field]

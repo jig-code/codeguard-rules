@@ -51,7 +51,7 @@ the languages it runs on.
 | `result-parts-named` | Result parts named: a function never returns values that answer different questions in a form that neither its callers nor a well-known convention set, where callers find each by position or by an unchecked key | Not yet |
 | `validator-depends-on-its-data` | Validator depends on its data: code that a data type runs when an instance is created, to accept or reject it, decides only from that instance's values and constants, so it parses the same anywhere and its tests need no setup. | Not yet |
 | `no-recheck-of-guaranteed-condition` | No recheck of guaranteed condition: a check never tests a condition which code that has already run makes true every time the check runs, so one place owns each guarantee. | Not yet |
-| `discriminated-unions` | Discriminated unions: a union of record types that a parser builds from outside data lets the parser pick the variant only by one named field with a different literal value in each variant, so parsing is fast and its errors name one variant. | Not yet |
+| `discriminated-unions` | Discriminated unions: a tagged union never has two variants whose tag fields can hold the same value, so code that narrows or dispatches on the tag tells every variant apart. | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:

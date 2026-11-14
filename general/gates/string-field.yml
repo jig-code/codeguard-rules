@@ -1,0 +1,14 @@
+id: string-field
+language: python
+rule:
+  kind: assignment
+  has:
+    field: type
+    regex: ^str$
+  inside:
+    kind: expression_statement
+    inside:
+      kind: block
+      inside:
+        kind: class_definition
+        field: body
