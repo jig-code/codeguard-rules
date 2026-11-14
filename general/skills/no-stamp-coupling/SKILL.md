@@ -1,13 +1,13 @@
 ---
 name: no-stamp-coupling
-description: A function whose parameters no framework dictates never takes an object that carries values for many unrelated parts of the program when the function uses that object only to read some of that object's fields or plain data that those fields hold.
+description: A function whose parameters no framework dictates never takes a bundle of values that unrelated parts of the program use, when the function uses that bundle only to read some of those values or plain data that those values hold.
 ---
 
 # No Stamp Coupling
 
-A function whose parameters no framework dictates never takes an object that carries
-values for many unrelated parts of the program when the function uses that object only
-to read some of that object's fields or plain data that those fields hold.
+A function whose parameters no framework dictates never takes a bundle of values that
+unrelated parts of the program use, when the function uses that bundle only to read some
+of those values or plain data that those values hold.
 
 ## Why
 
