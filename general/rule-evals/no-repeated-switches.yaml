@@ -733,7 +733,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a row parser builds the discount that the row's kind column names
+- name: a row parser builds the discount that the row's kind column names, over every discount kind
   inputs:
     file: src/pricing/discountRow.ts
     unchanged:
@@ -754,7 +754,7 @@ cases:
       import type { Discount } from "./discount";
 
       export interface DiscountRow {
-        kind: string;
+        kind: Discount["kind"];
         value: number;
       }
 
@@ -764,8 +764,6 @@ cases:
             return { kind: "percent", percent: row.value };
           case "fixed":
             return { kind: "fixed", amountCents: row.value };
-          default:
-            throw new Error(`unknown discount kind ${row.kind}`);
         }
       }
   expected_output:

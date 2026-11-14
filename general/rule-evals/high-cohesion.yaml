@@ -1,32 +1,25 @@
 cases:
-- name: a retry policy with its own behavior sits beside the notification dispatcher
+- name: a password checker class sits beside the invoice numberer
   inputs:
-    file: notifications/dispatcher.py
+    file: billing/numbering.py
     after: |
-      import time
+      class InvoiceNumberer:
+          def __init__(self, prefix: str) -> None:
+              self._prefix = prefix
+              self._next = 1
 
-      from notifications.channels import Channel
-
-
-      class RetryBackoffPolicy:
-          def __init__(self, base_seconds: float, max_attempts: int) -> None:
-              self.base_seconds = base_seconds
-              self.max_attempts = max_attempts
-
-          def delay(self, attempt: int) -> float:
-              return self.base_seconds * 2**attempt
+          def next_number(self) -> str:
+              number = f"{self._prefix}-{self._next:06d}"
+              self._next += 1
+              return number
 
 
-      class NotificationDispatcher:
-          def __init__(self, channel: Channel, policy: RetryBackoffPolicy) -> None:
-              self._channel = channel
-              self._policy = policy
+      class PasswordStrengthChecker:
+          def __init__(self, min_length: int) -> None:
+              self._min_length = min_length
 
-          def dispatch(self, recipient: str, message: str) -> None:
-              for attempt in range(self._policy.max_attempts):
-                  if self._channel.send(recipient, message):
-                      return
-                  time.sleep(self._policy.delay(attempt))
+          def is_strong(self, password: str) -> bool:
+              return len(password) >= self._min_length and any(c.isdigit() for c in password)
   expected_output:
     outcome: invalid
 - name: an enums module groups three unrelated enumerations

@@ -24,26 +24,22 @@ cases:
           return int(context.subtotal_cents * rate)
   expected_output:
     outcome: invalid
-- name: a function reads one field of the invoice it decides about
+- name: a function reads the start of the date range it takes
   inputs:
-    file: billing/overdue.py
+    file: billing/periods.py
     after: |
       from dataclasses import dataclass
       from datetime import date
 
 
       @dataclass(frozen=True)
-      class Invoice:
-          number: str
-          customer_id: str
-          total_cents: int
-          issued_on: date
-          due_on: date
-          paid_on: date | None
+      class DateRange:
+          start: date
+          end: date
 
 
-      def days_overdue(invoice: Invoice, today: date) -> int:
-          return max((today - invoice.due_on).days, 0)
+      def has_started(period: DateRange, today: date) -> bool:
+          return period.start <= today
   expected_output:
     outcome: valid
 - name: a web framework's view reads the user from its request
@@ -114,20 +110,17 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: an overdue check reads one field of the invoice interface
+- name: a check reads the amount of the money value it takes
   inputs:
-    file: billing/overdue.ts
+    file: pricing/money.ts
     after: |
-      export interface Invoice {
-        number: string;
-        customerId: string;
-        totalCents: number;
-        issuedOn: Date;
-        dueOn: Date;
+      export interface Money {
+        amountCents: number;
+        currency: string;
       }
 
-      export function isOverdue(invoice: Invoice, today: Date): boolean {
-        return invoice.dueOn < today;
+      export function isFree(price: Money): boolean {
+        return price.amountCents === 0;
       }
   expected_output:
     outcome: valid
