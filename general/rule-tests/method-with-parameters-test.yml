@@ -68,3 +68,13 @@ invalid:
   class ExampleQuoter:
       async def quote(self, example_client):
           return await example_client.fetch()
+# Method with a keyword-only parameter
+- |
+  class ExampleQuoter:
+      def quote(self, *, example_provider):
+          return example_provider.rate()
+# Method with a positional-only parameter
+- |
+  class ExampleQuoter:
+      def quote(self, example_provider, /):
+          return example_provider.rate()

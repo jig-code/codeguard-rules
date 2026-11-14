@@ -1,0 +1,18 @@
+id: class-creation-call
+valid:
+# type with one argument
+- |
+  kind = type(order)
+# A call to another function with three arguments
+- |
+  label = render("Alerter", (SmsGateway,), {})
+# new_class with only a name
+- |
+  Empty = types.new_class("Empty")
+invalid:
+# type with a name, bases and a namespace
+- |
+  LowStockAlerter = type("LowStockAlerter", (SmsGateway,), {"threshold": 5})
+# new_class with a name and bases
+- |
+  LowStockAlerter = types.new_class("LowStockAlerter", (SmsGateway,))

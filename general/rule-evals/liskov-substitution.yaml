@@ -295,6 +295,112 @@ cases:
               return "".join(f"{line}\n" for line in lines)
   expected_output:
     outcome: valid
+- name: an in-memory order repository beside a database one implements the repository interface
+  inputs:
+    file: orders/repositories.py
+    before: |
+      import sqlite3
+      from abc import ABC, abstractmethod
+      from dataclasses import dataclass
+      
+      
+      @dataclass(frozen=True)
+      class Order:
+          id: str
+          total_cents: int
+      
+      
+      class OrderNotFound(Exception):
+          pass
+      
+      
+      class OrderRepository(ABC):
+          @abstractmethod
+          def save(self, order: Order) -> None:
+              """Store the order under its id, replacing any order stored under that id."""
+      
+          @abstractmethod
+          def get(self, order_id: str) -> Order:
+              """The order stored under the id. Raises OrderNotFound when none is."""
+      
+      
+      class SqliteOrderRepository(OrderRepository):
+          def __init__(self, connection: sqlite3.Connection) -> None:
+              self._connection = connection
+      
+          def save(self, order: Order) -> None:
+              with self._connection:
+                  self._connection.execute(
+                      "INSERT OR REPLACE INTO orders (id, total_cents) VALUES (?, ?)",
+                      (order.id, order.total_cents),
+                  )
+      
+          def get(self, order_id: str) -> Order:
+              row = self._connection.execute(
+                  "SELECT id, total_cents FROM orders WHERE id = ?", (order_id,)
+              ).fetchone()
+              if row is None:
+                  raise OrderNotFound(order_id)
+              return Order(id=row[0], total_cents=row[1])
+    after: |
+      import sqlite3
+      from abc import ABC, abstractmethod
+      from dataclasses import dataclass
+      
+      
+      @dataclass(frozen=True)
+      class Order:
+          id: str
+          total_cents: int
+      
+      
+      class OrderNotFound(Exception):
+          pass
+      
+      
+      class OrderRepository(ABC):
+          @abstractmethod
+          def save(self, order: Order) -> None:
+              """Store the order under its id, replacing any order stored under that id."""
+      
+          @abstractmethod
+          def get(self, order_id: str) -> Order:
+              """The order stored under the id. Raises OrderNotFound when none is."""
+      
+      
+      class SqliteOrderRepository(OrderRepository):
+          def __init__(self, connection: sqlite3.Connection) -> None:
+              self._connection = connection
+      
+          def save(self, order: Order) -> None:
+              with self._connection:
+                  self._connection.execute(
+                      "INSERT OR REPLACE INTO orders (id, total_cents) VALUES (?, ?)",
+                      (order.id, order.total_cents),
+                  )
+      
+          def get(self, order_id: str) -> Order:
+              row = self._connection.execute(
+                  "SELECT id, total_cents FROM orders WHERE id = ?", (order_id,)
+              ).fetchone()
+              if row is None:
+                  raise OrderNotFound(order_id)
+              return Order(id=row[0], total_cents=row[1])
+      
+      
+      class InMemoryOrderRepository(OrderRepository):
+          def __init__(self) -> None:
+              self._orders: dict[str, Order] = {}
+      
+          def save(self, order: Order) -> None:
+              self._orders[order.id] = order
+      
+          def get(self, order_id: str) -> Order:
+              if order_id not in self._orders:
+                  raise OrderNotFound(order_id)
+              return self._orders[order_id]
+  expected_output:
+    outcome: valid
 - name: a seat map with holds raises the error its base documents for a seat on hold
   inputs:
     file: venues/seats.py
@@ -605,6 +711,87 @@ cases:
       export class Feet implements LengthUnit {
         fromMetres(metres: number): number {
           return metres / 0.3048;
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a fixed rate source beside an HTTP one implements the rate source interface
+  inputs:
+    file: src/rates/sources.ts
+    before: |
+      export class UnknownCurrencyError extends Error {
+        constructor(readonly currency: string) {
+          super(`no rate for ${currency}`);
+        }
+      }
+      
+      export class RatesUnavailableError extends Error {}
+      
+      export interface RateSource {
+        /**
+         * The rate from euros to the currency. Rejects with UnknownCurrencyError when the
+         * currency has no rate, and with RatesUnavailableError when the rates can't be read.
+         */
+        rateFor(currency: string): Promise<number>;
+      }
+      
+      export class HttpRateSource implements RateSource {
+        constructor(private readonly baseUrl: string) {}
+      
+        async rateFor(currency: string): Promise<number> {
+          const response = await fetch(`${this.baseUrl}/rates/${encodeURIComponent(currency)}`);
+          if (response.status === 404) {
+            throw new UnknownCurrencyError(currency);
+          }
+          if (!response.ok) {
+            throw new RatesUnavailableError(`rate lookup failed with status ${response.status}`);
+          }
+          const body = (await response.json()) as { rate: number };
+          return body.rate;
+        }
+      }
+    after: |
+      export class UnknownCurrencyError extends Error {
+        constructor(readonly currency: string) {
+          super(`no rate for ${currency}`);
+        }
+      }
+      
+      export class RatesUnavailableError extends Error {}
+      
+      export interface RateSource {
+        /**
+         * The rate from euros to the currency. Rejects with UnknownCurrencyError when the
+         * currency has no rate, and with RatesUnavailableError when the rates can't be read.
+         */
+        rateFor(currency: string): Promise<number>;
+      }
+      
+      export class HttpRateSource implements RateSource {
+        constructor(private readonly baseUrl: string) {}
+      
+        async rateFor(currency: string): Promise<number> {
+          const response = await fetch(`${this.baseUrl}/rates/${encodeURIComponent(currency)}`);
+          if (response.status === 404) {
+            throw new UnknownCurrencyError(currency);
+          }
+          if (!response.ok) {
+            throw new RatesUnavailableError(`rate lookup failed with status ${response.status}`);
+          }
+          const body = (await response.json()) as { rate: number };
+          return body.rate;
+        }
+      }
+      
+      export class FixedRateSource implements RateSource {
+        constructor(private readonly rates: ReadonlyMap<string, number>) {}
+      
+        async rateFor(currency: string): Promise<number> {
+          const rate = this.rates.get(currency);
+          if (rate === undefined) {
+            throw new UnknownCurrencyError(currency);
+          }
+          return rate;
         }
       }
   expected_output:

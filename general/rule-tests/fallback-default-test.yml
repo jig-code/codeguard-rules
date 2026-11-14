@@ -18,6 +18,16 @@ valid:
 # conditional expression without a None check
 - |
   example_label = "big" if example_total > 100 else "small"
+# next without a default
+- |
+  example_first = next(iter(example_rows))
+# check for None that raises
+- |
+  def example_rate(example_rates, example_currency):
+      example_found = example_rates.get(example_currency)
+      if example_found is None:
+          raise ExampleMissingRate(example_currency)
+      return example_found
 invalid:
 # dict get with a default
 - |
@@ -55,3 +65,25 @@ invalid:
 # conditional expression on None
 - |
   example_total = example_order.total if example_order.total is not None else 0
+# next with a default
+- |
+  example_match = next((example_row for example_row in example_rows if example_row.id == example_id), None)
+# or with a constant
+- |
+  example_rate = example_rates.get(example_currency) or EXAMPLE_DEFAULT_RATE
+# or with a call
+- |
+  example_started = example_job.started_at or datetime.now()
+# check for None that assigns a default
+- |
+  def example_label(example_user):
+      example_name = example_user.nickname
+      if example_name is None:
+          example_name = "Guest"
+      return example_name
+# check for None that returns early
+- |
+  def example_notify(example_user, example_mailer):
+      if example_user.email is None:
+          return
+      example_mailer.send(example_user.email)

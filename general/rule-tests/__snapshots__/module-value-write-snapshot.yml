@@ -1,0 +1,541 @@
+id: module-value-write
+snapshots:
+  "_cache = {}\n\ndef forget(key):\n    del _cache[key]\n":
+    labels:
+    - source: del _cache[key]
+      style: primary
+      start: 34
+      end: 49
+    - source: _cache
+      style: secondary
+      start: 38
+      end: 44
+    - source: _cache[key]
+      style: secondary
+      start: 38
+      end: 49
+    - source: |-
+        def forget(key):
+            del _cache[key]
+      style: secondary
+      start: 13
+      end: 49
+    - source: _cache
+      style: secondary
+      start: 0
+      end: 6
+    - source: _cache = {}
+      style: secondary
+      start: 0
+      end: 11
+    - source: _cache = {}
+      style: secondary
+      start: 0
+      end: 11
+    - source: |
+        _cache = {}
+
+        def forget(key):
+            del _cache[key]
+      style: secondary
+      start: 0
+      end: 50
+  "_state = ExampleState()\n\ndef bump():\n    _state.count += 1\n":
+    labels:
+    - source: _state.count += 1
+      style: primary
+      start: 41
+      end: 58
+    - source: _state
+      style: secondary
+      start: 41
+      end: 47
+    - source: _state.count
+      style: secondary
+      start: 41
+      end: 53
+    - source: |-
+        def bump():
+            _state.count += 1
+      style: secondary
+      start: 25
+      end: 58
+    - source: _state
+      style: secondary
+      start: 0
+      end: 6
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: |
+        _state = ExampleState()
+
+        def bump():
+            _state.count += 1
+      style: secondary
+      start: 0
+      end: 59
+  "_state = ExampleState()\n\ndef record(item):\n    _state.items.append(item)\n":
+    labels:
+    - source: _state.items.append(item)
+      style: primary
+      start: 47
+      end: 72
+    - source: _state
+      style: secondary
+      start: 47
+      end: 53
+    - source: _state.items
+      style: secondary
+      start: 47
+      end: 59
+    - source: append
+      style: secondary
+      start: 60
+      end: 66
+    - source: _state.items.append
+      style: secondary
+      start: 47
+      end: 66
+    - source: |-
+        def record(item):
+            _state.items.append(item)
+      style: secondary
+      start: 25
+      end: 72
+    - source: _state
+      style: secondary
+      start: 0
+      end: 6
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: |
+        _state = ExampleState()
+
+        def record(item):
+            _state.items.append(item)
+      style: secondary
+      start: 0
+      end: 73
+  "_state = ExampleState()\n\ndef remember(key, value):\n    _state.entries[key] = value\n":
+    labels:
+    - source: _state.entries[key] = value
+      style: primary
+      start: 55
+      end: 82
+    - source: _state
+      style: secondary
+      start: 55
+      end: 61
+    - source: _state.entries
+      style: secondary
+      start: 55
+      end: 69
+    - source: _state.entries[key]
+      style: secondary
+      start: 55
+      end: 74
+    - source: |-
+        def remember(key, value):
+            _state.entries[key] = value
+      style: secondary
+      start: 25
+      end: 82
+    - source: _state
+      style: secondary
+      start: 0
+      end: 6
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: |
+        _state = ExampleState()
+
+        def remember(key, value):
+            _state.entries[key] = value
+      style: secondary
+      start: 0
+      end: 83
+  "_state = ExampleState()\n\ndef reset():\n    _state.count = 0\n":
+    labels:
+    - source: _state.count = 0
+      style: primary
+      start: 42
+      end: 58
+    - source: _state
+      style: secondary
+      start: 42
+      end: 48
+    - source: _state.count
+      style: secondary
+      start: 42
+      end: 54
+    - source: |-
+        def reset():
+            _state.count = 0
+      style: secondary
+      start: 25
+      end: 58
+    - source: _state
+      style: secondary
+      start: 0
+      end: 6
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: |
+        _state = ExampleState()
+
+        def reset():
+            _state.count = 0
+      style: secondary
+      start: 0
+      end: 59
+  "from example import config\n\ndef allow(host):\n    config.HOSTS.append(host)\n":
+    labels:
+    - source: config.HOSTS.append(host)
+      style: primary
+      start: 49
+      end: 74
+    - source: config
+      style: secondary
+      start: 49
+      end: 55
+    - source: config.HOSTS
+      style: secondary
+      start: 49
+      end: 61
+    - source: append
+      style: secondary
+      start: 62
+      end: 68
+    - source: config.HOSTS.append
+      style: secondary
+      start: 49
+      end: 68
+    - source: config
+      style: secondary
+      start: 20
+      end: 26
+    - source: from example import config
+      style: secondary
+      start: 0
+      end: 26
+    - source: |
+        from example import config
+
+        def allow(host):
+            config.HOSTS.append(host)
+      style: secondary
+      start: 0
+      end: 75
+  "from example import config\n\ndef drop_limit(key):\n    del config.LIMITS[key]\n":
+    labels:
+    - source: del config.LIMITS[key]
+      style: primary
+      start: 53
+      end: 75
+    - source: config
+      style: secondary
+      start: 57
+      end: 63
+    - source: config.LIMITS
+      style: secondary
+      start: 57
+      end: 70
+    - source: config.LIMITS[key]
+      style: secondary
+      start: 57
+      end: 75
+    - source: config
+      style: secondary
+      start: 20
+      end: 26
+    - source: from example import config
+      style: secondary
+      start: 0
+      end: 26
+    - source: |
+        from example import config
+
+        def drop_limit(key):
+            del config.LIMITS[key]
+      style: secondary
+      start: 0
+      end: 76
+  "from example import config\n\ndef loosen():\n    config.RETRY_LIMIT += 1\n":
+    labels:
+    - source: config.RETRY_LIMIT += 1
+      style: primary
+      start: 46
+      end: 69
+    - source: config
+      style: secondary
+      start: 46
+      end: 52
+    - source: config.RETRY_LIMIT
+      style: secondary
+      start: 46
+      end: 64
+    - source: config
+      style: secondary
+      start: 20
+      end: 26
+    - source: from example import config
+      style: secondary
+      start: 0
+      end: 26
+    - source: |
+        from example import config
+
+        def loosen():
+            config.RETRY_LIMIT += 1
+      style: secondary
+      start: 0
+      end: 70
+  "from example import config\n\ndef set_limit(key, value):\n    config.LIMITS[key] = value\n":
+    labels:
+    - source: config.LIMITS[key] = value
+      style: primary
+      start: 59
+      end: 85
+    - source: config
+      style: secondary
+      start: 59
+      end: 65
+    - source: config.LIMITS
+      style: secondary
+      start: 59
+      end: 72
+    - source: config.LIMITS[key]
+      style: secondary
+      start: 59
+      end: 77
+    - source: config
+      style: secondary
+      start: 20
+      end: 26
+    - source: from example import config
+      style: secondary
+      start: 0
+      end: 26
+    - source: |
+        from example import config
+
+        def set_limit(key, value):
+            config.LIMITS[key] = value
+      style: secondary
+      start: 0
+      end: 86
+  "from example import config\n\ndef set_option(name, value):\n    setattr(config, name, value)\n":
+    labels:
+    - source: setattr(config, name, value)
+      style: primary
+      start: 61
+      end: 89
+    - source: setattr
+      style: secondary
+      start: 61
+      end: 68
+    - source: config
+      style: secondary
+      start: 69
+      end: 75
+    - source: config
+      style: secondary
+      start: 69
+      end: 75
+    - source: config
+      style: secondary
+      start: 20
+      end: 26
+    - source: from example import config
+      style: secondary
+      start: 0
+      end: 26
+    - source: |
+        from example import config
+
+        def set_option(name, value):
+            setattr(config, name, value)
+      style: secondary
+      start: 0
+      end: 90
+  "from example import config\n\ndef tighten():\n    config.RETRY_LIMIT = 1\n":
+    labels:
+    - source: config.RETRY_LIMIT = 1
+      style: primary
+      start: 47
+      end: 69
+    - source: config
+      style: secondary
+      start: 47
+      end: 53
+    - source: config.RETRY_LIMIT
+      style: secondary
+      start: 47
+      end: 65
+    - source: config
+      style: secondary
+      start: 20
+      end: 26
+    - source: from example import config
+      style: secondary
+      start: 0
+      end: 26
+    - source: |
+        from example import config
+
+        def tighten():
+            config.RETRY_LIMIT = 1
+      style: secondary
+      start: 0
+      end: 70
+  "from example.config import HOSTS\n\ndef allow(host):\n    HOSTS.append(host)\n":
+    labels:
+    - source: HOSTS.append(host)
+      style: primary
+      start: 55
+      end: 73
+    - source: HOSTS
+      style: secondary
+      start: 55
+      end: 60
+    - source: append
+      style: secondary
+      start: 61
+      end: 67
+    - source: HOSTS.append
+      style: secondary
+      start: 55
+      end: 67
+    - source: HOSTS
+      style: secondary
+      start: 27
+      end: 32
+    - source: from example.config import HOSTS
+      style: secondary
+      start: 0
+      end: 32
+    - source: |
+        from example.config import HOSTS
+
+        def allow(host):
+            HOSTS.append(host)
+      style: secondary
+      start: 0
+      end: 74
+  "from example.config import LIMITS\n\ndef set_limit(key, value):\n    LIMITS[key] = value\n":
+    labels:
+    - source: LIMITS[key] = value
+      style: primary
+      start: 66
+      end: 85
+    - source: LIMITS
+      style: secondary
+      start: 66
+      end: 72
+    - source: LIMITS[key]
+      style: secondary
+      start: 66
+      end: 77
+    - source: LIMITS
+      style: secondary
+      start: 27
+      end: 33
+    - source: from example.config import LIMITS
+      style: secondary
+      start: 0
+      end: 33
+    - source: |
+        from example.config import LIMITS
+
+        def set_limit(key, value):
+            LIMITS[key] = value
+      style: secondary
+      start: 0
+      end: 86
+  "import example.config\n\nexample.config.RETRY_LIMIT = 10\n":
+    labels:
+    - source: example.config.RETRY_LIMIT = 10
+      style: primary
+      start: 23
+      end: 54
+    - source: example
+      style: secondary
+      start: 23
+      end: 30
+    - source: example.config
+      style: secondary
+      start: 23
+      end: 37
+    - source: example.config.RETRY_LIMIT
+      style: secondary
+      start: 23
+      end: 49
+    - source: example
+      style: secondary
+      start: 7
+      end: 14
+    - source: import example.config
+      style: secondary
+      start: 0
+      end: 21
+    - source: |
+        import example.config
+
+        example.config.RETRY_LIMIT = 10
+      style: secondary
+      start: 0
+      end: 55
+  "import example.config as config\n\ndef tighten():\n    config.RETRY_LIMIT = 1\n":
+    labels:
+    - source: config.RETRY_LIMIT = 1
+      style: primary
+      start: 52
+      end: 74
+    - source: config
+      style: secondary
+      start: 52
+      end: 58
+    - source: config.RETRY_LIMIT
+      style: secondary
+      start: 52
+      end: 70
+    - source: config
+      style: secondary
+      start: 15
+      end: 21
+    - source: import example.config as config
+      style: secondary
+      start: 0
+      end: 31
+    - source: |
+        import example.config as config
+
+        def tighten():
+            config.RETRY_LIMIT = 1
+      style: secondary
+      start: 0
+      end: 75
