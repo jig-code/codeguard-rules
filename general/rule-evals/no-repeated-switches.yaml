@@ -1,77 +1,5 @@
 cases:
-- name: a second isinstance chain over the notification channels means a new channel must be found in both, and gets email's limits where it's missed
-  inputs:
-    file: notify/channels.py
-    before: |
-      from dataclasses import dataclass
-
-
-      @dataclass(frozen=True)
-      class EmailChannel:
-          address: str
-
-
-      @dataclass(frozen=True)
-      class SmsChannel:
-          phone: str
-
-
-      @dataclass(frozen=True)
-      class PushChannel:
-          device_token: str
-
-
-      Channel = EmailChannel | SmsChannel | PushChannel
-
-
-      def cost_per_message_cents(channel: Channel) -> int:
-          if isinstance(channel, SmsChannel):
-              return 4
-          elif isinstance(channel, PushChannel):
-              return 1
-          else:
-              return 0
-    after: |
-      from dataclasses import dataclass
-
-
-      @dataclass(frozen=True)
-      class EmailChannel:
-          address: str
-
-
-      @dataclass(frozen=True)
-      class SmsChannel:
-          phone: str
-
-
-      @dataclass(frozen=True)
-      class PushChannel:
-          device_token: str
-
-
-      Channel = EmailChannel | SmsChannel | PushChannel
-
-
-      def cost_per_message_cents(channel: Channel) -> int:
-          if isinstance(channel, SmsChannel):
-              return 4
-          elif isinstance(channel, PushChannel):
-              return 1
-          else:
-              return 0
-
-
-      def max_body_length(channel: Channel) -> int:
-          if isinstance(channel, SmsChannel):
-              return 160
-          elif isinstance(channel, PushChannel):
-              return 240
-          else:
-              return 100_000
-  expected_output:
-    outcome: invalid
-- name: a WhatsApp channel is added to the one isinstance chain that prices the notification channels
+- name: a new channel is added to the one isinstance chain over the notification channels
   inputs:
     file: notify/channels.py
     before: |
@@ -141,7 +69,7 @@ cases:
               return 0
   expected_output:
     outcome: valid
-- name: a second match on the coverage tier falls back to premium's limit, so a new tier missed there pays out the top limit
+- name: a second match on the coverage tier ends in a default branch
   inputs:
     file: insurance/policy.py
     before: |
@@ -206,7 +134,7 @@ cases:
                   return 250_000
   expected_output:
     outcome: invalid
-- name: both coverage matches end in assert_never, so the type checker names each one when a tier is added
+- name: two matches on the coverage tier each end in assert_never
   inputs:
     file: insurance/policy.py
     before: |
@@ -279,7 +207,7 @@ cases:
                   assert_never(policy.coverage)
   expected_output:
     outcome: valid
-- name: the statement switches on the ledger entry classes the entries module already switches on, so a new entry type prints as a payout
+- name: a statement line switches on the entry classes that an imported module's match already switches on
   inputs:
     file: ledger/statement.py
     unchanged:
@@ -319,43 +247,15 @@ cases:
 
       def statement_line(entry: Entry) -> str:
           if isinstance(entry, Charge):
-              return f"Charge      {entry.amount_cents / 100:>10.2f}"
+              label = "Charge"
           elif isinstance(entry, Refund):
-              return f"Refund     -{entry.amount_cents / 100:>10.2f}"
+              label = "Refund"
           else:
-              return f"Payout      {entry.amount_cents / 100:>10.2f}"
+              label = "Payout"
+          return f"{label:<10}{entry.amount_cents / 100:>10.2f}"
   expected_output:
     outcome: invalid
-- name: the module chooses a shipment's tracking page by its carrier class in one place
-  inputs:
-    file: shipping/tracking.py
-    after: |
-      from dataclasses import dataclass
-
-
-      @dataclass(frozen=True)
-      class UpsShipment:
-          tracking_number: str
-
-
-      @dataclass(frozen=True)
-      class DhlShipment:
-          waybill: str
-
-
-      Shipment = UpsShipment | DhlShipment
-
-
-      def tracking_url(shipment: Shipment) -> str:
-          if isinstance(shipment, UpsShipment):
-              return f"https://www.ups.com/track?tracknum={shipment.tracking_number}"
-          elif isinstance(shipment, DhlShipment):
-              return f"https://www.dhl.com/track?AWB={shipment.waybill}"
-          else:
-              raise ValueError(f"no tracking page for {shipment!r}")
-  expected_output:
-    outcome: valid
-- name: a webhook parser turns the payload's type string into the matching billing event, which decides what kind to create, not what one does
+- name: a webhook parser builds the billing event that the payload's type string names
   inputs:
     file: billing/webhooks.py
     unchanged:
@@ -396,7 +296,7 @@ cases:
                   raise ValueError(f"unknown billing event type {other!r}")
   expected_output:
     outcome: valid
-- name: adding an import to the statement module
+- name: an edit that only adds an import
   inputs:
     file: ledger/statement.py
     before: |
@@ -407,7 +307,221 @@ cases:
       from ledger.entries import Entry
   expected_output:
     outcome: skipped
-- name: a second switch on the reward kind defaults to points, so a new reward kind is labelled as points per dollar
+- name: a new match on the media type ends in a default beside a match on it that ends in assert_never
+  inputs:
+    file: library/loans.py
+    before: |
+      from enum import Enum
+      from typing import assert_never
+
+
+      class Media(Enum):
+          BOOK = "book"
+          DVD = "dvd"
+          MAGAZINE = "magazine"
+
+
+      def loan_days(media: Media) -> int:
+          match media:
+              case Media.BOOK:
+                  return 21
+              case Media.DVD:
+                  return 7
+              case Media.MAGAZINE:
+                  return 14
+              case _:
+                  assert_never(media)
+    after: |
+      from enum import Enum
+      from typing import assert_never
+
+
+      class Media(Enum):
+          BOOK = "book"
+          DVD = "dvd"
+          MAGAZINE = "magazine"
+
+
+      def loan_days(media: Media) -> int:
+          match media:
+              case Media.BOOK:
+                  return 21
+              case Media.DVD:
+                  return 7
+              case Media.MAGAZINE:
+                  return 14
+              case _:
+                  assert_never(media)
+
+
+      def late_fee_cents_per_day(media: Media) -> int:
+          match media:
+              case Media.DVD:
+                  return 100
+              case Media.MAGAZINE:
+                  return 10
+              case _:
+                  return 25
+  expected_output:
+    outcome: invalid
+- name: a withdrawal total picks out savings accounts with one isinstance check
+  inputs:
+    file: banking/accounts.py
+    before: |
+      from dataclasses import dataclass
+
+
+      @dataclass(frozen=True)
+      class CheckingAccount:
+          balance_cents: int
+
+
+      @dataclass(frozen=True)
+      class SavingsAccount:
+          balance_cents: int
+          withdrawals_this_month: int
+
+
+      @dataclass(frozen=True)
+      class BrokerageAccount:
+          cash_cents: int
+
+
+      Account = CheckingAccount | SavingsAccount | BrokerageAccount
+
+
+      def monthly_fee_cents(account: Account) -> int:
+          if isinstance(account, CheckingAccount):
+              return 500
+          elif isinstance(account, SavingsAccount):
+              return 0
+          else:
+              return 1500
+    after: |
+      from dataclasses import dataclass
+
+
+      @dataclass(frozen=True)
+      class CheckingAccount:
+          balance_cents: int
+
+
+      @dataclass(frozen=True)
+      class SavingsAccount:
+          balance_cents: int
+          withdrawals_this_month: int
+
+
+      @dataclass(frozen=True)
+      class BrokerageAccount:
+          cash_cents: int
+
+
+      Account = CheckingAccount | SavingsAccount | BrokerageAccount
+
+
+      def monthly_fee_cents(account: Account) -> int:
+          if isinstance(account, CheckingAccount):
+              return 500
+          elif isinstance(account, SavingsAccount):
+              return 0
+          else:
+              return 1500
+
+
+      def savings_withdrawals_this_month(accounts: list[Account]) -> int:
+          return sum(
+              account.withdrawals_this_month
+              for account in accounts
+              if isinstance(account, SavingsAccount)
+          )
+  expected_output:
+    outcome: valid
+- name: two if/elif chains choose by a parcel's weight in grams
+  inputs:
+    file: postage/weight.py
+    before: |
+      def postage_cents(weight_grams: int) -> int:
+          if weight_grams <= 100:
+              return 95
+          elif weight_grams <= 750:
+              return 210
+          else:
+              return 480
+    after: |
+      def postage_cents(weight_grams: int) -> int:
+          if weight_grams <= 100:
+              return 95
+          elif weight_grams <= 750:
+              return 210
+          else:
+              return 480
+
+
+      def packaging_for(weight_grams: int) -> str:
+          if weight_grams <= 100:
+              return "padded envelope"
+          elif weight_grams <= 750:
+              return "small box"
+          else:
+              return "large box"
+  expected_output:
+    outcome: valid
+- name: a second dict keyed by the course enum
+  inputs:
+    file: kitchen/courses.py
+    before: |
+      from enum import Enum
+
+
+      class Course(Enum):
+          STARTER = "starter"
+          MAIN = "main"
+          DESSERT = "dessert"
+
+
+      PREP_MINUTES: dict[Course, int] = {
+          Course.STARTER: 10,
+          Course.MAIN: 25,
+          Course.DESSERT: 15,
+      }
+
+
+      def prep_minutes(course: Course) -> int:
+          return PREP_MINUTES[course]
+    after: |
+      from enum import Enum
+
+
+      class Course(Enum):
+          STARTER = "starter"
+          MAIN = "main"
+          DESSERT = "dessert"
+
+
+      PREP_MINUTES: dict[Course, int] = {
+          Course.STARTER: 10,
+          Course.MAIN: 25,
+          Course.DESSERT: 15,
+      }
+
+
+      def prep_minutes(course: Course) -> int:
+          return PREP_MINUTES[course]
+
+
+      PLATING_STATION: dict[Course, str] = {
+          Course.STARTER: "cold line",
+          Course.MAIN: "hot pass",
+          Course.DESSERT: "pastry",
+      }
+
+
+      def plating_station(course: Course) -> str:
+          return PLATING_STATION[course]
+  expected_output:
+    outcome: invalid
+- name: a second switch on the reward kind ends in a default branch
   inputs:
     file: src/rewards/reward.ts
     before: |
@@ -455,7 +569,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: both switches on the reward kind end in a never check, so the compiler flags each one when a kind is added
+- name: two switches on the reward kind each end in a never check
   inputs:
     file: src/rewards/reward.ts
     before: |
@@ -517,63 +631,42 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a second instanceof chain over the vehicle classes means a new vehicle needs no truck licence wherever the chain is missed
+- name: a reward label switches on the reward kind that an imported module's switch already switches on
   inputs:
-    file: src/fleet/vehicle.ts
-    before: |
-      export class Van {
-        constructor(readonly payloadKg: number) {}
-      }
+    file: src/rewards/rewardLabel.ts
+    unchanged:
+      src/rewards/reward.ts: |
+        export type Reward =
+          | { kind: "cashback"; percent: number }
+          | { kind: "miles"; perDollar: number }
+          | { kind: "points"; perDollar: number };
 
-      export class Truck {
-        constructor(readonly axles: number) {}
-      }
-
-      export class CargoBike {}
-
-      export type Vehicle = Van | Truck | CargoBike;
-
-      export function hourlyRateCents(vehicle: Vehicle): number {
-        if (vehicle instanceof Truck) {
-          return 9000 + vehicle.axles * 1000;
-        } else if (vehicle instanceof Van) {
-          return 6000;
+        export function rewardValueCents(reward: Reward, spendCents: number): number {
+          switch (reward.kind) {
+            case "cashback":
+              return Math.round((spendCents * reward.percent) / 100);
+            case "miles":
+              return Math.round((spendCents / 100) * reward.perDollar * 1.2);
+            default:
+              return Math.round((spendCents / 100) * reward.perDollar);
+          }
         }
-        return 2500;
-      }
     after: |
-      export class Van {
-        constructor(readonly payloadKg: number) {}
-      }
+      import type { Reward } from "./reward";
 
-      export class Truck {
-        constructor(readonly axles: number) {}
-      }
-
-      export class CargoBike {}
-
-      export type Vehicle = Van | Truck | CargoBike;
-
-      export function hourlyRateCents(vehicle: Vehicle): number {
-        if (vehicle instanceof Truck) {
-          return 9000 + vehicle.axles * 1000;
-        } else if (vehicle instanceof Van) {
-          return 6000;
+      export function rewardLabel(reward: Reward): string {
+        switch (reward.kind) {
+          case "cashback":
+            return `${reward.percent}% cash back`;
+          case "miles":
+            return `${reward.perDollar} miles per dollar`;
+          default:
+            return `${reward.perDollar} points per dollar`;
         }
-        return 2500;
-      }
-
-      export function needsTruckLicence(vehicle: Vehicle): boolean {
-        if (vehicle instanceof Truck) {
-          return true;
-        } else if (vehicle instanceof Van) {
-          return vehicle.payloadKg > 3500;
-        }
-        return false;
       }
   expected_output:
     outcome: invalid
-- name: each vehicle class answers whether it needs a truck licence, and the interface makes a new class answer too
+- name: each vehicle class implements the interface's truck licence method
   inputs:
     file: src/fleet/vehicle.ts
     before: |
@@ -643,54 +736,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a second if chain on the plan gives an unlisted plan enterprise support, so a new plan gets a one-hour response by default
-  inputs:
-    file: src/billing/plan.ts
-    before: |
-      export enum Plan {
-        Free,
-        Team,
-        Enterprise,
-      }
-
-      export function seatLimit(plan: Plan): number {
-        if (plan === Plan.Free) {
-          return 3;
-        } else if (plan === Plan.Team) {
-          return 50;
-        } else {
-          return 10_000;
-        }
-      }
-    after: |
-      export enum Plan {
-        Free,
-        Team,
-        Enterprise,
-      }
-
-      export function seatLimit(plan: Plan): number {
-        if (plan === Plan.Free) {
-          return 3;
-        } else if (plan === Plan.Team) {
-          return 50;
-        } else {
-          return 10_000;
-        }
-      }
-
-      export function supportResponseHours(plan: Plan): number {
-        if (plan === Plan.Free) {
-          return 72;
-        } else if (plan === Plan.Team) {
-          return 24;
-        } else {
-          return 1;
-        }
-      }
-  expected_output:
-    outcome: invalid
-- name: each plan behaviour is a Record over every plan, so the compiler demands an entry when a plan is added
+- name: each plan behaviour is a table typed Record over every plan
   inputs:
     file: src/billing/plan.ts
     before: |
@@ -734,6 +780,271 @@ cases:
 
       export function supportResponseHours(plan: Plan): number {
         return SUPPORT_RESPONSE_HOURS[plan];
+      }
+  expected_output:
+    outcome: valid
+- name: a new switch on the document format ends in a default beside a switch on it that ends in a never check
+  inputs:
+    file: src/documents/format.ts
+    before: |
+      export type Document =
+        | { format: "pdf"; pages: number }
+        | { format: "docx"; words: number }
+        | { format: "html"; url: string };
+
+      function assertNever(value: never): never {
+        throw new Error(`unhandled document ${JSON.stringify(value)}`);
+      }
+
+      export function mimeType(document: Document): string {
+        switch (document.format) {
+          case "pdf":
+            return "application/pdf";
+          case "docx":
+            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+          case "html":
+            return "text/html";
+          default:
+            return assertNever(document);
+        }
+      }
+    after: |
+      export type Document =
+        | { format: "pdf"; pages: number }
+        | { format: "docx"; words: number }
+        | { format: "html"; url: string };
+
+      function assertNever(value: never): never {
+        throw new Error(`unhandled document ${JSON.stringify(value)}`);
+      }
+
+      export function mimeType(document: Document): string {
+        switch (document.format) {
+          case "pdf":
+            return "application/pdf";
+          case "docx":
+            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+          case "html":
+            return "text/html";
+          default:
+            return assertNever(document);
+        }
+      }
+
+      export function previewable(document: Document): boolean {
+        switch (document.format) {
+          case "pdf":
+            return document.pages <= 200;
+          case "html":
+            return true;
+          default:
+            return false;
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: an interchange fee total picks out card payments with one tag check
+  inputs:
+    file: src/payments/batch.ts
+    before: |
+      export type Payment =
+        | { kind: "card"; amountCents: number; interchangeFeeCents: number }
+        | { kind: "bank"; amountCents: number; iban: string }
+        | { kind: "wallet"; amountCents: number; walletId: string };
+
+      export function settlementDays(payment: Payment): number {
+        switch (payment.kind) {
+          case "card":
+            return 2;
+          case "bank":
+            return 3;
+          default:
+            return 1;
+        }
+      }
+    after: |
+      export type Payment =
+        | { kind: "card"; amountCents: number; interchangeFeeCents: number }
+        | { kind: "bank"; amountCents: number; iban: string }
+        | { kind: "wallet"; amountCents: number; walletId: string };
+
+      export function settlementDays(payment: Payment): number {
+        switch (payment.kind) {
+          case "card":
+            return 2;
+          case "bank":
+            return 3;
+          default:
+            return 1;
+        }
+      }
+
+      export function interchangeFeesCents(payments: readonly Payment[]): number {
+        let total = 0;
+        for (const payment of payments) {
+          if (payment.kind === "card") {
+            total += payment.interchangeFeeCents;
+          }
+        }
+        return total;
+      }
+  expected_output:
+    outcome: valid
+- name: two if chains choose by an outside API's HTTP status code
+  inputs:
+    file: src/carrier/status.ts
+    before: |
+      export function shouldRetry(status: number): boolean {
+        if (status === 429) {
+          return true;
+        } else if (status >= 500) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    after: |
+      export function shouldRetry(status: number): boolean {
+        if (status === 429) {
+          return true;
+        } else if (status >= 500) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      export function logLevel(status: number): "info" | "warn" | "error" {
+        if (status >= 500) {
+          return "error";
+        } else if (status >= 400) {
+          return "warn";
+        } else {
+          return "info";
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a second table of tile kinds typed Record<string, number>
+  inputs:
+    file: src/map/tile.ts
+    before: |
+      export type Tile =
+        | { kind: "road"; lanes: number }
+        | { kind: "water"; depthMetres: number }
+        | { kind: "forest"; density: number };
+
+      const TILE_COLOUR: Record<string, string> = {
+        road: "#9e9e9e",
+        water: "#2196f3",
+        forest: "#2e7d32",
+      };
+
+      export function tileColour(tile: Tile): string {
+        return TILE_COLOUR[tile.kind];
+      }
+    after: |
+      export type Tile =
+        | { kind: "road"; lanes: number }
+        | { kind: "water"; depthMetres: number }
+        | { kind: "forest"; density: number };
+
+      const TILE_COLOUR: Record<string, string> = {
+        road: "#9e9e9e",
+        water: "#2196f3",
+        forest: "#2e7d32",
+      };
+
+      export function tileColour(tile: Tile): string {
+        return TILE_COLOUR[tile.kind];
+      }
+
+      const MOVEMENT_COST: Record<string, number> = {
+        road: 1,
+        water: 5,
+        forest: 3,
+      };
+
+      export function movementCost(tile: Tile): number {
+        return MOVEMENT_COST[tile.kind];
+      }
+  expected_output:
+    outcome: invalid
+- name: a row parser builds the discount that the row's kind column names
+  inputs:
+    file: src/pricing/discountRow.ts
+    unchanged:
+      src/pricing/discount.ts: |
+        export type Discount =
+          | { kind: "percent"; percent: number }
+          | { kind: "fixed"; amountCents: number };
+
+        export function discountedCents(discount: Discount, priceCents: number): number {
+          switch (discount.kind) {
+            case "percent":
+              return Math.round(priceCents * (1 - discount.percent / 100));
+            case "fixed":
+              return priceCents - discount.amountCents;
+          }
+        }
+    after: |
+      import type { Discount } from "./discount";
+
+      export interface DiscountRow {
+        kind: string;
+        value: number;
+      }
+
+      export function discountFromRow(row: DiscountRow): Discount {
+        switch (row.kind) {
+          case "percent":
+            return { kind: "percent", percent: row.value };
+          case "fixed":
+            return { kind: "fixed", amountCents: row.value };
+          default:
+            throw new Error(`unknown discount kind ${row.kind}`);
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a receipt line reads the fare from the one switch on the ticket kind
+  inputs:
+    file: src/transit/ticket.ts
+    before: |
+      export type Ticket =
+        | { kind: "adult"; zones: number }
+        | { kind: "child"; zones: number }
+        | { kind: "senior"; zones: number };
+
+      export function fareCents(ticket: Ticket): number {
+        switch (ticket.kind) {
+          case "child":
+            return 120 * ticket.zones;
+          case "senior":
+            return 100 * ticket.zones;
+          default:
+            return 250 * ticket.zones;
+        }
+      }
+    after: |
+      export type Ticket =
+        | { kind: "adult"; zones: number }
+        | { kind: "child"; zones: number }
+        | { kind: "senior"; zones: number };
+
+      export function fareCents(ticket: Ticket): number {
+        switch (ticket.kind) {
+          case "child":
+            return 120 * ticket.zones;
+          case "senior":
+            return 100 * ticket.zones;
+          default:
+            return 250 * ticket.zones;
+        }
+      }
+
+      export function receiptLine(ticket: Ticket): string {
+        return `${ticket.zones}-zone ${ticket.kind} ticket  ${(fareCents(ticket) / 100).toFixed(2)}`;
       }
   expected_output:
     outcome: valid
