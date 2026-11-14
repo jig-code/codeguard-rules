@@ -7,7 +7,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 env:
-  CODEGUARD_REF: 856edd32967fd7fc9472bfef16429dc8cdd51007
+  CODEGUARD_REF: 7eda0308551765d39707a02ef09a02ade44ab863
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -63,6 +63,7 @@ jobs:
           role-to-assume: ${{ vars.CLAUDE_AWS_ROLE }}
           aws-region: us-west-2
       - if: steps.affected.outputs.rules && matrix.provider == 'gemini'
+        id: gcp-auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
@@ -76,6 +77,8 @@ jobs:
             args+=(--provider claude-cli --model "$BEDROCK_MODEL")
           else
             export CODEGUARD_CONFIG=.github/codeguard-gemini-eval.yaml
+            export CODEGUARD_JUDGE__GEMINI__PROJECT="$GEMINI_PROJECT"
+            export CODEGUARD_JUDGE__GEMINI__CREDENTIALS_FILE="$GEMINI_CREDENTIALS_FILE"
           fi
           uv run --frozen --project ../codeguard codeguard eval --repeat 3 "${args[@]}"
         env:
@@ -85,5 +88,5 @@ jobs:
           AWS_REGION: us-west-2
           BEDROCK_MODEL: ${{ vars.BEDROCK_MODEL }}
           LOGFIRE_TOKEN: ${{ secrets.LOGFIRE_TOKEN }}
-          GOOGLE_CLOUD_PROJECT: ${{ vars.GOOGLE_CLOUD_PROJECT }}
-          GOOGLE_CLOUD_LOCATION: global
+          GEMINI_PROJECT: ${{ vars.GOOGLE_CLOUD_PROJECT }}
+          GEMINI_CREDENTIALS_FILE: ${{ steps.gcp-auth.outputs.credentials_file_path }}
