@@ -56,7 +56,7 @@ cases:
           return membership.expires_on() - REMINDER_LEAD
   expected_output:
     outcome: valid
-- name: a shipping charge looks up a parcel's region in the shipping module's rate table and multiplies by the parcel's weight
+- name: a shipping charge combines a parcel's weight with the carrier rate it is given
   inputs:
     file: shipping/rates.py
     unchanged:
@@ -70,13 +70,19 @@ cases:
             region: str
             weight_kg: float
     after: |
+      from dataclasses import dataclass
+
       from parcels.models import Parcel
 
-      CENTS_PER_KG = {"EU": 450, "US": 620, "APAC": 880}
+
+      @dataclass(frozen=True)
+      class CarrierRate:
+          cents_per_kg: int
+          minimum_cents: int
 
 
-      def charge_cents(parcel: Parcel) -> int:
-          return round(CENTS_PER_KG[parcel.region] * parcel.weight_kg)
+      def charge_cents(parcel: Parcel, rate: CarrierRate) -> int:
+          return max(round(rate.cents_per_kg * parcel.weight_kg), rate.minimum_cents)
   expected_output:
     outcome: valid
 - name: a payload builder copies a parcel's fields into an API's keys
