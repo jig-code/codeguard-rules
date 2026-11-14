@@ -11,4 +11,4 @@ exclude_paths:
   - "**/*.spec.ts"
   - "**/*.spec.tsx"
   - "**/__tests__/**"
-triggers: [class-header, definition-added-or-removed]
+triggers: [class-header, definition-added-or-removed, module-statement]

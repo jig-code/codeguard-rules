@@ -1,14 +1,13 @@
 ---
 name: threaded-state-own-module
-description: A type whose values a workflow's steps pass from one step to the next as the run's state, each step updating that value or returning an updated copy of that value, is never defined outside a module that is named for that state and that publicly defines nothing besides that type and the parts of that type's declaration.
+description: A type that holds the state that a workflow's steps update in turn is never defined in a module that publicly defines anything besides that type and the definitions that the declaration of that type uses.
 ---
 
 # Threaded State Own Module
 
-A type whose values a workflow's steps pass from one step to the next as the run's
-state, each step updating that value or returning an updated copy of that value, is
-never defined outside a module that is named for that state and that publicly defines
-nothing besides that type and the parts of that type's declaration.
+A type that holds the state that a workflow's steps update in turn is never defined in a
+module that publicly defines anything besides that type and the definitions that the
+declaration of that type uses.
 
 ## Why
 
