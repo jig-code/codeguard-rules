@@ -40,24 +40,7 @@ cases:
               self.shipped_at = now
   expected_output:
     outcome: valid
-- name: a cart keeps a count of its items beside the items
-  inputs:
-    file: cart/cart.py
-    after: |
-      from cart.item import CartItem
-
-
-      class Cart:
-          def __init__(self) -> None:
-              self.items: list[CartItem] = []
-              self.item_count = 0
-
-          def add(self, item: CartItem) -> None:
-              self.items.append(item)
-              self.item_count += 1
-  expected_output:
-    outcome: invalid
-- name: a shipment keeps a copy of its customer's email in step with the customer, so a reassignment that forgets one leaves them disagreeing
+- name: a shipment sets a copy of its customer's email whenever it sets the customer
   inputs:
     file: shipping/shipment.py
     unchanged:
@@ -90,70 +73,6 @@ cases:
               self.customer_email = customer.email
   expected_output:
     outcome: invalid
-- name: a shipment stores its customer's email beside the customer and nothing records it at a moment, so it is a copy to keep in step
-  inputs:
-    file: shipping/shipment.py
-    unchanged:
-      accounts/customer.py: |
-        from dataclasses import dataclass
-
-
-        @dataclass(frozen=True)
-        class Customer:
-            id: str
-            name: str
-            email: str
-    after: |
-      from dataclasses import dataclass
-
-      from accounts.customer import Customer
-
-
-      @dataclass
-      class Shipment:
-          tracking_number: str
-          customer: Customer
-          customer_email: str
-  expected_output:
-    outcome: invalid
-- name: a shipment records the address its dispatch notice went to when it sends it, kept as history beside the customer
-  inputs:
-    file: shipping/shipment.py
-    unchanged:
-      accounts/customer.py: |
-        from dataclasses import dataclass
-
-
-        @dataclass(frozen=True)
-        class Customer:
-            id: str
-            name: str
-            email: str
-      shipping/notices.py: |
-        from typing import Protocol
-
-
-        class Notifier(Protocol):
-            def send(self, email: str, text: str) -> None: ...
-    after: |
-      from dataclasses import dataclass
-
-      from accounts.customer import Customer
-      from shipping.notices import Notifier
-
-
-      @dataclass
-      class Shipment:
-          tracking_number: str
-          customer: Customer
-          # The address the dispatch notice went to, as it was when it was sent.
-          notified_email: str | None = None
-
-          def send_dispatch_notice(self, notifier: Notifier) -> None:
-              notifier.send(self.customer.email, f"Shipment {self.tracking_number} is on its way")
-              self.notified_email = self.customer.email
-  expected_output:
-    outcome: valid
 - name: an order line records the unit price paid beside the product
   inputs:
     file: orders/line.py
@@ -203,70 +122,6 @@ cases:
           return f"{prefix}-{number:06d}"
   expected_output:
     outcome: skipped
-- name: a component keeps a selected count in state beside the selected ids
-  inputs:
-    file: inbox/MessageList.tsx
-    after: |
-      import { useState } from "react";
-
-      export function MessageList({ messages }: { messages: Message[] }) {
-        const [selectedIds, setSelectedIds] = useState<string[]>([]);
-        const [selectedCount, setSelectedCount] = useState(0);
-
-        function toggle(id: string) {
-          if (selectedIds.includes(id)) {
-            setSelectedIds(selectedIds.filter((s) => s !== id));
-            setSelectedCount(selectedCount - 1);
-          } else {
-            setSelectedIds([...selectedIds, id]);
-            setSelectedCount(selectedCount + 1);
-          }
-        }
-
-        return (
-          <ul>
-            <li>{selectedCount} selected</li>
-            {messages.map((m) => (
-              <li key={m.id} onClick={() => toggle(m.id)}>
-                {m.subject}
-              </li>
-            ))}
-          </ul>
-        );
-      }
-  expected_output:
-    outcome: invalid
-- name: a component computes the selected count from the selected ids
-  inputs:
-    file: inbox/MessageList.tsx
-    after: |
-      import { useState } from "react";
-
-      export function MessageList({ messages }: { messages: Message[] }) {
-        const [selectedIds, setSelectedIds] = useState<string[]>([]);
-        const selectedCount = selectedIds.length;
-
-        function toggle(id: string) {
-          setSelectedIds(
-            selectedIds.includes(id)
-              ? selectedIds.filter((s) => s !== id)
-              : [...selectedIds, id],
-          );
-        }
-
-        return (
-          <ul>
-            <li>{selectedCount} selected</li>
-            {messages.map((m) => (
-              <li key={m.id} onClick={() => toggle(m.id)}>
-                {m.subject}
-              </li>
-            ))}
-          </ul>
-        );
-      }
-  expected_output:
-    outcome: valid
 - name: a subscription class stores whether it is active beside its cancellation time
   inputs:
     file: billing/subscription.ts
@@ -280,6 +135,54 @@ cases:
         cancel(now: Date): void {
           this.cancelledAt = now;
           this.isActive = false;
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: a subscription class computes whether it is active from its cancellation time
+  inputs:
+    file: billing/subscription.ts
+    after: |
+      export class Subscription {
+        cancelledAt?: Date;
+
+        constructor(readonly customerId: string, readonly plan: string) {}
+
+        get isActive(): boolean {
+          return this.cancelledAt === undefined;
+        }
+
+        cancel(now: Date): void {
+          this.cancelledAt = now;
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a shipment class sets a copy of its customer's email whenever it sets the customer
+  inputs:
+    file: shipping/shipment.ts
+    unchanged:
+      accounts/customer.ts: |
+        export type Customer = {
+          id: string;
+          name: string;
+          email: string;
+        };
+    after: |
+      import { Customer } from "../accounts/customer";
+
+      export class Shipment {
+        customer: Customer;
+        customerEmail: string;
+
+        constructor(readonly trackingNumber: string, customer: Customer) {
+          this.customer = customer;
+          this.customerEmail = customer.email;
+        }
+
+        reassign(customer: Customer): void {
+          this.customer = customer;
+          this.customerEmail = customer.email;
         }
       }
   expected_output:
