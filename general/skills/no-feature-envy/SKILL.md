@@ -1,13 +1,12 @@
 ---
 name: no-feature-envy
-description: Code outside the module that defines one of the program's own types never works out a fact about a value of that type when the only data that the code reads is that value's fields.
+description: Code outside the module that defines one of the program's own types never works out a fact about a value of that type that depends on nothing but that value's fields.
 ---
 
 # No Feature Envy
 
 Code outside the module that defines one of the program's own types never works out a
-fact about a value of that type when the only data that the code reads is that value's
-fields.
+fact about a value of that type that depends on nothing but that value's fields.
 
 ## Why
 
