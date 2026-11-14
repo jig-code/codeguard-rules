@@ -35,7 +35,7 @@ snapshots:
     - source: |-
         class ExampleBuilder {
           constructor(private readonly name: string) {}
-        
+
           build(): Example {
             return new Example(this.name);
           }
@@ -52,11 +52,11 @@ snapshots:
     - source: |-
         class ExampleBuilder {
           constructor(private readonly name: string) {}
-        
+
           initial(): string {
             return this.name.toUpperCase().slice(0, 1);
           }
-        
+
           build(): Example {
             return new Example(this.name);
           }
@@ -73,13 +73,13 @@ snapshots:
     - source: |-
         class ExampleBuilder {
           constructor(private readonly name: string) {}
-        
+
           label(suffix: string): string {
             let label = this.name;
             label += suffix;
             return label;
           }
-        
+
           build(): Example {
             return new Example(this.name);
           }
@@ -96,9 +96,9 @@ snapshots:
     - source: |-
         class ExampleBuilder {
           private created?: Example;
-        
+
           constructor(private readonly name: string) {}
-        
+
           create(): Example {
             this.created = new Example(this.name);
             return this.created;
@@ -116,9 +116,9 @@ snapshots:
     - source: |-
         class ExampleBuilder {
           private made = 0;
-        
+
           constructor(private readonly name: string) {}
-        
+
           make(): Example {
             this.made += 1;
             return new Example(this.name);
@@ -141,9 +141,9 @@ snapshots:
               this.count += 1;
             },
           };
-        
+
           constructor(private readonly name: string) {}
-        
+
           build(): Example {
             this.counter.bump();
             return new Example(this.name);
@@ -161,11 +161,11 @@ snapshots:
     - source: |-
         class ExampleBuilder {
           static defaults: string[] = [];
-        
+
           static configure(name: string): void {
             this.defaults.push(name);
           }
-        
+
           build(): Example {
             return new Example(ExampleBuilder.defaults);
           }
@@ -221,9 +221,9 @@ snapshots:
     - source: |-
         class ExampleBuilder {
           private built?: Example;
-        
+
           constructor(private readonly name: string) {}
-        
+
           build(): Example {
             this.built = new Example(this.name);
             return this.built;

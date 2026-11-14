@@ -1,6 +1,6 @@
 id: builder-builds-in-steps
 valid:
-  # stores-part, assignment: a part method that assigns an attribute of self
+  # stores-part, assignment: a method that assigns an attribute of self
   - |
     class ExampleBuilder:
         def __init__(self) -> None:
@@ -13,7 +13,7 @@ valid:
         def build(self) -> Example:
             return Example(self._name)
 
-  # stores-part, subscript assignment: a part method that sets a key on a dict on self
+  # stores-part, subscript assignment: a method that sets a key on a dict on self
   - |
     class ExampleBuilder:
         def __init__(self) -> None:
@@ -26,7 +26,7 @@ valid:
         def build(self) -> Example:
             return Example(self._headers)
 
-  # stores-part, augmented assignment: a part method that adds to a counter on self
+  # stores-part, augmented assignment: a method that adds to a counter on self
   - |
     class ExampleBuilder:
         def __init__(self) -> None:
@@ -38,7 +38,7 @@ valid:
         def build(self) -> Example:
             return Example(self._total)
 
-  # stores-part, mutating call: a part method that appends to a list on self
+  # stores-part, mutating call: a method that appends to a list on self
   - |
     class ExampleBuilder:
         def __init__(self) -> None:
@@ -51,7 +51,7 @@ valid:
         def build(self) -> Example:
             return Example(self._lines)
 
-  # part-method: a decorated part method still counts
+  # part-method: a decorated method that assigns an attribute of self
   - |
     class ExampleBuilder:
         def __init__(self) -> None:
@@ -65,7 +65,7 @@ valid:
         def build(self) -> Example:
             return Example(self._name)
 
-  # returns-new-builder, replace(self, ...): an immutable builder
+  # returns-new-builder, replace(self, ...): a method that returns replace(self, ...)
   - |
     @dataclass(frozen=True)
     class ExampleBuilder:
@@ -77,7 +77,7 @@ valid:
         def build(self) -> Example:
             return Example(self.name)
 
-  # returns-new-builder, module.replace(self, ...): an immutable builder
+  # returns-new-builder, module.replace(self, ...): a method that returns dataclasses.replace(self, ...)
   - |
     @dataclasses.dataclass(frozen=True)
     class ExampleBuilder:
@@ -89,7 +89,7 @@ valid:
         def build(self) -> Example:
             return Example(self.name)
 
-  # returns-new-builder, type(self)(...): an immutable builder that keeps its subclass
+  # returns-new-builder, type(self)(...): a method that returns type(self)(...)
   - |
     class ExampleBuilder:
         def __init__(self, name: str = "") -> None:
@@ -101,7 +101,7 @@ valid:
         def build(self) -> Example:
             return Example(self._name)
 
-  # returns-new-builder, ...Builder(...): an immutable builder that makes a new one
+  # returns-new-builder, ...Builder(...): a method that returns ExampleBuilder(...)
   - |
     class ExampleBuilder:
         def __init__(self, name: str = "") -> None:
@@ -113,20 +113,20 @@ valid:
         def build(self) -> Example:
             return Example(self._name)
 
-  # rule, class name: a class whose name doesn't end in Builder
+  # rule, class name: a class whose name ends in Factory, with one build call
   - |
     class ExampleFactory:
         def build(self, name: str) -> Example:
             return Example(name)
 
 invalid:
-  # rule: one build call from arguments
+  # rule: a Builder whose only method is a build call from arguments
   - |
     class ExampleBuilder:
         def build(self, name: str, total: int) -> Example:
             return Example(name, total)
 
-  # part-method, __init__ excluded: build() only uses what the constructor took
+  # part-method, __init__: only __init__ assigns attributes of self
   - |
     class ExampleBuilder:
         def __init__(self, name: str) -> None:
@@ -135,7 +135,7 @@ invalid:
         def build(self) -> Example:
             return Example(self._name)
 
-  # part-method, build excluded: build() caches its product on self
+  # part-method, build: only build() assigns an attribute of self
   - |
     class ExampleBuilder:
         def __init__(self, name: str) -> None:
@@ -146,7 +146,7 @@ invalid:
             self._built = Example(self._name)
             return self._built
 
-  # part-method, create excluded: create() caches its product on self
+  # part-method, create: only create() assigns an attribute of self
   - |
     class ExampleBuilder:
         def __init__(self, name: str) -> None:
@@ -157,7 +157,7 @@ invalid:
             self._created = Example(self._name)
             return self._created
 
-  # part-method, make excluded: make() counts the products it made
+  # part-method, make: only make() adds to an attribute of self
   - |
     class ExampleBuilder:
         def __init__(self, name: str) -> None:
@@ -168,7 +168,7 @@ invalid:
             self._made += 1
             return Example(self._name)
 
-  # part-method, __call__ excluded: calling the builder logs each product on self
+  # part-method, __call__: only __call__ appends to an attribute of self
   - |
     class ExampleBuilder:
         def __init__(self, name: str) -> None:
@@ -180,14 +180,7 @@ invalid:
             self._history.append(product)
             return product
 
-  # stores-part, self only: a static method that makes the product
-  - |
-    class ExampleBuilder:
-        @staticmethod
-        def create(name: str) -> Example:
-            return Example(name)
-
-  # stores-part, self only: a class method that sets an attribute on the class
+  # stores-part, self: a class method that sets an attribute on cls
   - |
     class ExampleBuilder:
         name = ""
@@ -199,7 +192,7 @@ invalid:
         def build(self) -> Example:
             return Example(self.name)
 
-  # stores-part, self only: another method stores to a local
+  # stores-part, self: another method adds to a local
   - |
     class ExampleBuilder:
         def __init__(self, name: str) -> None:

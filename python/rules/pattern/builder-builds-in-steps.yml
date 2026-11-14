@@ -7,15 +7,11 @@ note: |
   on the instance, or return a new builder holding them, then a separate call such as
   build() that returns the product. This class makes its product in one call. Give it
   methods that store the parts, or name it for what it makes (a factory, or a function
-  such as make_invoice). A part method is any method other than __init__, build, create,
-  make or __call__ that sets, adds to or updates an attribute of self, or returns a new
-  builder (replace(self, ...), type(self)(...) or a ...Builder(...) call).
+  such as make_invoice).
 metadata:
-  why: |
-    A builder that makes its product in one call is a constructor with a misleading name.
-    The rule matches a class by its name because here the name is the convention: only a
-    class named ...Builder promises step-by-step assembly, so only such a class can break
-    that promise.
+  why: >-
+    A class named ...Builder promises that its product is assembled step by step; one that
+    makes its product in one call is a constructor under a misleading name.
 utils:
   stores-part:
     any:

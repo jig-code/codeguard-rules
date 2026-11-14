@@ -85,7 +85,7 @@ code skip test files:
 | Rule | Checks |
 |---|---|
 | `all-only-in-init` | `__all__` only in `__init__.py` or a `.pyi` stub |
-| `builder-pattern` | Builder pattern: a class named `...Builder` has a method that stores a part of its product on the instance, before a separate call returns it |
+| `builder-pattern` | Builder builds in steps: a class named `...Builder` has a method that stores a part of its product on the instance, or returns a new builder that holds the part, before a separate call returns the product |
 | `no-assert-in-fixtures` | No `assert` inside a pytest fixture |
 | `no-asserting-action-helpers` | No test helper that asserts and then returns a call |
 | `no-clock-moves-in-fixtures` | No sleep or clock tick inside a pytest fixture |
@@ -140,7 +140,7 @@ Pattern rules (ast-grep). They skip test files:
 
 | Rule | Checks |
 |---|---|
-| `builder-pattern` | Builder pattern: a class named `...Builder` has a method that stores a part of its product on the instance, before a separate call returns it |
+| `builder-pattern` | Builder builds in steps: a class named `...Builder` has a method that stores a part of its product on the instance, or returns a new builder that holds the part, before a separate call returns the product |
 
 ## Use a ruleset
 
