@@ -7,7 +7,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 env:
-  CODEGUARD_REF: 003f79cde5f8a01bf014a8c4dfe53d72915b875c
+  CODEGUARD_REF: 7eda0308551765d39707a02ef09a02ade44ab863
 jobs:
   test:
     runs-on: ubuntu-latest
