@@ -47,7 +47,7 @@ cases:
           return redirect("order-detail", order_id=order.id)
   expected_output:
     outcome: valid
-- name: a signal handler queues a dump of the product for reindexing
+- name: a signal handler queues a dict of all the product's fields for reindexing
   inputs:
     file: catalog/signals.py
     after: |
@@ -62,6 +62,21 @@ cases:
       @receiver(post_save, sender=Product)
       def queue_reindex(sender: type[Product], instance: Product, **kwargs: object) -> None:
           reindex_product.delay(model_to_dict(instance))
+  expected_output:
+    outcome: invalid
+- name: a receipt task takes the order model as its parameter
+  inputs:
+    file: orders/tasks.py
+    after: |
+      from celery import shared_task
+
+      from orders.emails import email_receipt
+      from orders.models import Order
+
+
+      @shared_task
+      def send_receipt(order: Order) -> None:
+          email_receipt(order)
   expected_output:
     outcome: invalid
 - name: a service publishes an event with the order's id and total
@@ -103,7 +118,7 @@ cases:
           return f"{year}-{sequence:06d}"
   expected_output:
     outcome: skipped
-- name: a handler queues the whole order loaded from Prisma
+- name: a handler queues the order that Prisma returns
   inputs:
     file: orders/complete.ts
     after: |
@@ -119,6 +134,34 @@ cases:
         });
         await receipts.add("send-receipt", { order });
       }
+  expected_output:
+    outcome: invalid
+- name: a handler queues a spread of all the product's fields for reindexing
+  inputs:
+    file: catalog/reindex.ts
+    after: |
+      import { Queue } from "bullmq";
+      import { prisma } from "../db";
+
+      const search = new Queue("search");
+
+      export async function queueReindex(productId: string): Promise<void> {
+        const product = await prisma.product.findUniqueOrThrow({ where: { id: productId } });
+        await search.add("reindex", { ...product });
+      }
+  expected_output:
+    outcome: invalid
+- name: a receipt worker takes the order entity in its job data
+  inputs:
+    file: orders/receiptWorker.ts
+    after: |
+      import { Job, Worker } from "bullmq";
+      import { Order } from "@prisma/client";
+      import { emailReceipt } from "./emails";
+
+      export const receiptWorker = new Worker("receipts", async (job: Job<{ order: Order }>) => {
+        await emailReceipt(job.data.order);
+      });
   expected_output:
     outcome: invalid
 - name: a handler queues the order's id

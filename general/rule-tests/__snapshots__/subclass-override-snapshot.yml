@@ -1,5 +1,28 @@
 id: subclass-override
 snapshots:
+  "class ABTest(Experiment):\n    def variant(self, user):\n        return self.variants[0]\n":
+    labels:
+    - source: |-
+        def variant(self, user):
+                return self.variants[0]
+      style: primary
+      start: 30
+      end: 86
+    - source: Experiment
+      style: secondary
+      start: 13
+      end: 23
+    - source: (Experiment)
+      style: secondary
+      start: 12
+      end: 24
+    - source: |-
+        class ABTest(Experiment):
+            def variant(self, user):
+                return self.variants[0]
+      style: secondary
+      start: 0
+      end: 86
   "class CheckingFakeQueue(FakeQueue):\n    def enqueue(self, name, message):\n        assert message\n":
     labels:
     - source: |-
@@ -23,6 +46,29 @@ snapshots:
       style: secondary
       start: 0
       end: 96
+  "class Exporter(Base, metaclass=ABCMeta):\n    def export(self, rows):\n        return rows\n":
+    labels:
+    - source: |-
+        def export(self, rows):
+                return rows
+      style: primary
+      start: 45
+      end: 88
+    - source: Base
+      style: secondary
+      start: 15
+      end: 19
+    - source: (Base, metaclass=ABCMeta)
+      style: secondary
+      start: 14
+      end: 39
+    - source: |-
+        class Exporter(Base, metaclass=ABCMeta):
+            def export(self, rows):
+                return rows
+      style: secondary
+      start: 0
+      end: 88
   "class FailingClient(FakeClient):\n    async def fetch(self, path):\n        raise TimeoutError\n":
     labels:
     - source: |-
@@ -78,10 +124,10 @@ snapshots:
       style: primary
       start: 45
       end: 98
-    - source: fakes
+    - source: fakes.FakeMailer
       style: secondary
       start: 22
-      end: 27
+      end: 38
     - source: (fakes.FakeMailer)
       style: secondary
       start: 21
@@ -118,3 +164,49 @@ snapshots:
       style: secondary
       start: 0
       end: 104
+  "class Testimonial(Card):\n    def render(self):\n        return self.quote\n":
+    labels:
+    - source: |-
+        def render(self):
+                return self.quote
+      style: primary
+      start: 29
+      end: 72
+    - source: Card
+      style: secondary
+      start: 18
+      end: 22
+    - source: (Card)
+      style: secondary
+      start: 17
+      end: 23
+    - source: |-
+        class Testimonial(Card):
+            def render(self):
+                return self.quote
+      style: secondary
+      start: 0
+      end: 72
+  "class TextCache(Cache[str]):\n    def get(self, key):\n        return self.entries[key]\n":
+    labels:
+    - source: |-
+        def get(self, key):
+                return self.entries[key]
+      style: primary
+      start: 33
+      end: 85
+    - source: Cache[str]
+      style: secondary
+      start: 16
+      end: 26
+    - source: (Cache[str])
+      style: secondary
+      start: 15
+      end: 27
+    - source: |-
+        class TextCache(Cache[str]):
+            def get(self, key):
+                return self.entries[key]
+      style: secondary
+      start: 0
+      end: 85
