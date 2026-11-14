@@ -1,0 +1,142 @@
+id: optional-field
+snapshots:
+  "class Parcel(TypedDict):\n    note: NotRequired[str]\n":
+    labels:
+    - source: "note: NotRequired[str]"
+      style: primary
+      start: 29
+      end: 51
+    - source: NotRequired[str]
+      style: secondary
+      start: 35
+      end: 51
+    - source: |-
+        class Parcel(TypedDict):
+            note: NotRequired[str]
+      style: secondary
+      start: 0
+      end: 51
+    - source: "note: NotRequired[str]"
+      style: secondary
+      start: 29
+      end: 51
+    - source: "note: NotRequired[str]"
+      style: secondary
+      start: 29
+      end: 51
+  "class Parcel(TypedDict, total=False):\n    note: str\n":
+    labels:
+    - source: total=False
+      style: primary
+      start: 24
+      end: 35
+    - source: |-
+        class Parcel(TypedDict, total=False):
+            note: str
+      style: secondary
+      start: 0
+      end: 51
+    - source: (TypedDict, total=False)
+      style: secondary
+      start: 12
+      end: 36
+  "class Parcel:\n    def __init__(self):\n        self.note = None\n":
+    labels:
+    - source: self.note = None
+      style: primary
+      start: 46
+      end: 62
+    - source: None
+      style: secondary
+      start: 58
+      end: 62
+    - source: self.note
+      style: secondary
+      start: 46
+      end: 55
+  "class Parcel:\n    def __init__(self):\n        self.note: str | None = None\n":
+    labels:
+    - source: "self.note: str | None = None"
+      style: primary
+      start: 46
+      end: 74
+    - source: str | None
+      style: secondary
+      start: 57
+      end: 67
+    - source: self.note
+      style: secondary
+      start: 46
+      end: 55
+  "class Parcel:\n    note = None\n":
+    labels:
+    - source: note = None
+      style: primary
+      start: 18
+      end: 29
+    - source: None
+      style: secondary
+      start: 25
+      end: 29
+    - source: |-
+        class Parcel:
+            note = None
+      style: secondary
+      start: 0
+      end: 29
+    - source: note = None
+      style: secondary
+      start: 18
+      end: 29
+    - source: note = None
+      style: secondary
+      start: 18
+      end: 29
+  "class Parcel:\n    note: Optional[str]\n":
+    labels:
+    - source: "note: Optional[str]"
+      style: primary
+      start: 18
+      end: 37
+    - source: Optional[str]
+      style: secondary
+      start: 24
+      end: 37
+    - source: |-
+        class Parcel:
+            note: Optional[str]
+      style: secondary
+      start: 0
+      end: 37
+    - source: "note: Optional[str]"
+      style: secondary
+      start: 18
+      end: 37
+    - source: "note: Optional[str]"
+      style: secondary
+      start: 18
+      end: 37
+  "class Parcel:\n    note: str | None = None\n":
+    labels:
+    - source: "note: str | None = None"
+      style: primary
+      start: 18
+      end: 41
+    - source: str | None
+      style: secondary
+      start: 24
+      end: 34
+    - source: |-
+        class Parcel:
+            note: str | None = None
+      style: secondary
+      start: 0
+      end: 41
+    - source: "note: str | None = None"
+      style: secondary
+      start: 18
+      end: 41
+    - source: "note: str | None = None"
+      style: secondary
+      start: 18
+      end: 41

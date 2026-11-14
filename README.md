@@ -41,6 +41,7 @@ the languages it runs on.
 | `liskov-substitution` | Liskov substitution: a subclass's method never breaks a promise that the method of the same name in the base class or interface makes, in the base method's signature, body or documentation, about which arguments the base method accepts and uses, what the base method returns, which errors the base method raises or which changes the base method makes that callers of the base class or interface can see | Not yet |
 | `no-shotgun-surgery` | No shotgun surgery: a type's public method never itself does a job to something the program models when a public method of another type, found by searching the program for the name of that thing, already does that same job to the same thing | Not yet |
 | `construction-in-its-home` | Construction in its home: a function never decides a value that a new instance of a data type the program declares holds when the function also does work other than building that instance | Not yet |
+| `make-illegal-states-unrepresentable` | Make illegal states unrepresentable: a type whose instances exist only in the program's memory never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
