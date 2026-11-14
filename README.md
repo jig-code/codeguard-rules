@@ -23,37 +23,30 @@ name, and [basedpyright](https://docs.basedpyright.com) with these rules on:
 
 ### `general`
 
-Architecture rules for any language. Most are judge rules. A judge rule's `SKILL.md`
-states the convention in no language's terms, and a supplement beside it for each
-language, `python.md` and `typescript.md`, gives that language's forms and examples. The judge
+Architecture rules for any language. Each is one judge rule: its `SKILL.md` states the
+convention in no language's terms, and a supplement beside it for each language,
+`python.md` and `typescript.md`, gives that language's forms and examples. The judge
 gets the skill and the supplement for the file's language. Its binding's `paths` name
 the languages it runs on.
 
 | Rule | Checks | Validated |
 |---|---|---|
 | `dry` | Don't Repeat Yourself: code the change adds doesn't state a computation, process, set or outside shape again when the file or a module it imports already states it | Not yet |
-| `domain-logic-separate-from-io` | Domain logic separate from I/O: a domain decision is made in code that does no I/O, so a function the change adds or edits doesn't decide and read or change state outside the program in the same body | Not yet |
-| `single-responsibility` | Single responsibility: a function or class has one reason to change, so a function's own body doesn't hold the details of two concerns (business rules, an outside system, a data format) and a class's methods don't serve two | Not yet |
-| `no-repeated-switches` | No repeated switches: behaviour chosen by which kind a value is (its class, or an enum member or tag naming its variant) is chosen in one place, unless the type checker proves every place covers every kind | Not yet |
-| `no-feature-envy` | No feature envy: a domain answer computed from one type's data lives in that type's module, so code elsewhere doesn't work an answer out from one value's fields alone | Not yet |
-| `fail-fast` | Fail fast: a failure, missing data or an impossible state is reported where it's found, so code the change adds doesn't swallow an error, default data that should exist, clamp an impossible value or drop the items that failed | Not yet |
-| `no-shared-mutable-state` | No shared mutable state: data belonging to one call or use is kept where only that call or use sees it, so code the change adds doesn't keep one call's data in module-level state or store each use's results on a shared instance | Not yet |
-| `liskov-substitution` | Liskov substitution: a subclass keeps every promise its base class makes, so an override the change adds doesn't raise where the base doesn't, ignore an argument, accept or return less, or stub out the base's work | Not yet |
-| `no-shotgun-surgery` | No shotgun surgery: one type owns each job on a concept, so a type the change adds or edits doesn't do a job another type already does to the same concept | Not yet |
-| `construction-in-its-home` | Construction in its home: what a new instance holds is decided by its type, its module, its factory or its source's mapper, so code the change adds doesn't build a program type from a source elsewhere or supply a default for one of its fields | Not yet |
-| `make-illegal-states-unrepresentable` | Make illegal states unrepresentable: a type's fields can't hold a combination the domain forbids, so a type the change adds or edits doesn't keep optional fields that must be set for some values of its status or kind field and empty for others | Not yet |
-| `composition-over-inheritance` | Composition over inheritance: a class inherits only from a type it is a kind of, so a class the change adds doesn't inherit from a program class just to reuse its code | Not yet |
+| `domain-logic-separate-from-io` | Domain logic separate from I/O: a function whose own code applies business rules never reads or changes anything outside the program's memory, directly or through a function it calls | Not yet |
+| `single-responsibility` | Single responsibility: a function or class never holds code that belongs to two different concerns (one set of business rules, one outside system, one file or message format), counting only the code written in a function's own body | Not yet |
+| `no-repeated-switches` | No repeated switches: code never chooses behaviour by which kind a value is (its class, or an enum member or tag naming its variant) in a second place over the same kinds, in the file or a module it imports, when the type checker would accept either place with a kind that has no branch or table entry of its own | Not yet |
+| `no-feature-envy` | No feature envy: code outside the module that defines one of the program's types never works out an answer the program's rules give about one value of that type from two or more of its fields alone, with no other program type and no constant or table of its own module | Not yet |
+| `fail-fast` | Fail fast: code never turns an error an operation reports, data the program requires but finds missing, or a state the program's own rules make impossible into a result with which the work carries on as if it had not occurred | Not yet |
+| `no-shared-mutable-state` | Call data stays local: code never keeps the input, working values or results that only one call, request or job needs in state that every call, request or job sees | Not yet |
+| `liskov-substitution` | Liskov substitution: a subclass's method never breaks a promise that the base method of the same name makes in its signature, body or documentation about the arguments it accepts and uses, what it returns, the errors it raises or the work it does | Not yet |
+| `no-shotgun-surgery` | No shotgun surgery: a type's public method never itself does a job to something the program models when a public method of another type already does that same job to the same thing | Not yet |
+| `construction-in-its-home` | Construction in its home: a function that does work besides building never itself decides a value a new instance of a program data type holds, whether read off another object, translated from outside data or picked | Not yet |
+| `make-illegal-states-unrepresentable` | Make illegal states unrepresentable: a type never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type | Not yet |
+| `composition-over-inheritance` | Composition over inheritance: a class never inherits from another class whose job is different from the job of the inheriting class | Not yet |
 | `single-source-of-truth` | Single source of truth: a class doesn't store a value it can derive from one other value it holds, so a field the change adds doesn't repeat what another field, or a held object's field, already says | Not yet |
 
-Pattern rules (ast-grep), one per language where a convention's form is syntax. They
-start as `warning`s and skip test files:
-
-| Rule | Checks |
-|---|---|
-| `no-middle-man-python`, `no-middle-man-typescript` | No middle man: a class without a base doesn't forward every method to the same collaborator |
-
-Each judge rule passes 20 of 20 eval runs on Claude before it ships, and CI's 3 runs
-before it merges. One check follows, and doesn't hold up the next rule:
+Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
+runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
 
 - **Validated**: its findings on real changes, read from codeguard's Logfire traces,
   show it flags what it should. Until then it's a `warning`: its findings print but don't
@@ -88,12 +81,14 @@ code skip test files:
 | `no-field-tuple-asserts` | Don't assert a tuple of one value's fields; compare the whole object |
 | `no-len-asserts` | Don't assert only a collection's length |
 | `no-manual-kwargs-check` | No hand-written `TypeError` for unexpected `**kwargs` keys |
+| `no-middle-man` | No middle man: a class without a base doesn't forward every method to the same collaborator |
 | `no-normalized-asserts` | No `replace`, `model_copy` or `model_dump(exclude=...)` of the result inside an assert |
 | `no-pop-from-kwargs` | No `.pop()` from a `**kwargs` parameter in test code |
 | `no-sleep-in-async-tests` | No `sleep` in an `async def test_…`; wait on an event |
 | `no-tuple-fixtures` | A pytest fixture returns or yields one object, never a tuple |
 | `one-form-per-input` | No parameter reconciled from another parameter when missing (`if index is None: index = build(catalog)`) |
 | `typed-dispatch-registries` | A class takes a registry, not a `dict[str, Callable]` |
+| `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
 
 The `python` ruleset has no judge rules yet. Its judge rules, and some pattern rules, are drafts in
 `drafts/python/`, which codeguard doesn't load. A draft moves into a ruleset one rule at a time, in the order in
@@ -105,9 +100,9 @@ conditions.
 
 Reviews and evals both judge a rule with its binding's `provider` and `model`, and a
 project can't override them, so a rule is only ever judged by the model its evals pass
-on. The bindings here leave both out, so codeguard's default, `claude-sonnet-5-5`
-through the `claude` CLI, judges them. To move a rule to another model, set them in its
-binding and pass its evals again. [drafts/README.md](drafts/README.md) lists them.
+on. The bindings here set `provider: gemini`, so Gemini on Vertex AI judges them, in
+reviews, in local `task eval` and in CI: `dry` with `gemini-4-argon`. To move a
+rule to another model, set them in its binding and pass its evals again. [drafts/README.md](drafts/README.md) lists them.
 
 A judge rule runs on a changed file only when a changed line falls inside code it could
 flag. Its binding's `triggers` names that code: a change kind built into codeguard, such
@@ -163,22 +158,29 @@ codeguard rejects any other entry in a ruleset directory.
 ```sh
 task test                # codeguard test: pattern rule and gate tests, eval triggers
 task test -- -U          # the same, regenerating snapshots
-task eval                # codeguard eval: judge each judge rule eval case; calls Claude
+task eval                # codeguard eval: judge each judge rule eval case with its binding's model (Gemini)
 ```
 
 `CODEGUARD=<path>` runs another codeguard build, such as a checkout's `.venv/bin/codeguard`.
+`task eval` calls Gemini on Vertex AI, so it needs Google Cloud Application Default
+Credentials with the Vertex AI User role, `GOOGLE_CLOUD_PROJECT`, and
+`GOOGLE_CLOUD_LOCATION=global`.
 
-A Claude Code session here installs codeguard at the release CI pins (`CODEGUARD_REF`
+A Claude Code session here installs codeguard at the commit CI pins (`CODEGUARD_REF`
 in `.github/workflows/ci.yaml`) when it starts, through `.claude/hooks/session-start.sh`,
-so local runs match CI. Moving to a new codeguard release is that one line.
+so local runs match CI. Moving to a new codeguard commit is that one line.
 
 CI judges only the rules a change can affect: a rule whose skill, binding, eval or a
 trigger's gate changed, or every rule when `codeguard-package.yaml`, the workflow or
 `scripts/affected_judge_rules.py` changed. That script prints the affected rules, and
 CI passes each to `codeguard eval --rule`. The `eval` job runs once per provider in its
-matrix, `claude-cli`. Gemini is out of the matrix until codeguard's Gemini judge
-is faster and steadier; its auth step stays, so adding `gemini` back turns it on. Locally, `codeguard eval --rule <id> --repeat 20` judges one
-rule, and `--provider gemini` judges it with Gemini instead of its binding's model.
+matrix, `gemini` and `claude-cli`. The `gemini` leg judges each rule with its binding's
+provider and model, 10 judge calls at once (`judge.calls_at_once` in
+`.github/codeguard-gemini-eval.yaml`, which the leg passes as `CODEGUARD_CONFIG`). The
+`claude-cli` leg passes `--provider claude-cli`, so it judges every rule with Claude.
+Locally, `codeguard eval --rule <id> --repeat 20` judges one rule with its binding's
+model, 2 calls at once unless `CODEGUARD_CONFIG` names that file, and
+`--provider claude-cli` judges it with Claude instead.
 
 [Which test to write](https://github.com/jig-code/codeguard#which-test-to-write)
 says which test covers which change. Every judge rule has a rule eval with `invalid`,
@@ -191,12 +193,17 @@ means the rule's criterion or the case is unclear. Fix the criterion or the case
 re-run or loosen the gate. [CLAUDE.md](CLAUDE.md) has the details.
 
 The rules are tested only by their own cases, through codeguard, so they are shown
-accurate as codeguard runs them. CI's `test` job runs `codeguard test`, then its `eval`
+accurate as codeguard runs them. CI's `test` job runs `codeguard test`, then, on a pull request, its `eval`
 job runs `codeguard eval --repeat 3` with each provider; a case that fails or isn't
-judged in any run fails the build. The `eval` job needs, in the repository's Actions
-settings, the secret `CLAUDE_CODE_OAUTH_TOKEN` for Claude, and for Gemini the secret
-`GOOGLE_CREDENTIALS` (a service account key with the Vertex AI User role) and the
-variable `GOOGLE_CLOUD_PROJECT`. codeguard's README, under "Judge with Gemini on Google
+judged in any run fails the build. Pushes to `main` run only `test`. The `claude-cli`
+leg runs Claude Haiku 5.5 on Amazon Bedrock in `us-west-2`: the job signs in to AWS
+with GitHub's OIDC token by assuming the role in the repository variable
+`CLAUDE_AWS_ROLE`, and judges with the Haiku 5.5 inference profile in the variable
+`BEDROCK_MODEL`, passed to `codeguard eval --model`. The `gemini` leg runs each
+binding's model on Vertex AI in the `global` location, the only one that serves
+`gemini-4-argon`: the job signs in with `google-github-actions/auth` using the secret
+`GOOGLE_CREDENTIALS` (a service account key with the Vertex AI User role), and bills
+the project in the variable `GOOGLE_CLOUD_PROJECT`. codeguard's README, under "Judge with Gemini on Google
 Cloud", has the setup.
-CI runs the codeguard release in `CODEGUARD_REF` in `.github/workflows/ci.yaml`, so
-moving to a new release is a change here, which judges every rule.
+CI runs the codeguard commit in `CODEGUARD_REF` in `.github/workflows/ci.yaml`, so
+moving to a new commit is a change here, which judges every rule.
