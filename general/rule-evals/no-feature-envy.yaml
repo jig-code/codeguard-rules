@@ -301,7 +301,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a VAT function looks up a sale's country in the tax module's rate table
+- name: a VAT function combines a sale's gross amount with the VAT rate it is given
   inputs:
     file: tax/vat.ts
     unchanged:
@@ -316,12 +316,10 @@ cases:
           country: Country;
         }
     after: |
-      import type { Country, Sale } from "../sales/sale";
+      import type { Sale } from "../sales/sale";
 
-      const VAT_RATES: Record<Country, number> = { DE: 0.19, FR: 0.2, NL: 0.21 };
-
-      export function vatCents(sale: Sale): number {
-        return Math.round(sale.grossCents * VAT_RATES[sale.country]);
+      export function vatCents(sale: Sale, vatRate: number): number {
+        return Math.round(sale.grossCents * vatRate);
       }
   expected_output:
     outcome: valid
