@@ -250,7 +250,7 @@ cases:
           return amount
   expected_output:
     outcome: valid
-- name: a suspension check loads a member, applies the suspension rules and saves the member
+- name: a suspension module decides in one function and loads and saves the member in another
   inputs:
     file: library/suspensions.py
     unchanged:
@@ -280,13 +280,17 @@ cases:
     after: |
       from datetime import date
 
-      from library.members import MemberRepository
+      from library.members import Member, MemberRepository
+
+
+      def should_suspend(member: Member, today: date) -> bool:
+          overdue = [loan for loan in member.loans if loan.due < today]
+          return len(overdue) >= 3 or any((today - loan.due).days > 30 for loan in overdue)
 
 
       def suspend_if_overdue(members: MemberRepository, member_id: str, today: date) -> None:
           member = members.get(member_id)
-          overdue = [loan for loan in member.loans if loan.due < today]
-          if len(overdue) >= 3 or any((today - loan.due).days > 30 for loan in overdue):
+          if should_suspend(member, today):
               member.suspended = True
               members.save(member)
   expected_output:
@@ -619,7 +623,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a pause function loads a subscription, applies the pause rules and saves the subscription
+- name: a pause module decides in one function and loads and saves the subscription in another
   inputs:
     file: src/billing/pauseSubscription.ts
     unchanged:
@@ -636,13 +640,17 @@ cases:
           save(subscription: Subscription): Promise<void>;
         }
     after: |
-      import type { SubscriptionRepository } from "./subscriptions";
+      import type { Subscription, SubscriptionRepository } from "./subscriptions";
 
       const MAX_FAILED_CHARGES = 3;
 
+      export function shouldPause(subscription: Subscription): boolean {
+        return subscription.status === "active" && subscription.failedCharges >= MAX_FAILED_CHARGES;
+      }
+
       export async function pauseAfterFailedCharges(subscriptions: SubscriptionRepository, id: string): Promise<void> {
         const subscription = await subscriptions.find(id);
-        if (subscription.status === "active" && subscription.failedCharges >= MAX_FAILED_CHARGES) {
+        if (shouldPause(subscription)) {
           await subscriptions.save({ ...subscription, status: "paused" });
         }
       }
