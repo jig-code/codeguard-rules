@@ -1,7 +1,9 @@
 id: function-name
 snapshots:
-  "async def submit(order):\n    return order\n":
-    labels:
+  ? |
+    async def submit(order):
+        return order
+  : labels:
     - source: submit
       style: primary
       start: 10
@@ -12,8 +14,11 @@ snapshots:
       style: secondary
       start: 0
       end: 41
-  "class Order:\n    def submit(self):\n        pass\n":
-    labels:
+  ? |
+    class Order:
+        def submit(self):
+            pass
+  : labels:
     - source: submit
       style: primary
       start: 21
@@ -24,8 +29,10 @@ snapshots:
       style: secondary
       start: 17
       end: 47
-  "def submit(order):\n    return order\n":
-    labels:
+  ? |
+    def submit(order):
+        return order
+  : labels:
     - source: submit
       style: primary
       start: 4
