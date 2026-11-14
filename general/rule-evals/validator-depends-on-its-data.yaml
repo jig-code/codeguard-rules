@@ -80,7 +80,7 @@ cases:
               return self
   expected_output:
     outcome: valid
-- name: a dataclass checks the product exists in the database after it is built
+- name: a dataclass checks the product exists in the database as it is created
   inputs:
     file: cart/lines.py
     after: |
@@ -101,23 +101,24 @@ cases:
                   raise ValueError(f"no active product {self.sku}")
   expected_output:
     outcome: invalid
-- name: a Django form checks the email isn't already registered
+- name: a model's validation method checks no other active coupon uses the same code
   inputs:
-    file: accounts/forms.py
+    file: promotions/models.py
     after: |
-      from django import forms
-      from django.contrib.auth import get_user_model
+      from django.core.exceptions import ValidationError
+      from django.db import models
 
 
-      class SignupForm(forms.Form):
-          email = forms.EmailField()
-          password = forms.CharField(widget=forms.PasswordInput)
+      class Coupon(models.Model):
+          code = models.CharField(max_length=20)
+          active = models.BooleanField(default=True)
 
-          def clean_email(self) -> str:
-              email = self.cleaned_data["email"].lower()
-              if get_user_model().objects.filter(email=email).exists():
-                  raise forms.ValidationError("an account with this email already exists")
-              return email
+          def clean(self) -> None:
+              if not self.active:
+                  return
+              clashes = Coupon.objects.filter(code__iexact=self.code, active=True).exclude(pk=self.pk)
+              if clashes.exists():
+                  raise ValidationError({"code": "an active coupon already uses this code"})
   expected_output:
     outcome: valid
 - name: a function rounds a price
