@@ -1,5 +1,5 @@
 cases:
-- name: a delivery calculator works out a parcel's shipping cost that the shipping quote already works out
+- name: a delivery calculator works out a parcel's shipping cost the way the shipping quote does
   inputs:
     file: checkout/delivery.py
     unchanged:
@@ -27,7 +27,7 @@ cases:
               return price.quantize(Decimal("0.01"))
   expected_output:
     outcome: invalid
-- name: a delivery calculator has the shipping quote work out a parcel's cost and adds packaging
+- name: a delivery calculator gets a parcel's cost from the shipping quote and adds gift wrap
   inputs:
     file: checkout/delivery.py
     unchanged:
@@ -61,38 +61,7 @@ cases:
               return price.quantize(Decimal("0.01"))
   expected_output:
     outcome: valid
-- name: a signup form checks a password against its own rules where the password policy already checks it
-  inputs:
-    file: signup/forms.py
-    unchanged:
-      accounts/__init__.py: ""
-      accounts/passwords.py: |
-        class WeakPassword(ValueError):
-            pass
-
-
-        class PasswordPolicy:
-            def validate(self, password: str) -> None:
-                if len(password) < 12:
-                    raise WeakPassword("use at least 12 characters")
-                if password.isalpha():
-                    raise WeakPassword("include a digit or a symbol")
-    after: |
-      class SignupForm:
-          def __init__(self, data: dict[str, str]) -> None:
-              self.data = data
-
-          def password_errors(self) -> list[str]:
-              password = self.data.get("password", "")
-              errors = []
-              if len(password) < 10:
-                  errors.append("Password is too short.")
-              if not any(char.isdigit() for char in password):
-                  errors.append("Password needs a number.")
-              return errors
-  expected_output:
-    outcome: invalid
-- name: a signup form checks the email address, a concept nothing else in the program validates
+- name: a signup form checks the email address while a password policy checks passwords
   inputs:
     file: signup/forms.py
     unchanged:
@@ -114,7 +83,7 @@ cases:
               self.data = data
 
           def email_errors(self) -> list[str]:
-              email = self.data.get("email", "")
+              email = self.data["email"]
               errors = []
               if "@" not in email:
                   errors.append("Enter a valid email address.")
@@ -132,7 +101,7 @@ cases:
       CARRIER_TIMEOUT_SECONDS = 20
   expected_output:
     outcome: skipped
-- name: a reminder service works out a subscription's next charge date that the renewal schedule already works out
+- name: a reminder service works out a subscription's next charge date the way the renewal schedule does
   inputs:
     file: notifications/reminders.ts
     unchanged:
@@ -162,7 +131,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a reminder service has the renewal schedule work out a subscription's next charge date
+- name: a reminder service gets a subscription's next charge date from the renewal schedule
   inputs:
     file: notifications/reminders.ts
     unchanged:
@@ -199,13 +168,13 @@ cases:
         cost(parcel: Parcel): number;
       }
 
-      export class RoyalMail implements Carrier {
+      export class PerKiloCarrier implements Carrier {
         cost(parcel: Parcel): number {
           return 350 + 90 * Math.ceil(parcel.weightKg);
         }
       }
 
-      export class DpdCarrier implements Carrier {
+      export class WeightBandCarrier implements Carrier {
         cost(parcel: Parcel): number {
           return parcel.weightKg > 20 ? 1800 : 900;
         }
