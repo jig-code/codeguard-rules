@@ -16,6 +16,9 @@ valid:
 # Name assigned a value that is not a lambda
 - |
   submit = make_submitter()
+# Name bound to a value that is not a lambda
+- |
+  submit = order.submit
 # Lambda passed as an argument
 - |
   orders.sort(key=lambda order: order.total)
