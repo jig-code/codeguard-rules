@@ -1,10 +1,7 @@
 id: returning-helper
 snapshots:
-  ? |
-    @pytest.fixture
-    def example_result(example_service):
-        return example_service.run()
-  : labels:
+  "@pytest.fixture\ndef example_result(example_service):\n    return example_service.run()\n":
+    labels:
     - source: |-
         def example_result(example_service):
             return example_service.run()
@@ -19,13 +16,8 @@ snapshots:
       style: secondary
       start: 57
       end: 85
-  ? |
-    @pytest.fixture
-    def example_service():
-        service = ExampleService()
-        yield service
-        service.close()
-  : labels:
+  "@pytest.fixture\ndef example_service():\n    service = ExampleService()\n    yield service\n    service.close()\n":
+    labels:
     - source: |-
         def example_service():
             service = ExampleService()
@@ -42,11 +34,8 @@ snapshots:
       style: secondary
       start: 74
       end: 87
-  ? |
-    class ExampleDriver:
-        def context(self):
-            return self.runtime.context
-  : labels:
+  "class ExampleDriver:\n    def context(self):\n        return self.runtime.context\n":
+    labels:
     - source: |-
         def context(self):
                 return self.runtime.context
@@ -61,11 +50,8 @@ snapshots:
       style: secondary
       start: 52
       end: 79
-  ? |
-    def make_example_key(example_model):
-        key = example_key(example_model)
-        return key
-  : labels:
+  "def make_example_key(example_model):\n    key = example_key(example_model)\n    return key\n":
+    labels:
     - source: |-
         def make_example_key(example_model):
             key = example_key(example_model)
@@ -81,10 +67,8 @@ snapshots:
       style: secondary
       start: 78
       end: 88
-  ? |
-    def make_example_service():
-        return ExampleService(ExampleRules())
-  : labels:
+  "def make_example_service():\n    return ExampleService(ExampleRules())\n":
+    labels:
     - source: |-
         def make_example_service():
             return ExampleService(ExampleRules())
@@ -99,10 +83,8 @@ snapshots:
       style: secondary
       start: 32
       end: 69
-  ? |
-    def overdue_example_models(ledger):
-        return [model for model in ledger.models if model.overdue]
-  : labels:
+  "def overdue_example_models(ledger):\n    return [model for model in ledger.models if model.overdue]\n":
+    labels:
     - source: |-
         def overdue_example_models(ledger):
             return [model for model in ledger.models if model.overdue]

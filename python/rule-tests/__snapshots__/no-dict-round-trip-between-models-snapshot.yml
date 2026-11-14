@@ -1,8 +1,7 @@
 id: no-dict-round-trip-between-models
 snapshots:
-  ? |
-    target = ExampleTarget(**asdict(source), total=0)
-  : labels:
+  "target = ExampleTarget(**asdict(source), total=0)\n":
+    labels:
     - source: ExampleTarget(**asdict(source), total=0)
       style: primary
       start: 9
@@ -15,17 +14,16 @@ snapshots:
       style: secondary
       start: 25
       end: 39
-    - source: '**asdict(source)'
+    - source: "**asdict(source)"
       style: secondary
       start: 23
       end: 39
-    - source: '**asdict(source)'
+    - source: "**asdict(source)"
       style: secondary
       start: 23
       end: 39
-  ? |
-    target = ExampleTarget(**dataclasses.asdict(source))
-  : labels:
+  "target = ExampleTarget(**dataclasses.asdict(source))\n":
+    labels:
     - source: ExampleTarget(**dataclasses.asdict(source))
       style: primary
       start: 9
@@ -38,17 +36,16 @@ snapshots:
       style: secondary
       start: 25
       end: 51
-    - source: '**dataclasses.asdict(source)'
+    - source: "**dataclasses.asdict(source)"
       style: secondary
       start: 23
       end: 51
-    - source: '**dataclasses.asdict(source)'
+    - source: "**dataclasses.asdict(source)"
       style: secondary
       start: 23
       end: 51
-  ? |
-    target = ExampleTarget(**source._asdict())
-  : labels:
+  "target = ExampleTarget(**source._asdict())\n":
+    labels:
     - source: ExampleTarget(**source._asdict())
       style: primary
       start: 9
@@ -61,17 +58,16 @@ snapshots:
       style: secondary
       start: 25
       end: 41
-    - source: '**source._asdict()'
+    - source: "**source._asdict()"
       style: secondary
       start: 23
       end: 41
-    - source: '**source._asdict()'
+    - source: "**source._asdict()"
       style: secondary
       start: 23
       end: 41
-  ? |
-    target = ExampleTarget.from_dict(asdict(source))
-  : labels:
+  "target = ExampleTarget.from_dict(asdict(source))\n":
+    labels:
     - source: ExampleTarget.from_dict(asdict(source))
       style: primary
       start: 9
@@ -92,9 +88,8 @@ snapshots:
       style: secondary
       start: 33
       end: 47
-  ? |
-    target = ExampleTarget.model_validate(source.model_dump())
-  : labels:
+  "target = ExampleTarget.model_validate(source.model_dump())\n":
+    labels:
     - source: ExampleTarget.model_validate(source.model_dump())
       style: primary
       start: 9
@@ -115,9 +110,8 @@ snapshots:
       style: secondary
       start: 38
       end: 57
-  ? |
-    target = models.ExampleTarget(**source.model_dump(exclude={"id"}))
-  : labels:
+  "target = models.ExampleTarget(**source.model_dump(exclude={\"id\"}))\n":
+    labels:
     - source: models.ExampleTarget(**source.model_dump(exclude={"id"}))
       style: primary
       start: 9
@@ -130,11 +124,11 @@ snapshots:
       style: secondary
       start: 32
       end: 65
-    - source: '**source.model_dump(exclude={"id"})'
+    - source: "**source.model_dump(exclude={\"id\"})"
       style: secondary
       start: 30
       end: 65
-    - source: '**source.model_dump(exclude={"id"})'
+    - source: "**source.model_dump(exclude={\"id\"})"
       style: secondary
       start: 30
       end: 65

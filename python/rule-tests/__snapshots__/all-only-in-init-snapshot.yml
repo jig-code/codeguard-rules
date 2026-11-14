@@ -1,8 +1,7 @@
 id: all-only-in-init
 snapshots:
-  ? |
-    __all__ += ["handle"]
-  : labels:
+  "__all__ += [\"handle\"]\n":
+    labels:
     - source: __all__ += ["handle"]
       style: primary
       start: 0
@@ -11,9 +10,8 @@ snapshots:
       style: secondary
       start: 0
       end: 7
-  ? |
-    __all__ = ["handle"]
-  : labels:
+  "__all__ = [\"handle\"]\n":
+    labels:
     - source: __all__ = ["handle"]
       style: primary
       start: 0
@@ -22,10 +20,9 @@ snapshots:
       style: secondary
       start: 0
       end: 7
-  ? |
-    __all__: list[str] = ["handle"]
-  : labels:
-    - source: '__all__: list[str] = ["handle"]'
+  "__all__: list[str] = [\"handle\"]\n":
+    labels:
+    - source: "__all__: list[str] = [\"handle\"]"
       style: primary
       start: 0
       end: 31

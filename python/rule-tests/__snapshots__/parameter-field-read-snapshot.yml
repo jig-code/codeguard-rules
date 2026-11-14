@@ -1,9 +1,7 @@
 id: parameter-field-read
 snapshots:
-  ? |
-    async def example_tax(example_context):
-        return example_context.subtotal
-  : labels:
+  "async def example_tax(example_context):\n    return example_context.subtotal\n":
+    labels:
     - source: |-
         async def example_tax(example_context):
             return example_context.subtotal
@@ -36,22 +34,19 @@ snapshots:
       style: secondary
       start: 22
       end: 37
-  ? |
-    class ExampleCalculator:
-        def example_tax(self, example_context: ExampleContext) -> int:
-            return round(example_context.subtotal * self.rate)
-  : labels:
+  "class ExampleCalculator:\n    def example_tax(self, example_context: ExampleContext) -> int:\n        return round(example_context.subtotal * self.rate)\n":
+    labels:
     - source: |-
         def example_tax(self, example_context: ExampleContext) -> int:
                 return round(example_context.subtotal * self.rate)
       style: primary
       start: 29
       end: 150
-    - source: '(self, example_context: ExampleContext)'
+    - source: "(self, example_context: ExampleContext)"
       style: secondary
       start: 44
       end: 83
-    - source: 'example_context: ExampleContext'
+    - source: "example_context: ExampleContext"
       style: secondary
       start: 51
       end: 82
@@ -77,10 +72,8 @@ snapshots:
       style: secondary
       start: 51
       end: 66
-  ? |
-    def example_tax(example_context):
-        return example_context.subtotal
-  : labels:
+  "def example_tax(example_context):\n    return example_context.subtotal\n":
+    labels:
     - source: |-
         def example_tax(example_context):
             return example_context.subtotal
@@ -113,21 +106,19 @@ snapshots:
       style: secondary
       start: 16
       end: 31
-  ? |
-    def example_tax(example_context: ExampleContext | None = None):
-        return example_context.subtotal
-  : labels:
+  "def example_tax(example_context: ExampleContext | None = None):\n    return example_context.subtotal\n":
+    labels:
     - source: |-
         def example_tax(example_context: ExampleContext | None = None):
             return example_context.subtotal
       style: primary
       start: 0
       end: 99
-    - source: '(example_context: ExampleContext | None = None)'
+    - source: "(example_context: ExampleContext | None = None)"
       style: secondary
       start: 15
       end: 62
-    - source: 'example_context: ExampleContext | None = None'
+    - source: "example_context: ExampleContext | None = None"
       style: secondary
       start: 16
       end: 61
@@ -153,21 +144,19 @@ snapshots:
       style: secondary
       start: 16
       end: 31
-  ? |
-    def example_tax(example_context: ExampleContext) -> int:
-        return example_context.subtotal
-  : labels:
+  "def example_tax(example_context: ExampleContext) -> int:\n    return example_context.subtotal\n":
+    labels:
     - source: |-
         def example_tax(example_context: ExampleContext) -> int:
             return example_context.subtotal
       style: primary
       start: 0
       end: 92
-    - source: '(example_context: ExampleContext)'
+    - source: "(example_context: ExampleContext)"
       style: secondary
       start: 15
       end: 48
-    - source: 'example_context: ExampleContext'
+    - source: "example_context: ExampleContext"
       style: secondary
       start: 16
       end: 47
@@ -193,10 +182,8 @@ snapshots:
       style: secondary
       start: 16
       end: 31
-  ? |
-    def example_tax(example_context=None):
-        return example_context.subtotal
-  : labels:
+  "def example_tax(example_context=None):\n    return example_context.subtotal\n":
+    labels:
     - source: |-
         def example_tax(example_context=None):
             return example_context.subtotal
@@ -233,10 +220,8 @@ snapshots:
       style: secondary
       start: 16
       end: 31
-  ? |
-    def example_tax(rates, example_context):
-        return rates[example_context.region] * 2
-  : labels:
+  "def example_tax(rates, example_context):\n    return rates[example_context.region] * 2\n":
+    labels:
     - source: |-
         def example_tax(rates, example_context):
             return rates[example_context.region] * 2

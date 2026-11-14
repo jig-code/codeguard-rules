@@ -1,16 +1,12 @@
 id: no-clock-moves-in-fixtures
 snapshots:
-  ? |
-    @fixture
-    def example_session():
-        sleep(1)
-        return ExampleSession()
-  : labels:
+  "@fixture\ndef example_session():\n    sleep(1)\n    return ExampleSession()\n":
+    labels:
     - source: sleep(1)
       style: primary
       start: 36
       end: 44
-    - source: '@fixture'
+    - source: "@fixture"
       style: secondary
       start: 0
       end: 8
@@ -29,18 +25,13 @@ snapshots:
       style: secondary
       start: 9
       end: 72
-  ? |
-    @pytest.fixture
-    def example_session():
-        session = ExampleSession()
-        time.sleep(1)
-        return session
-  : labels:
+  "@pytest.fixture\ndef example_session():\n    session = ExampleSession()\n    time.sleep(1)\n    return session\n":
+    labels:
     - source: time.sleep(1)
       style: primary
       start: 74
       end: 87
-    - source: '@pytest.fixture'
+    - source: "@pytest.fixture"
       style: secondary
       start: 0
       end: 15
@@ -61,18 +52,13 @@ snapshots:
       style: secondary
       start: 16
       end: 106
-  ? |
-    @pytest.fixture
-    def expired_example_session(freezer):
-        session = ExampleSession()
-        freezer.tick(3600)
-        return session
-  : labels:
+  "@pytest.fixture\ndef expired_example_session(freezer):\n    session = ExampleSession()\n    freezer.tick(3600)\n    return session\n":
+    labels:
     - source: freezer.tick(3600)
       style: primary
       start: 89
       end: 107
-    - source: '@pytest.fixture'
+    - source: "@pytest.fixture"
       style: secondary
       start: 0
       end: 15
@@ -93,18 +79,13 @@ snapshots:
       style: secondary
       start: 16
       end: 126
-  ? |
-    @pytest.fixture
-    def expired_example_session(time_machine):
-        session = ExampleSession()
-        time_machine.shift(3600)
-        return session
-  : labels:
+  "@pytest.fixture\ndef expired_example_session(time_machine):\n    session = ExampleSession()\n    time_machine.shift(3600)\n    return session\n":
+    labels:
     - source: time_machine.shift(3600)
       style: primary
       start: 94
       end: 118
-    - source: '@pytest.fixture'
+    - source: "@pytest.fixture"
       style: secondary
       start: 0
       end: 15
@@ -125,18 +106,13 @@ snapshots:
       style: secondary
       start: 16
       end: 137
-  ? |
-    @pytest_asyncio.fixture
-    async def example_cache():
-        cache = ExampleCache()
-        await asyncio.sleep(0.1)
-        return cache
-  : labels:
+  "@pytest_asyncio.fixture\nasync def example_cache():\n    cache = ExampleCache()\n    await asyncio.sleep(0.1)\n    return cache\n":
+    labels:
     - source: asyncio.sleep(0.1)
       style: primary
       start: 88
       end: 106
-    - source: '@pytest_asyncio.fixture'
+    - source: "@pytest_asyncio.fixture"
       style: secondary
       start: 0
       end: 23

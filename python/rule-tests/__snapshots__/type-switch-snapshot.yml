@@ -1,8 +1,7 @@
 id: type-switch
 snapshots:
-  ? |
-    handler = handlers[type(payment)]
-  : labels:
+  "handler = handlers[type(payment)]\n":
+    labels:
     - source: handlers[type(payment)]
       style: primary
       start: 10
@@ -15,10 +14,8 @@ snapshots:
       style: secondary
       start: 19
       end: 32
-  ? |
-    if isinstance(payment, ExampleCard):
-        pass
-  : labels:
+  "if isinstance(payment, ExampleCard):\n    pass\n":
+    labels:
     - source: isinstance(payment, ExampleCard)
       style: primary
       start: 3
@@ -27,10 +24,8 @@ snapshots:
       style: secondary
       start: 3
       end: 13
-  ? |
-    if issubclass(kind, ExampleCard):
-        pass
-  : labels:
+  "if issubclass(kind, ExampleCard):\n    pass\n":
+    labels:
     - source: issubclass(kind, ExampleCard)
       style: primary
       start: 3
@@ -39,10 +34,8 @@ snapshots:
       style: secondary
       start: 3
       end: 13
-  ? |
-    if type(payment) is ExampleCard:
-        pass
-  : labels:
+  "if type(payment) is ExampleCard:\n    pass\n":
+    labels:
     - source: type(payment) is ExampleCard
       style: primary
       start: 3
@@ -55,11 +48,8 @@ snapshots:
       style: secondary
       start: 3
       end: 16
-  ? |
-    match payment:
-        case ExampleCard():
-            pass
-  : labels:
+  "match payment:\n    case ExampleCard():\n        pass\n":
+    labels:
     - source: |-
         match payment:
             case ExampleCard():

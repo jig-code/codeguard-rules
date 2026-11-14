@@ -1,10 +1,7 @@
 id: test-support-type
 snapshots:
-  ? |
-    @dataclass
-    class ExampleSetup:
-        example_model: ExampleModel
-  : labels:
+  "@dataclass\nclass ExampleSetup:\n    example_model: ExampleModel\n":
+    labels:
     - source: |-
         @dataclass
         class ExampleSetup:
@@ -18,9 +15,8 @@ snapshots:
       style: secondary
       start: 11
       end: 62
-  ? |
-    ExamplePair = NamedTuple("ExamplePair", [("left", int)])
-  : labels:
+  "ExamplePair = NamedTuple(\"ExamplePair\", [(\"left\", int)])\n":
+    labels:
     - source: NamedTuple("ExamplePair", [("left", int)])
       style: primary
       start: 14
@@ -29,9 +25,8 @@ snapshots:
       style: secondary
       start: 14
       end: 24
-  ? |
-    ExamplePair = collections.namedtuple("ExamplePair", ["left", "right"])
-  : labels:
+  "ExamplePair = collections.namedtuple(\"ExamplePair\", [\"left\", \"right\"])\n":
+    labels:
     - source: collections.namedtuple("ExamplePair", ["left", "right"])
       style: primary
       start: 14
@@ -40,21 +35,16 @@ snapshots:
       style: secondary
       start: 14
       end: 36
-  ? |
-    class ExampleResources(NamedTuple):
-        example_model: ExampleModel
-  : labels:
+  "class ExampleResources(NamedTuple):\n    example_model: ExampleModel\n":
+    labels:
     - source: |-
         class ExampleResources(NamedTuple):
             example_model: ExampleModel
       style: primary
       start: 0
       end: 67
-  ? |
-    class FakeExampleGateway:
-        def charge(self, amount):
-            return amount
-  : labels:
+  "class FakeExampleGateway:\n    def charge(self, amount):\n        return amount\n":
+    labels:
     - source: |-
         class FakeExampleGateway:
             def charge(self, amount):
@@ -62,10 +52,8 @@ snapshots:
       style: primary
       start: 0
       end: 77
-  ? |
-    def make_example_setup():
-        return SimpleNamespace(example_model=ExampleModel())
-  : labels:
+  "def make_example_setup():\n    return SimpleNamespace(example_model=ExampleModel())\n":
+    labels:
     - source: SimpleNamespace(example_model=ExampleModel())
       style: primary
       start: 37

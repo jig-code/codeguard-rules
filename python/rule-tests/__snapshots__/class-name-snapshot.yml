@@ -1,10 +1,7 @@
 id: class-name
 snapshots:
-  ? |
-    class Order:
-        class Line:
-            pass
-  : labels:
+  "class Order:\n    class Line:\n        pass\n":
+    labels:
     - source: Order
       style: primary
       start: 6
@@ -16,10 +13,8 @@ snapshots:
       style: secondary
       start: 0
       end: 41
-  ? |
-    class OrderSubmitter(Base):
-        pass
-  : labels:
+  "class OrderSubmitter(Base):\n    pass\n":
+    labels:
     - source: OrderSubmitter
       style: primary
       start: 6
@@ -30,10 +25,8 @@ snapshots:
       style: secondary
       start: 0
       end: 36
-  ? |
-    class OrderSubmitter:
-        pass
-  : labels:
+  "class OrderSubmitter:\n    pass\n":
+    labels:
     - source: OrderSubmitter
       style: primary
       start: 6

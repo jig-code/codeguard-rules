@@ -1,0 +1,229 @@
+id: no-mutating-class-attribute-through-self
+valid:
+  # __init__ rebinds the class-level list on self, and another method appends to it
+  - |
+    class ExampleCart:
+        items = []
+
+        def __init__(self) -> None:
+            self.items = []
+
+        def add(self, item: str) -> None:
+            self.items.append(item)
+
+  # A ClassVar dict that a method sets a key on through type(self)
+  - |
+    from typing import ClassVar
+
+    class ExampleRegistry:
+        handlers: ClassVar[dict[str, str]] = {}
+
+        def register(self, name: str, handler: str) -> None:
+            type(self).handlers[name] = handler
+
+  # A class-level dict that a method indexes through self
+  - |
+    class ExampleRouter:
+        routes = {"home": "/"}
+
+        def path(self, name: str) -> str:
+            return self.routes[name]
+
+  # A class-level list whose count method a method calls through self
+  - |
+    class ExamplePalette:
+        colors = ["red", "blue"]
+
+        def uses(self, color: str) -> int:
+            return self.colors.count(color)
+
+  # A method that deletes the dict another method bound on self over a class-level dict
+  - |
+    class ExampleSession:
+        entries = {}
+
+        def open(self) -> None:
+            self.entries = {}
+
+        def close(self) -> None:
+            del self.entries
+
+  # A method that builds a local list and appends to it
+  - |
+    class ExampleReport:
+        def lines(self, title: str) -> list[str]:
+            lines = []
+            lines.append(title)
+            return lines
+
+  # A dataclass field with a list default factory, appended to through self
+  - |
+    from dataclasses import dataclass, field
+
+    @dataclass
+    class ExampleBasket:
+        items: list[str] = field(default_factory=list)
+
+        def add(self, item: str) -> None:
+            self.items.append(item)
+
+  # A list field annotated without ClassVar on a pydantic model, appended to through self
+  - |
+    from pydantic import BaseModel
+
+    class ExampleArticle(BaseModel):
+        tags: list[str] = []
+
+        def tag(self, label: str) -> None:
+            self.tags.append(label)
+
+  # A class-level integer incremented through self
+  - |
+    class ExampleCounter:
+        count = 0
+
+        def bump(self) -> None:
+            self.count += 1
+
+invalid:
+  # A method call on self.$N, bound to a list literal
+  - |
+    class ExampleCart:
+        items = []
+
+        def add(self, item: str) -> None:
+            self.items.append(item)
+
+  # An item assignment on self.$N[...], bound to a dict literal
+  - |
+    class ExampleCache:
+        entries = {}
+
+        def put(self, key: str, value: str) -> None:
+            self.entries[key] = value
+
+  # An augmented assignment on self.$N, bound to a list literal
+  - |
+    class ExampleLog:
+        lines = []
+
+        def write(self, line: str) -> None:
+            self.lines += [line]
+
+  # An augmented assignment on self.$N[...], bound to a Counter call
+  - |
+    from collections import Counter
+
+    class ExampleTally:
+        votes = Counter()
+
+        def vote(self, choice: str) -> None:
+            self.votes[choice] += 1
+
+  # A delete of self.$N[...], bound to a dict literal
+  - |
+    class ExampleCache:
+        entries = {}
+
+        def evict(self, key: str) -> None:
+            del self.entries[key]
+
+  # A method call on self.$N[...], bound to a defaultdict call
+  - |
+    from collections import defaultdict
+
+    class ExampleIndex:
+        by_key = defaultdict(list)
+
+        def index(self, key: str, value: str) -> None:
+            self.by_key[key].append(value)
+
+  # A class-level set literal, added to through self
+  - |
+    class ExampleBlocklist:
+        hosts = {"localhost"}
+
+        def block(self, host: str) -> None:
+            self.hosts.add(host)
+
+  # A class-level set() call, added to through self
+  - |
+    class ExampleSeen:
+        ids = set()
+
+        def mark(self, item_id: int) -> None:
+            self.ids.add(item_id)
+
+  # A class-level list comprehension, removed from through self
+  - |
+    class ExampleGrid:
+        cells = [0 for _ in range(9)]
+
+        def mark(self, cell: int) -> None:
+            self.cells.remove(cell)
+
+  # A class-level dict comprehension, cleared through self
+  - |
+    class ExampleTable:
+        rows = {name: 0 for name in ("a", "b")}
+
+        def reset(self) -> None:
+            self.rows.clear()
+
+  # A class-level set comprehension, discarded from through self
+  - |
+    class ExampleChannels:
+        names = {f"ch{n}" for n in range(3)}
+
+        def leave(self, name: str) -> None:
+            self.names.discard(name)
+
+  # A class-level OrderedDict call, updated through self
+  - |
+    from collections import OrderedDict
+
+    class ExampleRecent:
+        pages = OrderedDict()
+
+        def visit(self, url: str) -> None:
+            self.pages.update({url: 1})
+
+  # A class-level collections.deque call, appended to on the left through self
+  - |
+    import collections
+
+    class ExampleQueue:
+        jobs = collections.deque()
+
+        def push(self, job: str) -> None:
+            self.jobs.appendleft(job)
+
+  # A method other than __init__ rebinds the class-level list on self
+  - |
+    class ExampleBuffer:
+        chunks = []
+
+        def reset(self) -> None:
+            self.chunks = []
+
+        def write(self, chunk: bytes) -> None:
+            self.chunks.append(chunk)
+
+  # An annotated class-level list in a class with no base
+  - |
+    class ExampleShelf:
+        books: list[str] = []
+
+        def shelve(self, title: str) -> None:
+            self.books.append(title)
+
+  # A ClassVar list on a pydantic model, appended to through self
+  - |
+    from typing import ClassVar
+    from pydantic import BaseModel
+
+    class ExamplePlugin(BaseModel):
+        loaded: ClassVar[list[str]] = []
+
+        def load(self, name: str) -> None:
+            self.loaded.append(name)

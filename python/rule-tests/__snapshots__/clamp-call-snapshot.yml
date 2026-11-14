@@ -1,8 +1,7 @@
 id: clamp-call
 snapshots:
-  ? |
-    example_balance = max(0, example_account.balance_cents - example_amount)
-  : labels:
+  "example_balance = max(0, example_account.balance_cents - example_amount)\n":
+    labels:
     - source: max(0, example_account.balance_cents - example_amount)
       style: primary
       start: 18
@@ -19,9 +18,8 @@ snapshots:
       style: secondary
       start: 25
       end: 71
-  ? |
-    example_discount = min(example_coupon_cents, example_subtotal_cents)
-  : labels:
+  "example_discount = min(example_coupon_cents, example_subtotal_cents)\n":
+    labels:
     - source: min(example_coupon_cents, example_subtotal_cents)
       style: primary
       start: 19
@@ -38,9 +36,8 @@ snapshots:
       style: secondary
       start: 45
       end: 67
-  ? |
-    example_percent = min(example_percent, 100)
-  : labels:
+  "example_percent = min(example_percent, 100)\n":
+    labels:
     - source: min(example_percent, 100)
       style: primary
       start: 18
@@ -49,17 +46,16 @@ snapshots:
       style: secondary
       start: 18
       end: 21
-    - source: '100'
+    - source: "100"
       style: secondary
       start: 39
       end: 42
-    - source: '100'
+    - source: "100"
       style: secondary
       start: 39
       end: 42
-  ? |
-    example_ratio = max(0.0, example_ratio)
-  : labels:
+  "example_ratio = max(0.0, example_ratio)\n":
+    labels:
     - source: max(0.0, example_ratio)
       style: primary
       start: 16
@@ -76,9 +72,8 @@ snapshots:
       style: secondary
       start: 25
       end: 38
-  ? |
-    example_stock = max(example_product.stock - example_quantity, 0)
-  : labels:
+  "example_stock = max(example_product.stock - example_quantity, 0)\n":
+    labels:
     - source: max(example_product.stock - example_quantity, 0)
       style: primary
       start: 16
@@ -87,11 +82,11 @@ snapshots:
       style: secondary
       start: 16
       end: 19
-    - source: '0'
+    - source: "0"
       style: secondary
       start: 62
       end: 63
-    - source: '0'
+    - source: "0"
       style: secondary
       start: 62
       end: 63

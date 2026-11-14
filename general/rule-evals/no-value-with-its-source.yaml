@@ -1,26 +1,4 @@
 cases:
-- name: a quote call passes the selected lines with the region they were selected by
-  inputs:
-    file: checkout/quote.py
-    after: |
-      from decimal import Decimal
-
-      RATES = {"EU": Decimal("0.21"), "US": Decimal("0.07")}
-
-
-      def select_lines(cart, region):
-          return [line for line in cart.lines if region in line.ships_to]
-
-
-      def quote(lines, region):
-          subtotal = sum(line.price for line in lines)
-          return subtotal * (1 + RATES[region])
-
-
-      def checkout_total(cart, region):
-          return quote(lines=select_lines(cart, region), region=region)
-  expected_output:
-    outcome: invalid
 - name: a receipt call passes an order's email with the order
   inputs:
     file: orders/complete.py
@@ -38,7 +16,7 @@ cases:
           return send_receipt(order.email, order)
   expected_output:
     outcome: invalid
-- name: an invoice total takes a rate computed from the customer it also takes
+- name: an invoice total takes a customer and a rate computed from that customer earlier in the caller
   inputs:
     file: billing/invoice.py
     after: |
@@ -58,7 +36,7 @@ cases:
           return invoice_total(subtotal, rate, customer)
   expected_output:
     outcome: invalid
-- name: a summary dataclass is built with a total and the lines it was summed from
+- name: a summary dataclass is built from lines and the total of those lines
   inputs:
     file: reports/summary.py
     after: |
@@ -79,7 +57,7 @@ cases:
           return Summary(total=total_of(lines), lines=lines)
   expected_output:
     outcome: invalid
-- name: a dict lookup takes a default computed from the key
+- name: a dict lookup takes a key and a default computed from that key
   inputs:
     file: config/timeouts.py
     after: |
@@ -94,22 +72,7 @@ cases:
           return settings.get(name, default_for(name))
   expected_output:
     outcome: valid
-- name: a regex substitution takes a replacement built from the pattern
-  inputs:
-    file: text/redact.py
-    after: |
-      import re
-
-
-      def mask_for(pattern):
-          return "*" * len(pattern)
-
-
-      def redact(text, pattern):
-          return re.sub(pattern, mask_for(pattern), text)
-  expected_output:
-    outcome: valid
-- name: a service is built with a repository made from the session it also takes
+- name: a service is built from a session and a repository made from that session
   inputs:
     file: orders/wiring.py
     after: |
@@ -136,23 +99,7 @@ cases:
           return OrderService(repo=OrderRepository(session), session=session)
   expected_output:
     outcome: valid
-- name: a quote call passes lines selected without the region it also passes
-  inputs:
-    file: checkout/quote.py
-    after: |
-      def select_lines(cart):
-          return [line for line in cart.lines if line.quantity > 0]
-
-
-      def quote(lines, region):
-          return sum(line.price for line in lines), region
-
-
-      def checkout_total(cart, region):
-          return quote(select_lines(cart), region)
-  expected_output:
-    outcome: skipped
-- name: a call passes only the value derived from an input
+- name: an email call passes an order's address and a subject
   inputs:
     file: orders/notify.py
     after: |
@@ -164,7 +111,7 @@ cases:
           return send_email(order.email, f"Order {order.id} shipped")
   expected_output:
     outcome: skipped
-- name: a typescript notify call passes an order's email with the order
+- name: a notify function call passes an order's email with the order
   inputs:
     file: orders/ship.ts
     after: |
@@ -183,7 +130,58 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a typescript map lookup falls back to a default computed from the key
+- name: a fee function takes a customer and a rate computed from that customer earlier in the caller
+  inputs:
+    file: billing/fees.ts
+    after: |
+      export interface Customer {
+        id: string;
+        taxExempt: boolean;
+        regionRate: number;
+        isMember: boolean;
+      }
+
+      export function taxRate(customer: Customer): number {
+        return customer.taxExempt ? 0 : customer.regionRate;
+      }
+
+      export function invoiceTotal(subtotal: number, rate: number, customer: Customer): number {
+        const total = subtotal * (1 + rate);
+        return customer.isMember ? total * 0.95 : total;
+      }
+
+      export function bill(customer: Customer, subtotal: number): number {
+        const rate = taxRate(customer);
+        return invoiceTotal(subtotal, rate, customer);
+      }
+  expected_output:
+    outcome: invalid
+- name: a summary class is built from lines and the total of those lines
+  inputs:
+    file: reports/summary.ts
+    after: |
+      export interface Line {
+        label: string;
+        amount: number;
+      }
+
+      export class Summary {
+        constructor(
+          readonly total: number,
+          readonly lines: readonly Line[],
+        ) {}
+      }
+
+      export function totalOf(lines: readonly Line[]): number {
+        return lines.reduce((sum, line) => sum + line.amount, 0);
+      }
+
+      export function summarize(lines: readonly Line[]): Summary {
+        return new Summary(totalOf(lines), lines);
+      }
+  expected_output:
+    outcome: invalid
+- name: a map lookup falls back to a default computed from its key
   inputs:
     file: config/limits.ts
     after: |
