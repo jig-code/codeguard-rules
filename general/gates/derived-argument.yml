@@ -1,0 +1,227 @@
+id: derived-argument
+language: python
+rule:
+  kind: argument_list
+  any:
+  - has:
+      all:
+      - any:
+        - kind: identifier
+          pattern: $X
+        - kind: attribute
+          pattern: $X
+        - kind: keyword_argument
+          has:
+            field: value
+            pattern: $X
+            any:
+            - kind: identifier
+            - kind: attribute
+      - precedes:
+          stopBy: end
+          any:
+          - all:
+            - not:
+                kind: identifier
+            - not:
+                kind: keyword_argument
+            - has:
+                stopBy: end
+                pattern: $X
+                any:
+                - kind: attribute
+                - kind: identifier
+                  not:
+                    any:
+                    - inside:
+                        kind: attribute
+                        field: attribute
+                    - inside:
+                        kind: keyword_argument
+                        field: name
+          - kind: keyword_argument
+            has:
+              field: value
+              not:
+                kind: identifier
+              has:
+                stopBy: end
+                pattern: $X
+                any:
+                - kind: attribute
+                - kind: identifier
+                  not:
+                    any:
+                    - inside:
+                        kind: attribute
+                        field: attribute
+                    - inside:
+                        kind: keyword_argument
+                        field: name
+  - has:
+      all:
+      - any:
+        - kind: identifier
+          pattern: $X
+        - kind: attribute
+          pattern: $X
+        - kind: keyword_argument
+          has:
+            field: value
+            pattern: $X
+            any:
+            - kind: identifier
+            - kind: attribute
+      - follows:
+          stopBy: end
+          any:
+          - all:
+            - not:
+                kind: identifier
+            - not:
+                kind: keyword_argument
+            - has:
+                stopBy: end
+                pattern: $X
+                any:
+                - kind: attribute
+                - kind: identifier
+                  not:
+                    any:
+                    - inside:
+                        kind: attribute
+                        field: attribute
+                    - inside:
+                        kind: keyword_argument
+                        field: name
+          - kind: keyword_argument
+            has:
+              field: value
+              not:
+                kind: identifier
+              has:
+                stopBy: end
+                pattern: $X
+                any:
+                - kind: attribute
+                - kind: identifier
+                  not:
+                    any:
+                    - inside:
+                        kind: attribute
+                        field: attribute
+                    - inside:
+                        kind: keyword_argument
+                        field: name
+  - has:
+      all:
+      - any:
+        - kind: identifier
+          pattern: $V
+        - kind: keyword_argument
+          has:
+            field: value
+            kind: identifier
+            pattern: $V
+      - precedes:
+          stopBy: end
+          any:
+          - kind: identifier
+            pattern: $X
+          - kind: attribute
+            pattern: $X
+          - kind: keyword_argument
+            has:
+              field: value
+              pattern: $X
+              any:
+              - kind: identifier
+              - kind: attribute
+      - inside:
+          kind: function_definition
+          stopBy: end
+          has:
+            field: body
+            stopBy: end
+            kind: assignment
+            all:
+            - has:
+                field: left
+                any:
+                - kind: identifier
+                  pattern: $V
+                - has:
+                    kind: identifier
+                    pattern: $V
+            - has:
+                field: right
+                has:
+                  stopBy: end
+                  pattern: $X
+                  any:
+                  - kind: attribute
+                  - kind: identifier
+                    not:
+                      any:
+                      - inside:
+                          kind: attribute
+                          field: attribute
+                      - inside:
+                          kind: keyword_argument
+                          field: name
+  - has:
+      all:
+      - any:
+        - kind: identifier
+          pattern: $V
+        - kind: keyword_argument
+          has:
+            field: value
+            kind: identifier
+            pattern: $V
+      - follows:
+          stopBy: end
+          any:
+          - kind: identifier
+            pattern: $X
+          - kind: attribute
+            pattern: $X
+          - kind: keyword_argument
+            has:
+              field: value
+              pattern: $X
+              any:
+              - kind: identifier
+              - kind: attribute
+      - inside:
+          kind: function_definition
+          stopBy: end
+          has:
+            field: body
+            stopBy: end
+            kind: assignment
+            all:
+            - has:
+                field: left
+                any:
+                - kind: identifier
+                  pattern: $V
+                - has:
+                    kind: identifier
+                    pattern: $V
+            - has:
+                field: right
+                has:
+                  stopBy: end
+                  pattern: $X
+                  any:
+                  - kind: attribute
+                  - kind: identifier
+                    not:
+                      any:
+                      - inside:
+                          kind: attribute
+                          field: attribute
+                      - inside:
+                          kind: keyword_argument
+                          field: name

@@ -1,0 +1,98 @@
+id: derived-argument
+valid:
+# Two independent arguments
+- |
+  example_quote(example_lines, example_region)
+# Derived value without its input
+- |
+  example_quote(example_select(example_cart))
+# Derived from a different name than the one passed
+- |
+  example_quote(example_select(example_cart, other_region), example_region)
+# Local derived from a different name than the one passed
+- |
+  def example_flow(example_cart, example_region):
+      example_lines = example_select(example_cart, other_region)
+      return example_quote(example_lines, example_region)
+# Field of one object passed with another object
+- |
+  example_notify(example_order.email, example_customer)
+# Field named like the other argument
+- |
+  example_notify(example_customer.example_order, example_order)
+# Keyword named like the other argument
+- |
+  example_quote(example_select(example_cart, example_region=other_region), example_region)
+# Field of one attribute passed with another attribute
+- |
+  example_notify(self.example_customer.email, self.example_order)
+invalid:
+# Keyword arguments, derived call first
+- |
+  example_quote(lines=example_select(example_cart, example_region), region=example_region)
+# Positional arguments, derived call first
+- |
+  example_quote(example_select(example_cart, example_region), example_region)
+# Positional arguments, input first
+- |
+  example_quote(example_region, example_select(example_cart, example_region))
+# Derived call takes the input as a keyword
+- |
+  example_quote(example_select(example_cart, region=example_region), example_region)
+# Field of the input passed with the input
+- |
+  example_notify(example_order.email, example_order)
+# Key of the input passed with the input, as keywords
+- |
+  example_notify(email=example_order["email"], order=example_order)
+# Method call on self deriving from the input
+- |
+  example_render(self.example_totals(example_invoice), example_invoice)
+# Method call on the input passed with the input
+- |
+  example_charge(example_order.total_cents(), example_order)
+# Arithmetic on a field passed with the input
+- |
+  example_charge(example_order.total_cents / 100, example_order)
+# Comprehension over the input passed with the input
+- |
+  example_render([example_line.amount for example_line in example_lines], example_lines)
+# Formatted string from the input passed with the input
+- |
+  example_notify(f"Order {example_order.id}", example_order)
+# Attribute input passed with its field
+- |
+  example_notify(self.example_order.email, self.example_order)
+# Attribute input passed with its field, as keywords
+- |
+  example_notify(email=self.example_order.email, order=self.example_order)
+# Local derived earlier, passed after the input
+- |
+  def example_flow(example_cart, example_region):
+      example_lines = example_select(example_cart, example_region)
+      return example_quote(example_region, example_lines)
+# Local derived earlier, passed before the input
+- |
+  def example_flow(example_cart, example_region):
+      example_lines = example_select(example_cart, example_region)
+      return example_quote(example_lines, example_region)
+# Local copied from a field, passed with the input as keywords
+- |
+  def example_flow(example_order):
+      example_email = example_order.email
+      example_notify(order=example_order, email=example_email)
+# Local computed by arithmetic on a field
+- |
+  def example_flow(example_order):
+      example_amount = example_order.total_cents / 100
+      example_charge(example_amount, example_order)
+# Local unpacked from a call on the input
+- |
+  def example_flow(example_order):
+      example_email, example_name = example_split(example_order)
+      example_notify(example_email, example_order)
+# Annotated local copied from a field
+- |
+  def example_flow(example_order):
+      example_email: str = example_order.email
+      example_notify(example_email, example_order)

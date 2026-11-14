@@ -60,6 +60,7 @@ the languages it runs on.
 | `intention-revealing-names` | Intention-revealing names: a name the program chooses for a function, method or class never consists only of words that could name any code | Not yet |
 | `one-word-per-concept` | One verb per operation: a function or method never names its operation with a verb other than the one another function or method in the same file, or in a module the file imports, uses for that operation | Not yet |
 | `comments-explain-why` | Comments explain why: a comment or docstring never says only what a reader could learn from the code around it or from earlier versions of that code | Not yet |
+| `no-value-with-its-source` | No Value With Its Source: a call to a function, method or class the program declares never passes both an input and data the calling code derived from that input | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:

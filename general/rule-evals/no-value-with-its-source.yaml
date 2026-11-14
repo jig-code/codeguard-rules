@@ -1,0 +1,142 @@
+cases:
+- name: a receipt call passes an order's email with the order
+  inputs:
+    file: orders/receipt_for.py
+    unchanged:
+      orders/receipts.py: |
+        from orders.models import Order
+
+
+        def receipt_message(email: str, order: Order) -> dict[str, str]:
+            body = f"Order {order.id}: {order.total_cents / 100:.2f}"
+            return {"to": email, "subject": "Your receipt", "body": body}
+    after: |
+      from orders.models import Order
+      from orders.receipts import receipt_message
+
+
+      def receipt_for(order: Order) -> dict[str, str]:
+          return receipt_message(order.email, order)
+  expected_output:
+    outcome: invalid
+- name: an invoice total takes a customer and a rate computed from that customer earlier in the caller
+  inputs:
+    file: billing/invoice.py
+    after: |
+      from dataclasses import dataclass
+      from decimal import Decimal
+
+      MEMBER_DISCOUNT = Decimal("0.95")
+
+
+      @dataclass(frozen=True)
+      class Customer:
+          tax_exempt: bool
+          region_rate: Decimal
+          is_member: bool
+
+
+      def tax_rate(customer: Customer) -> Decimal:
+          return Decimal(0) if customer.tax_exempt else customer.region_rate
+
+
+      def invoice_total(subtotal: Decimal, rate: Decimal, customer: Customer) -> Decimal:
+          total = subtotal * (1 + rate)
+          if customer.is_member:
+              total *= MEMBER_DISCOUNT
+          return total
+
+
+      def bill(customer: Customer, subtotal: Decimal) -> Decimal:
+          rate = tax_rate(customer)
+          return invoice_total(subtotal, rate, customer)
+  expected_output:
+    outcome: invalid
+- name: a dict lookup takes a key and a default computed from that key
+  inputs:
+    file: config/timeouts.py
+    after: |
+      DEFAULTS = {"connect": 5, "read": 30}
+
+
+      def default_for(name: str) -> int:
+          return DEFAULTS.get(name, 10)
+
+
+      def timeout(settings: dict[str, int], name: str) -> int:
+          return settings.get(name, default_for(name))
+  expected_output:
+    outcome: valid
+- name: an email call passes an order's address and a subject
+  inputs:
+    file: orders/notify.py
+    after: |
+      from orders.models import Order
+
+
+      def shipped_email(address: str, subject: str) -> dict[str, str]:
+          return {"to": address, "subject": subject}
+
+
+      def notify(order: Order) -> dict[str, str]:
+          return shipped_email(order.email, f"Order {order.id} shipped")
+  expected_output:
+    outcome: skipped
+- name: a notify function call passes an order's email with the order
+  inputs:
+    file: orders/ship.ts
+    after: |
+      export interface Order {
+        id: string;
+        email: string;
+        totalCents: number;
+      }
+
+      export function notify(email: string, order: Order): { to: string; body: string } {
+        return { to: email, body: `Order ${order.id} shipped` };
+      }
+
+      export function ship(order: Order): { to: string; body: string } {
+        return notify(order.email, order);
+      }
+  expected_output:
+    outcome: invalid
+- name: a fee function takes a customer and a rate computed from that customer earlier in the caller
+  inputs:
+    file: billing/fees.ts
+    after: |
+      export interface Customer {
+        id: string;
+        taxExempt: boolean;
+        regionRate: number;
+        isMember: boolean;
+      }
+
+      export function taxRate(customer: Customer): number {
+        return customer.taxExempt ? 0 : customer.regionRate;
+      }
+
+      export function invoiceTotal(subtotal: number, rate: number, customer: Customer): number {
+        const total = subtotal * (1 + rate);
+        return customer.isMember ? total * 0.95 : total;
+      }
+
+      export function bill(customer: Customer, subtotal: number): number {
+        const rate = taxRate(customer);
+        return invoiceTotal(subtotal, rate, customer);
+      }
+  expected_output:
+    outcome: invalid
+- name: a JSON string is built from a value and an indent computed from that value
+  inputs:
+    file: export/json.ts
+    after: |
+      export function indentFor(value: Record<string, unknown>): number {
+        return Object.keys(value).length > 5 ? 2 : 0;
+      }
+
+      export function render(value: Record<string, unknown>): string {
+        return JSON.stringify(value, null, indentFor(value));
+      }
+  expected_output:
+    outcome: valid
