@@ -11,4 +11,4 @@ exclude_paths:
   - "**/*.spec.ts"
   - "**/*.spec.tsx"
   - "**/__tests__/**"
-triggers: [return-yield]
+triggers: [return-yield, call, field-write, global-rebind]
