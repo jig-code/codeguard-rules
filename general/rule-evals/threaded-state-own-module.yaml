@@ -1,5 +1,5 @@
 cases:
-- name: a checkout workflow module defines the state its steps thread
+- name: a checkout workflow module defines the state that its steps pass along
   inputs:
     file: checkout/workflow.py
     after: |
@@ -27,47 +27,14 @@ cases:
           return charge(state, gateway)
   expected_output:
     outcome: invalid
-- name: a langgraph state is declared in the module that builds the graph
+- name: an import state module also defines a supplier record
   inputs:
-    file: review/graph.py
-    after: |
-      import operator
-      from typing import Annotated, TypedDict
-
-      from langgraph.graph import END, START, StateGraph
-
-
-      class ReviewState(TypedDict):
-          diff: str
-          findings: Annotated[list[str], operator.add]
-
-
-      def lint(state: ReviewState) -> dict:
-          return {"findings": [line for line in state["diff"].splitlines() if "TODO" in line]}
-
-
-      def summarize(state: ReviewState) -> dict:
-          return {"findings": [f"{len(state['findings'])} findings"]}
-
-
-      def build():
-          graph = StateGraph(ReviewState)
-          graph.add_node("lint", lint)
-          graph.add_node("summarize", summarize)
-          graph.add_edge(START, "lint")
-          graph.add_edge("lint", "summarize")
-          graph.add_edge("summarize", END)
-          return graph.compile()
-  expected_output:
-    outcome: invalid
-- name: an import state model sits in a models module beside an unrelated record
-  inputs:
-    file: imports/models.py
+    file: imports/state.py
     unchanged:
       imports/pipeline.py: |
         from dataclasses import replace
 
-        from imports.models import ImportState
+        from imports.state import ImportState
 
 
         def parse(state: ImportState, raw: str) -> ImportState:
@@ -94,7 +61,34 @@ cases:
           email: str
   expected_output:
     outcome: invalid
-- name: a step is added to the module that holds the onboarding state
+- name: a shipment state alone in a module named for carriers
+  inputs:
+    file: shipping/carriers.py
+    unchanged:
+      shipping/flow.py: |
+        from dataclasses import replace
+
+        from shipping.carriers import ShipmentState
+
+
+        def book(state: ShipmentState, booking_id: str) -> ShipmentState:
+            return replace(state, booking_id=booking_id)
+
+
+        def dispatch(state: ShipmentState, tracking_code: str) -> ShipmentState:
+            return replace(state, tracking_code=tracking_code)
+    after: |
+      from dataclasses import dataclass
+
+
+      @dataclass(frozen=True)
+      class ShipmentState:
+          order_id: str
+          booking_id: str | None = None
+          tracking_code: str | None = None
+  expected_output:
+    outcome: invalid
+- name: a profile step is added to the module that defines the onboarding state
   inputs:
     file: onboarding/state.py
     unchanged:
@@ -127,28 +121,7 @@ cases:
           return state.model_copy(update={"profile_done": done})
   expected_output:
     outcome: invalid
-- name: a typescript pipeline module declares the state its steps spread into copies
-  inputs:
-    file: checkout/pipeline.ts
-    after: |
-      export class CheckoutState {
-        constructor(
-          readonly cartId: string,
-          readonly totalCents = 0,
-          readonly chargeId: string | null = null,
-        ) {}
-      }
-
-      export function price(state: CheckoutState, prices: Map<string, number>): CheckoutState {
-        return new CheckoutState(state.cartId, prices.get(state.cartId) ?? 0, state.chargeId);
-      }
-
-      export function charge(state: CheckoutState, chargeId: string): CheckoutState {
-        return new CheckoutState(state.cartId, state.totalCents, chargeId);
-      }
-  expected_output:
-    outcome: invalid
-- name: a state module holds only the checkout state and its update method
+- name: a checkout state module holds the state and its update method
   inputs:
     file: checkout/state.py
     unchanged:
@@ -171,7 +144,7 @@ cases:
               return replace(self, total_cents=total_cents)
   expected_output:
     outcome: valid
-- name: a workflow module adds a step that imports its state from the state module
+- name: a checkout workflow module adds a step that imports the state from its own module
   inputs:
     file: checkout/workflow.py
     unchanged:
@@ -231,7 +204,7 @@ cases:
           return render(ReportRequest(month=month, account_id=account_id), rows)
   expected_output:
     outcome: valid
-- name: pipeline settings are read by every step but never updated
+- name: pipeline settings are read by every step and never updated
   inputs:
     file: etl/pipeline.py
     after: |
@@ -287,3 +260,74 @@ cases:
           return replace(state, total_cents=round(prices[state.cart_id]))
   expected_output:
     outcome: skipped
+- name: a checkout pipeline module declares the state that its steps copy
+  inputs:
+    file: checkout/pipeline.ts
+    after: |
+      export class CheckoutState {
+        constructor(
+          readonly cartId: string,
+          readonly totalCents = 0,
+          readonly chargeId: string | null = null,
+        ) {}
+      }
+
+      export function price(state: CheckoutState, totalCents: number): CheckoutState {
+        return new CheckoutState(state.cartId, totalCents, state.chargeId);
+      }
+
+      export function charge(state: CheckoutState, chargeId: string): CheckoutState {
+        return new CheckoutState(state.cartId, state.totalCents, chargeId);
+      }
+  expected_output:
+    outcome: invalid
+- name: an import state module also exports a supplier record
+  inputs:
+    file: imports/state.ts
+    unchanged:
+      imports/pipeline.ts: |
+        import type { ImportState } from "./state";
+
+        export function parse(state: ImportState, raw: string): ImportState {
+          return { ...state, rows: raw.split("\n").map((line) => line.split(",")) };
+        }
+
+        export function validate(state: ImportState): ImportState {
+          const bad = state.rows.filter((row) => row.length !== 3);
+          return { ...state, errors: bad.map((row) => `bad row: ${row.join(",")}`) };
+        }
+    after: |
+      export interface ImportState {
+        readonly source: string;
+        readonly rows: readonly string[][];
+        readonly errors: readonly string[];
+      }
+
+      export interface Supplier {
+        readonly name: string;
+        readonly email: string;
+      }
+  expected_output:
+    outcome: invalid
+- name: a shipment state interface alone in a module named for carriers
+  inputs:
+    file: shipping/carriers.ts
+    unchanged:
+      shipping/flow.ts: |
+        import type { ShipmentState } from "./carriers";
+
+        export function book(state: ShipmentState, bookingId: string): ShipmentState {
+          return { ...state, bookingId };
+        }
+
+        export function dispatch(state: ShipmentState, trackingCode: string): ShipmentState {
+          return { ...state, trackingCode };
+        }
+    after: |
+      export interface ShipmentState {
+        readonly orderId: string;
+        readonly bookingId: string | null;
+        readonly trackingCode: string | null;
+      }
+  expected_output:
+    outcome: invalid
