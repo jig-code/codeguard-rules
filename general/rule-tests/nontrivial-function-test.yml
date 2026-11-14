@@ -20,6 +20,10 @@ valid:
 - |
   def as_dict(self):
       return {"id": self.id, "name": self.name}
+# Returns a string literal
+- |
+  def title(self):
+      return "Order summary"
 # Returns a constant
 - |
   def limit():
@@ -84,6 +88,10 @@ invalid:
           "^XA"
           f"^FD{name.upper()}^FS"
       )
+# Returns an f-string built from attributes
+- |
+  def display_name(self):
+      return f"{self.first_name} {self.last_name}"
 # Single expression statement call
 - |
   def notify(order):
