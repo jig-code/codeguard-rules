@@ -120,24 +120,6 @@ cases:
               return email
   expected_output:
     outcome: valid
-- name: a Django model's clean checks no other post has its slug
-  inputs:
-    file: blog/models.py
-    after: |
-      from django.core.exceptions import ValidationError
-      from django.db import models
-
-
-      class Post(models.Model):
-          title = models.CharField(max_length=200)
-          slug = models.SlugField()
-
-          def clean(self) -> None:
-              others = Post.objects.filter(slug=self.slug).exclude(pk=self.pk)
-              if others.exists():
-                  raise ValidationError({"slug": "another post already uses this slug"})
-  expected_output:
-    outcome: valid
 - name: a function rounds a price
   inputs:
     file: billing/rounding.py

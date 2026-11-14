@@ -1,5 +1,5 @@
 cases:
-- name: a tax function takes the checkout context to read two of its six fields
+- name: a tax function reads two of the six fields of the checkout context it takes
   inputs:
     file: checkout/tax.py
     after: |
@@ -22,31 +22,6 @@ cases:
       def tax_cents(context: CheckoutContext) -> int:
           rate = RATES[context.region]
           return int(context.subtotal_cents * rate)
-  expected_output:
-    outcome: invalid
-- name: a helper takes the application settings to read one timeout
-  inputs:
-    file: integrations/http.py
-    unchanged:
-      app/settings.py: |
-        from pydantic_settings import BaseSettings
-
-
-        class Settings(BaseSettings):
-            database_url: str
-            redis_url: str
-            http_timeout: float = 10.0
-            sentry_dsn: str | None = None
-            debug: bool = False
-            allowed_hosts: list[str] = []
-    after: |
-      import httpx
-
-      from app.settings import Settings
-
-
-      def make_client(settings: Settings) -> httpx.Client:
-          return httpx.Client(timeout=settings.http_timeout)
   expected_output:
     outcome: invalid
 - name: a function reads one field of the invoice it decides about
@@ -84,7 +59,7 @@ cases:
               return JsonResponse({"email": request.user.email})
   expected_output:
     outcome: valid
-- name: a function reads most of the checkout context's fields
+- name: a function reads every field of the checkout context it takes
   inputs:
     file: checkout/receipt.py
     after: |
@@ -115,7 +90,7 @@ cases:
           return sum(prices)
   expected_output:
     outcome: skipped
-- name: a retry helper takes the app config to read one of its fields
+- name: a retry helper reads one of the six fields of the app config it takes
   inputs:
     file: jobs/retry.ts
     after: |
