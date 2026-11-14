@@ -36,4 +36,5 @@ rule:
                 - kind: subscript
                 - kind: unary_operator
                 - kind: not_operator
+                - kind: interpolation
           - kind: raise_statement
