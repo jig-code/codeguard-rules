@@ -134,6 +134,35 @@ snapshots:
       style: secondary
       start: 41
       end: 58
+  "class ExampleQuoter:\n    def quote(self, *, example_provider):\n        return example_provider.rate()\n":
+    labels:
+    - source: |-
+        def quote(self, *, example_provider):
+                return example_provider.rate()
+      style: primary
+      start: 25
+      end: 101
+    - source: |-
+        class ExampleQuoter:
+            def quote(self, *, example_provider):
+                return example_provider.rate()
+      style: secondary
+      start: 0
+      end: 101
+    - source: |-
+        def quote(self, *, example_provider):
+                return example_provider.rate()
+      style: secondary
+      start: 25
+      end: 101
+    - source: example_provider
+      style: secondary
+      start: 44
+      end: 60
+    - source: example_provider
+      style: secondary
+      start: 44
+      end: 60
   "class ExampleQuoter:\n    def quote(self, *example_providers):\n        return example_providers\n":
     labels:
     - source: |-
@@ -184,6 +213,35 @@ snapshots:
       style: secondary
       start: 25
       end: 98
+    - source: example_provider
+      style: secondary
+      start: 41
+      end: 57
+    - source: example_provider
+      style: secondary
+      start: 41
+      end: 57
+  "class ExampleQuoter:\n    def quote(self, example_provider, /):\n        return example_provider.rate()\n":
+    labels:
+    - source: |-
+        def quote(self, example_provider, /):
+                return example_provider.rate()
+      style: primary
+      start: 25
+      end: 101
+    - source: |-
+        class ExampleQuoter:
+            def quote(self, example_provider, /):
+                return example_provider.rate()
+      style: secondary
+      start: 0
+      end: 101
+    - source: |-
+        def quote(self, example_provider, /):
+                return example_provider.rate()
+      style: secondary
+      start: 25
+      end: 101
     - source: example_provider
       style: secondary
       start: 41

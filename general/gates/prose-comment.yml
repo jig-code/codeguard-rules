@@ -1,6 +1,21 @@
 id: prose-comment
 language: python
 rule:
-  kind: comment
-  not:
-    regex: ^#!|^#\s*(noqa\b|type:|pragma\b|fmt:|pyright:|mypy:|pylint:|ruff:|isort:|ast-grep-ignore\b|-\*-\s*coding)
+  any:
+    - kind: comment
+      not:
+        regex: ^#!|^#\s*(noqa\b|type:|pragma\b|fmt:|pyright:|mypy:|pylint:|ruff:|isort:|ast-grep-ignore\b|-\*-\s*coding)
+    - kind: string
+      inside:
+        kind: expression_statement
+      not:
+        inside:
+          kind: expression_statement
+          nthChild: {position: 1, ofRule: {not: {kind: comment}}}
+          inside:
+            any:
+              - kind: module
+              - kind: block
+                any:
+                  - inside: {kind: function_definition, field: body}
+                  - inside: {kind: class_definition, field: body}
