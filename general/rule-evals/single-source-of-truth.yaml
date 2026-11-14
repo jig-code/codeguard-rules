@@ -1,0 +1,189 @@
+cases:
+- name: an order stores whether it shipped beside the time it shipped
+  inputs:
+    file: shipping/order.py
+    after: |
+      from dataclasses import dataclass
+      from datetime import datetime
+
+
+      @dataclass
+      class Order:
+          reference: str
+          shipped_at: datetime | None = None
+          is_shipped: bool = False
+
+          def ship(self, now: datetime) -> None:
+              self.shipped_at = now
+              self.is_shipped = True
+  expected_output:
+    outcome: invalid
+- name: an order computes whether it shipped from the time it shipped
+  inputs:
+    file: shipping/order.py
+    after: |
+      from dataclasses import dataclass
+      from datetime import datetime
+
+
+      @dataclass
+      class Order:
+          reference: str
+          is_gift: bool = False
+          shipped_at: datetime | None = None
+
+          @property
+          def is_shipped(self) -> bool:
+              return self.shipped_at is not None
+
+          def ship(self, now: datetime) -> None:
+              self.shipped_at = now
+  expected_output:
+    outcome: valid
+- name: a shipment sets a copy of its customer's email whenever it sets the customer
+  inputs:
+    file: shipping/shipment.py
+    unchanged:
+      accounts/customer.py: |
+        from dataclasses import dataclass
+
+
+        @dataclass(frozen=True)
+        class Customer:
+            id: str
+            name: str
+            email: str
+    after: |
+      from dataclasses import dataclass, field
+
+      from accounts.customer import Customer
+
+
+      @dataclass
+      class Shipment:
+          tracking_number: str
+          customer: Customer
+          customer_email: str = field(init=False)
+
+          def __post_init__(self) -> None:
+              self.customer_email = self.customer.email
+
+          def reassign(self, customer: Customer) -> None:
+              self.customer = customer
+              self.customer_email = customer.email
+  expected_output:
+    outcome: invalid
+- name: an order line records the unit price paid beside the product
+  inputs:
+    file: orders/line.py
+    unchanged:
+      catalog/product.py: |
+        from dataclasses import dataclass
+        from decimal import Decimal
+
+
+        @dataclass
+        class Product:
+            sku: str
+            name: str
+            price: Decimal
+    after: |
+      from dataclasses import dataclass
+      from decimal import Decimal
+
+      from catalog.product import Product
+
+
+      @dataclass(frozen=True)
+      class OrderLine:
+          product: Product
+          quantity: int
+          unit_price_paid: Decimal
+  expected_output:
+    outcome: valid
+- name: a Django order keeps a foreign key to its customer
+  inputs:
+    file: orders/models.py
+    after: |
+      from django.db import models
+
+
+      class Order(models.Model):
+          customer = models.ForeignKey("accounts.Customer", on_delete=models.PROTECT)
+          reference = models.CharField(max_length=32)
+          placed_at = models.DateTimeField()
+  expected_output:
+    outcome: valid
+- name: a function formats an order reference
+  inputs:
+    file: orders/format.py
+    after: |
+      def format_reference(prefix: str, number: int) -> str:
+          return f"{prefix}-{number:06d}"
+  expected_output:
+    outcome: skipped
+- name: a subscription class stores whether it is active beside its cancellation time
+  inputs:
+    file: billing/subscription.ts
+    after: |
+      export class Subscription {
+        cancelledAt?: Date;
+        isActive = true;
+
+        constructor(readonly customerId: string, readonly plan: string) {}
+
+        cancel(now: Date): void {
+          this.cancelledAt = now;
+          this.isActive = false;
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: a subscription class computes whether it is active from its cancellation time
+  inputs:
+    file: billing/subscription.ts
+    after: |
+      export class Subscription {
+        cancelledAt?: Date;
+
+        constructor(readonly customerId: string, readonly plan: string) {}
+
+        get isActive(): boolean {
+          return this.cancelledAt === undefined;
+        }
+
+        cancel(now: Date): void {
+          this.cancelledAt = now;
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a shipment class sets a copy of its customer's email whenever it sets the customer
+  inputs:
+    file: shipping/shipment.ts
+    unchanged:
+      accounts/customer.ts: |
+        export type Customer = {
+          id: string;
+          name: string;
+          email: string;
+        };
+    after: |
+      import { Customer } from "../accounts/customer";
+
+      export class Shipment {
+        customer: Customer;
+        customerEmail: string;
+
+        constructor(readonly trackingNumber: string, customer: Customer) {
+          this.customer = customer;
+          this.customerEmail = customer.email;
+        }
+
+        reassign(customer: Customer): void {
+          this.customer = customer;
+          this.customerEmail = customer.email;
+        }
+      }
+  expected_output:
+    outcome: invalid

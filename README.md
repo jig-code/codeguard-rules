@@ -43,6 +43,7 @@ the languages it runs on.
 | `construction-in-its-home` | Construction in its home: a function never decides a value that a new instance of a data type the program declares holds when the function also does work other than building that instance | Not yet |
 | `make-illegal-states-unrepresentable` | Make illegal states unrepresentable: a type whose instances exist only in the program's memory never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type | Not yet |
 | `composition-over-inheritance` | Composition over inheritance: a class never inherits from another class that gives the inheriting class a public method or field outside the job of the inheriting class | Not yet |
+| `single-source-of-truth` | Single source of truth: a class never stores a value in a field when that value must always equal the result of a computation on a single other value that the class holds, in another field or in a field of a held object | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
