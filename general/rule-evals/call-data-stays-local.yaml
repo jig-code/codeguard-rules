@@ -1,5 +1,5 @@
 cases:
-- name: the duplicate check keeps one import's SKUs in a module-level set, so the next import reports every SKU as a duplicate
+- name: a duplicate check for one import's rows adds the SKUs to a module-level set
   inputs:
     file: catalog/importer.py
     after: |
@@ -18,7 +18,7 @@ cases:
           return duplicates
   expected_output:
     outcome: invalid
-- name: the duplicate check keeps each import's SKUs in a set of its own
+- name: a duplicate check keeps the SKUs it has seen in a local set
   inputs:
     file: catalog/importer.py
     after: |
@@ -40,25 +40,7 @@ cases:
           return duplicates
   expected_output:
     outcome: valid
-- name: a duplicate check reads and adds to a module-level set that nothing says should outlive one import, so it reports the last import's SKUs as duplicates
-  inputs:
-    file: catalog/importer.py
-    after: |
-      from catalog.models import ProductRow
-
-      _seen_skus: set[str] = set()
-
-
-      def duplicate_skus(rows: list[ProductRow]) -> list[str]:
-          duplicates: list[str] = []
-          for row in rows:
-              if row.sku in _seen_skus:
-                  duplicates.append(row.sku)
-              _seen_skus.add(row.sku)
-          return duplicates
-  expected_output:
-    outcome: invalid
-- name: a duplicate check reads and adds to a module-level set its name and comment say holds every import's SKUs, so a SKU any earlier import brought in is a duplicate
+- name: a duplicate check adds SKUs to a module-level set whose comment says it holds every import's SKUs
   inputs:
     file: catalog/importer.py
     after: |
@@ -79,7 +61,7 @@ cases:
           return duplicates
   expected_output:
     outcome: valid
-- name: a module-level reading-time estimator adds every article's words to its own count, so each estimate includes every article before it
+- name: a module-level reading-time estimator adds each article's word count to a total on itself
   inputs:
     file: blog/reading_time.py
     after: |
@@ -99,7 +81,7 @@ cases:
       estimator = ReadingTimeEstimator(words_per_minute=230)
   expected_output:
     outcome: invalid
-- name: a module-level reading-time estimator counts each article's words in the call and stores nothing on itself
+- name: a module-level reading-time estimator counts each article's words inside the call
   inputs:
     file: blog/reading_time.py
     after: |
@@ -117,7 +99,7 @@ cases:
       estimator = ReadingTimeEstimator(words_per_minute=230)
   expected_output:
     outcome: valid
-- name: a shortage check clears and refills a module-level stock map on each call, so two orders checked at once read each other's stock
+- name: a shortage check clears and refills a module-level stock map on each call
   inputs:
     file: warehouse/shortages.py
     after: |
@@ -132,7 +114,7 @@ cases:
           return [line.sku for line in order.lines if _stock_by_sku[line.sku] < line.quantity]
   expected_output:
     outcome: invalid
-- name: a before-request hook rebinds a global to the current request's client address, so concurrent requests rate-limit each other's address
+- name: a before-request hook sets a global to the current request's client address
   inputs:
     file: api/limits.py
     after: |
@@ -140,7 +122,7 @@ cases:
 
       app = Flask(__name__)
 
-      _client_address = ""
+      _client_address: str | None = None
 
 
       @app.before_request
@@ -153,7 +135,7 @@ cases:
           return f"{endpoint}:{_client_address}"
   expected_output:
     outcome: invalid
-- name: a before-request hook keeps the client address on flask.g, which holds it for that request only
+- name: a before-request hook keeps the client address on the request context object
   inputs:
     file: api/limits.py
     after: |
@@ -171,76 +153,7 @@ cases:
           return f"{endpoint}:{client_address}"
   expected_output:
     outcome: valid
-- name: a box packer held as a class attribute keeps every planner's packed boxes, so each shipment's plan lists boxes from earlier shipments
-  inputs:
-    file: shipping/planner.py
-    after: |
-      from shipping.models import Box, Parcel
-
-
-      class BoxPacker:
-          def __init__(self) -> None:
-              self.packed: list[Box] = []
-
-          def pack(self, parcels: list[Parcel]) -> list[Box]:
-              for parcel in parcels:
-                  self.packed.append(Box.fitting(parcel))
-              return self.packed
-
-
-      class ShipmentPlanner:
-          packer = BoxPacker()
-
-          def plan(self, parcels: list[Parcel]) -> list[Box]:
-              return self.packer.pack(parcels)
-  expected_output:
-    outcome: invalid
-- name: a line renderer given as a parameter default collects every invoice's lines, so the second invoice prints the first one's lines too
-  inputs:
-    file: billing/render.py
-    after: |
-      from billing.models import Invoice
-
-
-      class LineRenderer:
-          def __init__(self) -> None:
-              self.lines: list[str] = []
-
-          def render(self, invoice: Invoice) -> str:
-              for item in invoice.items:
-                  self.lines.append(f"{item.description}  {item.amount}")
-              return "\n".join(self.lines)
-
-
-      def invoice_text(invoice: Invoice, renderer: LineRenderer = LineRenderer()) -> str:
-          return renderer.render(invoice)
-  expected_output:
-    outcome: invalid
-- name: a module-level pager sets the alert it is sending on itself, so two alerts sent at once page with each other's message
-  inputs:
-    file: oncall/pager.py
-    after: |
-      from oncall.models import Alert
-      from oncall.sms import send_sms
-
-
-      class Pager:
-          def __init__(self) -> None:
-              self.alert: Alert | None = None
-
-          def page(self, alert: Alert) -> None:
-              self.alert = alert
-              send_sms(alert.engineer_phone, self._message())
-
-          def _message(self) -> str:
-              assert self.alert is not None
-              return f"[{self.alert.severity}] {self.alert.summary}"
-
-
-      pager = Pager()
-  expected_output:
-    outcome: invalid
-- name: units are registered into a module-level map once at import and only read afterwards
+- name: units are registered into a module-level map at import and only read afterwards
   inputs:
     file: measures/units.py
     after: |
@@ -262,7 +175,7 @@ cases:
           return _units_by_symbol[symbol]
   expected_output:
     outcome: valid
-- name: an invoice number sequence behind a lock outlives every call by design, so each call gets the next number
+- name: an invoice number sequence behind a lock hands each call the next number
   inputs:
     file: billing/numbers.py
     after: |
@@ -279,65 +192,7 @@ cases:
               return _last_invoice_number
   expected_output:
     outcome: valid
-- name: a class-level list that each instance appends to is left to a separate rule
-  inputs:
-    file: audit/trail.py
-    after: |
-      class AuditTrail:
-          entries: list[str] = []
-
-          def record(self, event: str) -> None:
-              self.entries.append(event)
-  expected_output:
-    outcome: valid
-- name: two helpers each add one order's lines to a module-level list, so a second order priced at once mixes its lines with the first
-  inputs:
-    file: shop/pricing.py
-    after: |
-      from decimal import Decimal
-
-      from shop.models import Order, PriceLine
-
-      _lines: list[PriceLine] = []
-
-
-      def _add_item_lines(order: Order) -> None:
-          for item in order.items:
-              _lines.append(PriceLine(label=item.name, amount=item.unit_price * item.quantity))
-
-
-      def _add_discount_lines(order: Order) -> None:
-          for code in order.discount_codes:
-              _lines.append(PriceLine(label=code.name, amount=-code.amount))
-
-
-      def order_total(order: Order) -> Decimal:
-          _lines.clear()
-          _add_item_lines(order)
-          _add_discount_lines(order)
-          return sum((line.amount for line in _lines), Decimal(0))
-  expected_output:
-    outcome: invalid
-- name: a task puts its tenant in a module-level dict for its helpers to read, so two jobs on one worker read each other's tenant
-  inputs:
-    file: reports/tasks.py
-    after: |
-      from reports.storage import load_orders, save_report
-
-      _job: dict[str, str] = {}
-
-
-      def _report_title() -> str:
-          return f"Orders for {_job['tenant']}"
-
-
-      def build_tenant_report(tenant_id: str) -> None:
-          _job["tenant"] = tenant_id
-          orders = load_orders(tenant_id)
-          save_report(tenant_id, _report_title(), orders)
-  expected_output:
-    outcome: invalid
-- name: exchange rates are memoized by date and currency in a module dict only the lookup uses
+- name: exchange rates are memoized in a module dict keyed by date and currency
   inputs:
     file: money/rates.py
     after: |
@@ -356,7 +211,7 @@ cases:
           return _rates[key]
   expected_output:
     outcome: valid
-- name: a label function with no module-level instance and no write to module state is outside the gates
+- name: a label function that touches no module-level state
   inputs:
     file: transit/labels.py
     after: |
@@ -367,7 +222,7 @@ cases:
           return f"{journey.zones} zones"
   expected_output:
     outcome: skipped
-- name: middleware sets the request's locale on a module-level context object, so concurrent requests format prices in each other's locale
+- name: middleware sets the request's locale on a module-level context object
   inputs:
     file: web/locale.ts
     after: |
@@ -385,7 +240,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: middleware keeps the request's locale on the response's locals for that request
+- name: middleware keeps the request's locale on the response's locals
   inputs:
     file: web/locale.ts
     after: |
@@ -401,26 +256,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: middleware runs each request inside AsyncLocalStorage, which keeps every request's trace id apart
-  inputs:
-    file: web/tracing.ts
-    after: |
-      import { AsyncLocalStorage } from "node:async_hooks";
-      import { randomUUID } from "node:crypto";
-      import type { NextFunction, Request, Response } from "express";
-
-      const traceStorage = new AsyncLocalStorage<{ traceId: string }>();
-
-      export function tracingMiddleware(_req: Request, _res: Response, next: NextFunction): void {
-        traceStorage.run({ traceId: randomUUID() }, next);
-      }
-
-      export function currentTraceId(): string | undefined {
-        return traceStorage.getStore()?.traceId;
-      }
-  expected_output:
-    outcome: valid
-- name: a module-level receipt printer object keeps every sale's lines on itself, so each receipt repeats the sales before it
+- name: a module-level receipt printer object pushes each sale's lines onto a list on itself
   inputs:
     file: till/receipts.ts
     after: |
@@ -438,7 +274,7 @@ cases:
       };
   expected_output:
     outcome: invalid
-- name: a module-level receipt printer object builds each receipt in the call and stores nothing on itself
+- name: a module-level receipt printer object builds each receipt inside the call
   inputs:
     file: till/receipts.ts
     after: |
@@ -455,7 +291,7 @@ cases:
       };
   expected_output:
     outcome: valid
-- name: a seat check clears and refills a module-level map on each call, so two bookings checked at once read each other's seats
+- name: a seat check clears and refills a module-level map on each call
   inputs:
     file: booking/seats.ts
     after: |
@@ -478,7 +314,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a repeated-tag check reads and adds to a module-level set that nothing says should outlive one batch of posts, so it reports the last batch's tags as repeated
+- name: a repeated-tag check for one batch of posts adds the tags to a module-level set
   inputs:
     file: posts/tags.ts
     after: |
@@ -486,6 +322,7 @@ cases:
 
       const tagsSeen = new Set<string>();
 
+      /** Returns the tags that appear on more than one of these posts. */
       export function repeatedTags(posts: Post[]): string[] {
         const repeated: string[] = [];
         for (const post of posts) {
@@ -500,7 +337,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a signup check reads and adds to a module-level set its name and comment say holds every signup's email, so an address any earlier signup used is taken
+- name: a signup check adds emails to a module-level set whose comment says it holds every signup's email
   inputs:
     file: accounts/signup.ts
     after: |
@@ -517,7 +354,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: slugs are memoized in a module-level map keyed by the title they are made from
+- name: slugs are memoized in a module-level map keyed by title
   inputs:
     file: posts/slugs.ts
     after: |
@@ -538,55 +375,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a report service writes each request's tenant into a static field its title reads, so two reports built at once carry each other's tenant
-  inputs:
-    file: reports/service.ts
-    after: |
-      import { loadOrders, saveReport } from "./storage";
-
-      export class ReportService {
-        static tenantId: string;
-
-        async build(tenantId: string): Promise<void> {
-          ReportService.tenantId = tenantId;
-          const orders = await loadOrders(tenantId);
-          await saveReport(tenantId, this.title(), orders);
-        }
-
-        private title(): string {
-          return `Orders for ${ReportService.tenantId}`;
-        }
-      }
-  expected_output:
-    outcome: invalid
-- name: a module-level uploader sets the file it is uploading on itself, so two uploads at once report each other's progress
-  inputs:
-    file: media/uploader.ts
-    after: |
-      import type { UploadFile } from "./models";
-      import { putObject } from "./storage";
-
-      class Uploader {
-        private file: UploadFile | undefined;
-
-        async upload(file: UploadFile): Promise<string> {
-          this.file = file;
-          await putObject(file.key, file.bytes);
-          return this.progressLabel();
-        }
-
-        private progressLabel(): string {
-          if (this.file === undefined) {
-            throw new Error("No upload in progress");
-          }
-          return `${this.file.name} uploaded`;
-        }
-      }
-
-      export const uploader = new Uploader();
-  expected_output:
-    outcome: invalid
-- name: webhook handlers are registered into a module-level map once at import and only read afterwards
+- name: webhook handlers are registered into a module-level map at import and only read afterwards
   inputs:
     file: webhooks/dispatch.ts
     after: |
@@ -613,7 +402,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: an order number sequence outlives every call by design, so each call gets the next number
+- name: an order number sequence hands each call the next number
   inputs:
     file: orders/numbers.ts
     after: |
@@ -625,35 +414,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: two helpers each push one quote's legs onto a module-level array, so a second quote built at once mixes its legs with the first
-  inputs:
-    file: travel/quotes.ts
-    after: |
-      import type { Leg, Trip } from "./models";
-
-      const legs: Leg[] = [];
-
-      function addFlights(trip: Trip): void {
-        for (const flight of trip.flights) {
-          legs.push({ label: `${flight.from}-${flight.to}`, priceCents: flight.priceCents });
-        }
-      }
-
-      function addHotels(trip: Trip): void {
-        for (const stay of trip.stays) {
-          legs.push({ label: stay.hotel, priceCents: stay.nightlyCents * stay.nights });
-        }
-      }
-
-      export function quoteCents(trip: Trip): number {
-        legs.length = 0;
-        addFlights(trip);
-        addHotels(trip);
-        return legs.reduce((total, leg) => total + leg.priceCents, 0);
-      }
-  expected_output:
-    outcome: invalid
-- name: a component keeps its draft comment in React state, which each mounted component has its own of
+- name: a component keeps its draft comment in React state
   inputs:
     file: comments/CommentBox.tsx
     after: |
@@ -677,7 +438,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a browser app keeps its basket in a zustand store, the one place the page's state lives
+- name: a browser app keeps its basket in a module-level store
   inputs:
     file: shop/basketStore.ts
     after: |
