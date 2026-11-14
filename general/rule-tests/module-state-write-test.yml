@@ -1,12 +1,12 @@
 id: module-state-write
 valid:
-# Local dict filled in a function
+# Subscript write: a local dict filled in a function
 - |
   def build():
       index = {}
       index["a"] = 1
       return index
-# Instance attribute set in __init__ and appended to
+# Mutating call: an instance attribute set in __init__ and appended to, in a class with no module-level instance
 - |
   class ExampleCollector:
       def __init__(self):
@@ -14,23 +14,45 @@ valid:
 
       def add(self, item):
           self.items.append(item)
-# Module constant read in a function
+# Subscript read: a module constant read in a function
 - |
   LIMITS = {"a": 1}
 
   def limit(key):
       return LIMITS[key]
-# Module-level write outside a function
+# Subscript write: a module-level write outside a function
 - |
   HANDLERS = {}
   HANDLERS["a"] = handle_a
-# Class attribute that is not a container
+# Attribute write: a local object's attribute set in a function
 - |
-  class ExampleCounter:
-      label = "count"
+  def build():
+      context = ExampleContext()
+      context.locale = "en"
+      return context
+# Self write: __init__ of a class that has a module-level instance
+- |
+  class ExampleEstimator:
+      def __init__(self, rate):
+          self.rate = rate
+          self.counted = 0
 
-      def rename(self, value):
-          self.label.update(value)
+  estimator = ExampleEstimator(rate=230)
+# Mutating call: a class-level list appended to through self
+- |
+  class ExampleCart:
+      items = []
+
+      def add(self, item):
+          self.items.append(item)
+# Subscript write: a class-level dict written through cls
+- |
+  class ExampleRegistry:
+      entries = defaultdict(list)
+
+      @classmethod
+      def put(cls, key, value):
+          cls.entries[key] = value
 invalid:
 # Global statement
 - |
@@ -58,22 +80,7 @@ invalid:
 
   def check(order):
       _errors.append(order)
-# Mutating call on a class-level list through self
-- |
-  class ExampleCart:
-      items = []
-
-      def add(self, item):
-          self.items.append(item)
-# Subscript write to a class-level dict through cls
-- |
-  class ExampleRegistry:
-      entries = defaultdict(list)
-
-      @classmethod
-      def put(cls, key, value):
-          cls.entries[key] = value
-# Module-level dict assigned after another module-level name
+# Mutating call on a module-level set assigned after another module-level name
 - |
   LIMIT = 10
   _seen = set()
@@ -89,11 +96,60 @@ invalid:
           _handlers[kind] = handler
           return handler
       return register
-# Class-level list assigned after another class attribute
+# Attribute write on a module-level object
 - |
-  class ExampleCart:
-      label = "cart"
-      items = []
+  _context = ExampleContext()
 
-      def add(self, item):
-          self.items.append(item)
+  def set_locale(locale):
+      _context.locale = locale
+# Augmented attribute write on a module-level object
+- |
+  _stats = ExampleStats()
+
+  def record(order):
+      _stats.total += order.amount
+# Subscript write to an attribute of a module-level object
+- |
+  _state = ExampleState()
+
+  def remember(key, value):
+      _state.entries[key] = value
+# Mutating call on an attribute of a module-level object
+- |
+  _state = ExampleState()
+
+  def report(error):
+      _state.errors.append(error)
+# Self write: a method of a class that has a module-level instance
+- |
+  class ExampleEstimator:
+      def __init__(self, rate):
+          self.rate = rate
+          self.counted = 0
+
+      def minutes(self, words):
+          self.counted += words
+          return self.counted // self.rate
+
+  estimator = ExampleEstimator(rate=230)
+# Self subscript write: a method of a class that has a module-level instance
+- |
+  class ExampleCache:
+      def __init__(self):
+          self.entries = {}
+
+      def put(self, key, value):
+          self.entries[key] = value
+
+  cache = ExampleCache()
+# Self mutating call: a method of a class that has a module-level instance
+- |
+  class ExamplePrinter:
+      def __init__(self):
+          self.lines = []
+
+      def print(self, line):
+          self.lines.append(line)
+          return "\n".join(self.lines)
+
+  printer = ExamplePrinter()

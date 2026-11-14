@@ -1,12 +1,12 @@
 ---
 name: no-disinformation
-description: A function, method or class is never named with a verb, noun or qualifier that the code of that function, method or class makes false.
+description: A name that the author of a function, method or class chooses never has a verb, noun or qualifier that the code of that function, method or class makes false.
 ---
 
 # No Disinformation
 
-A function, method or class is never named with a verb, noun or qualifier that the code
-of that function, method or class makes false.
+A name that the author of a function, method or class chooses never has a verb, noun or
+qualifier that the code of that function, method or class makes false.
 
 ## Why
 

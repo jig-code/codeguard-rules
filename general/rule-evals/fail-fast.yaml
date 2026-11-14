@@ -196,7 +196,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a rate table typed to hold every invoice currency falls back to a rate of one
+- name: an invoice currency missing from the loaded exchange rates converts at a rate of one
   inputs:
     file: billing/convert.ts
     unchanged:
@@ -210,9 +210,9 @@ cases:
     after: |
       import type { Currency, Invoice } from "./invoice";
 
-      export function totalInEuroCents(invoice: Invoice, eurRates: Record<Currency, number>): number {
-        const rate = eurRates[invoice.currency] ?? 1;
-        return invoice.totalCents * rate;
+      export function totalInEuroCents(invoice: Invoice, eurRates: ReadonlyMap<Currency, number>): number {
+        const rate = eurRates.get(invoice.currency) ?? 1;
+        return Math.round(invoice.totalCents * rate);
       }
   expected_output:
     outcome: invalid
@@ -260,7 +260,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: meter readings that fail to parse are filtered out of a daily average
+- name: meter readings that fail to parse are filtered out of a daily total
   inputs:
     file: meters/daily.ts
     unchanged:
@@ -282,11 +282,11 @@ cases:
     after: |
       import { parseReading, type Reading } from "./reading";
 
-      export function dailyAverage(lines: string[]): number {
+      export function dailyTotalKwh(lines: string[]): number {
         const readings = lines
           .map((line) => parseReading(line))
           .filter((reading): reading is Reading => reading !== undefined);
-        return readings.reduce((sum, reading) => sum + reading.kwh, 0) / readings.length;
+        return readings.reduce((sum, reading) => sum + reading.kwh, 0);
       }
   expected_output:
     outcome: invalid
