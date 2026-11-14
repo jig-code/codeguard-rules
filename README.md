@@ -36,7 +36,7 @@ the languages it runs on.
 | `single-responsibility` | Single responsibility: a function or class never holds code that belongs to two different concerns (one set of business rules, one outside system, one file or message format), counting only the code written in a function's own body | Not yet |
 | `no-repeated-switches` | No repeated switches: code never chooses behaviour by which kind a value is (its class, or an enum member or tag naming its variant) in a second place over the same kinds, in the file or a module it imports, when the type checker would accept either place with a kind that has no branch or table entry of its own | Not yet |
 | `no-feature-envy` | No feature envy: code outside the module that defines one of the program's types never works out an answer the program's rules give about one value of that type from two or more of its fields alone, with no other program type and no constant or table of its own module | Not yet |
-| `fail-fast` | Fail fast: a failure, missing data or an impossible state is reported where it's found, so code the change adds doesn't swallow an error, default data that should exist, clamp an impossible value or drop the items that failed | Not yet |
+| `fail-fast` | Fail fast: code never turns an error an operation reports, data the program requires but finds missing, or a state the program's own rules make impossible into a result with which the work carries on as if it had not occurred | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:

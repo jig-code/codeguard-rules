@@ -1,5 +1,5 @@
 cases:
-- name: timesheet export swallows every payroll error, so a rejected sheet is reported as exported and the worker goes unpaid
+- name: a timesheet export catches every payroll error with a handler that does nothing
   inputs:
     file: payroll/export.py
     after: |
@@ -16,7 +16,7 @@ cases:
           return len(sheets)
   expected_output:
     outcome: invalid
-- name: timesheet export names the sheet the payroll system rejected and stops
+- name: a timesheet export raises its own error naming the sheet that the payroll system rejected
   inputs:
     file: payroll/export.py
     after: |
@@ -34,7 +34,7 @@ cases:
           return len(sheets)
   expected_output:
     outcome: valid
-- name: a missing webhook signing secret becomes an empty string, so every signature is checked against nothing
+- name: a missing webhook signing secret becomes an empty string
   inputs:
     file: webhooks/verify.py
     after: |
@@ -50,7 +50,7 @@ cases:
           return hmac.compare_digest(expected, signature)
   expected_output:
     outcome: invalid
-- name: an export batch size the operator may leave unset defaults to a working size
+- name: an export batch size that the operator may leave unset defaults to a working size
   inputs:
     file: exports/batches.py
     after: |
@@ -60,12 +60,12 @@ cases:
       BATCH_SIZE = int(os.environ.get("EXPORT_BATCH_SIZE", "500"))
 
 
-      def batches(rows: Sequence[dict]) -> Iterator[Sequence[dict]]:
+      def batches(rows: Sequence[dict[str, object]]) -> Iterator[Sequence[dict[str, object]]]:
           for start in range(0, len(rows), BATCH_SIZE):
               yield rows[start : start + BATCH_SIZE]
   expected_output:
     outcome: valid
-- name: seats left are clamped at zero although booking refuses to overbook, so an overbooked flight shows as merely full
+- name: seats left are clamped at zero although booking refuses to overbook
   inputs:
     file: flights/availability.py
     unchanged:
@@ -111,7 +111,7 @@ cases:
           return min(max(requested, 1), 100)
   expected_output:
     outcome: valid
-- name: statement import drops the rows that failed to parse, so the imported total no longer matches the bank's
+- name: a statement import drops the rows that failed to parse
   inputs:
     file: banking/statement_import.py
     unchanged:
@@ -139,7 +139,7 @@ cases:
           return [transaction for transaction in parsed if transaction is not None]
   expected_output:
     outcome: invalid
-- name: a dunning run picks the invoices past due and unpaid, which is the rule it applies
+- name: a dunning run picks the invoices that are past due and unpaid
   inputs:
     file: billing/dunning.py
     after: |
@@ -152,7 +152,7 @@ cases:
           return [invoice for invoice in invoices if invoice.due_on < today and invoice.paid_on is None]
   expected_output:
     outcome: valid
-- name: sums a shift's hours
+- name: a function that sums shifts' hours
   inputs:
     file: rota/hours.py
     after: |
@@ -164,7 +164,7 @@ cases:
           return sum(hours)
   expected_output:
     outcome: skipped
-- name: a failed price list load returns an empty list, so the shop shows every product as unavailable instead of an error
+- name: a failed price list load returns an empty list
   inputs:
     file: catalog/prices.ts
     after: |
@@ -179,7 +179,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a failed price list load is rethrown with what failed and its cause
+- name: a failed price list load is rethrown as the program's own error with its cause
   inputs:
     file: catalog/prices.ts
     after: |
@@ -196,7 +196,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a rate table typed to hold every invoice currency falls back to one to one, so a missing rate comes out in the wrong money
+- name: a rate table typed to hold every invoice currency falls back to a rate of one
   inputs:
     file: billing/convert.ts
     unchanged:
@@ -210,7 +210,7 @@ cases:
     after: |
       import type { Currency, Invoice } from "./invoice";
 
-      export function totalInEuros(invoice: Invoice, eurRates: Record<Currency, number>): number {
+      export function totalInEuroCents(invoice: Invoice, eurRates: Record<Currency, number>): number {
         const rate = eurRates[invoice.currency] ?? 1;
         return invoice.totalCents * rate;
       }
@@ -231,7 +231,36 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: meter readings that fail to parse are filtered out, so the average is taken over a partial day without saying so
+- name: units available are clamped at zero although reserving refuses more than is on hand
+  inputs:
+    file: inventory/availability.ts
+    unchanged:
+      inventory/item.ts: |
+        /** reserved never exceeds onHand: reserve() is the only code that changes it,
+         * and it refuses a reservation that would exceed onHand. */
+        export interface StockItem {
+          sku: string;
+          onHand: number;
+          reserved: number;
+        }
+
+        export class OutOfStock extends Error {}
+
+        export function reserve(item: StockItem, quantity: number): void {
+          if (item.reserved + quantity > item.onHand) {
+            throw new OutOfStock(item.sku);
+          }
+          item.reserved += quantity;
+        }
+    after: |
+      import type { StockItem } from "./item";
+
+      export function unitsAvailable(item: StockItem): number {
+        return Math.max(0, item.onHand - item.reserved);
+      }
+  expected_output:
+    outcome: invalid
+- name: meter readings that fail to parse are filtered out of a daily average
   inputs:
     file: meters/daily.ts
     unchanged:
@@ -261,7 +290,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a report keeps the meters whose readings exceeded their limit, which is what it reports
+- name: a report keeps the readings that exceeded their limit
   inputs:
     file: meters/alerts.ts
     after: |
