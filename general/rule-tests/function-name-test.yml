@@ -13,6 +13,12 @@ valid:
 - |
   class Order:
       pass
+# Name assigned a value that is not a lambda
+- |
+  submit = make_submitter()
+# Lambda passed as an argument
+- |
+  orders.sort(key=lambda order: order.total)
 invalid:
 # Module function name
 - |
@@ -27,3 +33,6 @@ invalid:
 - |
   async def submit(order):
       return order
+# Name assigned a lambda
+- |
+  submit = lambda order: order
