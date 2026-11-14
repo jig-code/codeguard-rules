@@ -73,3 +73,10 @@ invalid:
 
   class Order:
       pass
+# A public class and a functional dataclass
+- |
+  class Order:
+      pass
+
+
+  Line = make_dataclass("Line", [("sku", str)])

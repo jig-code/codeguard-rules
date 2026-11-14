@@ -158,6 +158,19 @@ cases:
       }
   expected_output:
     outcome: invalid
+- name: a hook returns its state and the function that flips it in the order the framework's state hook uses
+  inputs:
+    file: ui/useToggle.ts
+    after: |
+      import { useCallback, useState } from "react";
+
+      export function useToggle(initial: boolean): [boolean, () => void] {
+        const [on, setOn] = useState(initial);
+        const toggle = useCallback(() => setOn((value) => !value), []);
+        return [on, toggle];
+      }
+  expected_output:
+    outcome: valid
 - name: a CSV parser returns an object naming its rows and warnings
   inputs:
     file: imports/csv.ts

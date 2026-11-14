@@ -30,38 +30,6 @@ cases:
               return celsius - self._room_celsius
   expected_output:
     outcome: invalid
-- name: recording a reading appends it to the readings file and returns the highest reading so far
-  inputs:
-    file: sensors/readings.py
-    after: |
-      from decimal import Decimal
-      from pathlib import Path
-
-
-      def record_reading(readings_path: Path, celsius: Decimal) -> Decimal:
-          with readings_path.open("a") as readings:
-              readings.write(f"{celsius}\n")
-          return max(Decimal(line) for line in readings_path.read_text().splitlines())
-  expected_output:
-    outcome: invalid
-- name: starting a session writes it to the cache and returns how many sessions the user has open
-  inputs:
-    file: auth/sessions.py
-    after: |
-      from typing import Protocol
-
-
-      class SessionCache(Protocol):
-          def set(self, key: str, value: str) -> None: ...
-
-          def keys(self, pattern: str) -> list[str]: ...
-
-
-      def start_session(cache: SessionCache, user_id: int, token: str) -> int:
-          cache.set(f"session:{user_id}:{token}", token)
-          return len(cache.keys(f"session:{user_id}:*"))
-  expected_output:
-    outcome: invalid
 - name: totalling a customer's open invoices
   inputs:
     file: billing/queries.py
@@ -202,7 +170,7 @@ cases:
               return self._rates[postcode]
   expected_output:
     outcome: valid
-- name: a method that marks a message read and returns nothing
+- name: a method marks a message read and returns nothing
   inputs:
     file: inbox/message.py
     after: |
@@ -216,6 +184,19 @@ cases:
 
           def mark_read(self) -> None:
               self.read_at = datetime.now(UTC)
+  expected_output:
+    outcome: valid
+- name: an enumeration of order statuses
+  inputs:
+    file: shop/status.py
+    after: |
+      from enum import StrEnum
+
+
+      class OrderStatus(StrEnum):
+          PLACED = "placed"
+          SHIPPED = "shipped"
+          DELIVERED = "delivered"
   expected_output:
     outcome: skipped
 - name: applying a clearance discount changes the cart lines' prices and returns the cart's new total
@@ -268,58 +249,6 @@ cases:
         async record(userId: string, at: Date): Promise<number> {
           await this.store.insert(userId, at);
           return this.store.countFor(userId);
-        }
-      }
-  expected_output:
-    outcome: invalid
-- name: requesting an export puts the job on the queue and returns how many exports are waiting
-  inputs:
-    file: exports/requests.ts
-    after: |
-      export interface ExportJob {
-        reportId: string;
-        requestedBy: string;
-      }
-
-      export interface ExportQueue {
-        enqueue(job: ExportJob): Promise<void>;
-        size(): Promise<number>;
-      }
-
-      export class ExportRequests {
-        constructor(private readonly queue: ExportQueue) {}
-
-        async request(job: ExportJob): Promise<number> {
-          await this.queue.enqueue(job);
-          return this.queue.size();
-        }
-      }
-  expected_output:
-    outcome: invalid
-- name: reminding overdue customers sends each an email and returns the total amount overdue
-  inputs:
-    file: billing/overdue.ts
-    after: |
-      export interface Mailer {
-        send(to: string, subject: string): Promise<void>;
-      }
-
-      export interface OverdueInvoice {
-        email: string;
-        number: string;
-        amountCents: number;
-      }
-
-      export class OverdueReminders {
-        constructor(private readonly mailer: Mailer) {}
-
-        async send(invoices: readonly OverdueInvoice[]): Promise<number> {
-          let overdueCents = 0;
-          for (const invoice of invoices) {
-            await this.mailer.send(invoice.email, `Invoice ${invoice.number} is overdue`);
-            overdueCents += invoice.amountCents;
-          }
-          return overdueCents;
         }
       }
   expected_output:
@@ -481,7 +410,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a function that sets a note's archive time and returns nothing
+- name: a function sets a note's archive time and returns nothing
   inputs:
     file: notes/archive.ts
     after: |

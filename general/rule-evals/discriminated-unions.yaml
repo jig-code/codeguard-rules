@@ -1,103 +1,69 @@
 cases:
-- name: a pydantic field is a union of tagged payment models with no discriminator named
+- name: a variant of a tagged union of typed dicts declares its tag as a plain string
   inputs:
-    file: payments/schemas.py
+    file: payments/types.py
     after: |
-      from decimal import Decimal
-      from typing import Literal
-
-      from pydantic import BaseModel
+      from typing import Literal, TypedDict
 
 
-      class CardPayment(BaseModel):
-          kind: Literal["card"] = "card"
+      class CardPayment(TypedDict):
+          kind: Literal["card"]
           card_token: str
 
 
-      class BankPayment(BaseModel):
-          kind: Literal["bank"] = "bank"
+      class BankPayment(TypedDict):
+          kind: str
           iban: str
 
 
-      class CheckoutIn(BaseModel):
-          amount: Decimal
-          payment: CardPayment | BankPayment
+      Payment = CardPayment | BankPayment
   expected_output:
     outcome: invalid
-- name: a variant of a discriminated union declares its tag as a plain string
+- name: two variants of a tagged union of dataclasses share a tag value
   inputs:
-    file: payments/schemas.py
+    file: events/types.py
     after: |
-      from decimal import Decimal
+      from dataclasses import dataclass
       from typing import Literal
 
-      from pydantic import BaseModel, Field
 
-
-      class CardPayment(BaseModel):
-          kind: Literal["card"] = "card"
-          card_token: str
-
-
-      class BankPayment(BaseModel):
-          kind: str = "bank"
-          iban: str
-
-
-      class CheckoutIn(BaseModel):
-          amount: Decimal
-          payment: CardPayment | BankPayment = Field(discriminator="kind")
-  expected_output:
-    outcome: invalid
-- name: two variants of a discriminated union share a tag value
-  inputs:
-    file: events/schemas.py
-    after: |
-      from typing import Annotated, Literal
-
-      from pydantic import BaseModel, Field
-
-
-      class OrderPlaced(BaseModel):
-          type: Literal["order"] = "order"
+      @dataclass(frozen=True)
+      class OrderPlaced:
           order_id: str
-
-
-      class OrderCancelled(BaseModel):
           type: Literal["order"] = "order"
+
+
+      @dataclass(frozen=True)
+      class OrderCancelled:
           order_id: str
           reason: str
+          type: Literal["order"] = "order"
 
 
-      Event = Annotated[OrderPlaced | OrderCancelled, Field(discriminator="type")]
+      Event = OrderPlaced | OrderCancelled
   expected_output:
     outcome: invalid
-- name: a pydantic field names its discriminator over uniquely tagged models
+- name: a tagged union of typed dicts gives each variant its own tag value
   inputs:
-    file: payments/schemas.py
+    file: payments/types.py
     after: |
-      from decimal import Decimal
-      from typing import Literal
-
-      from pydantic import BaseModel, Field
+      from typing import Literal, TypedDict
 
 
-      class CardPayment(BaseModel):
-          kind: Literal["card"] = "card"
+      class CardPayment(TypedDict):
+          kind: Literal["card"]
           card_token: str
 
 
-      class BankPayment(BaseModel):
-          kind: Literal["bank"] = "bank"
+      class BankPayment(TypedDict):
+          kind: Literal["bank"]
           iban: str
 
 
-      class CheckoutIn(BaseModel):
-          amount: Decimal
-          payment: CardPayment | BankPayment = Field(discriminator="kind")
+      Payment = CardPayment | BankPayment
   expected_output:
     outcome: valid
-- name: a union of dataclasses the program builds is told apart by class
+- name: a union of dataclasses is told apart by class
   inputs:
     file: billing/charges.py
     after: |
@@ -137,64 +103,33 @@ cases:
           return f"{amount:.2f} {currency}"
   expected_output:
     outcome: skipped
-- name: a zod union of tagged object schemas names no discriminator
+- name: a variant of a tagged union of object types declares its tag as any string
   inputs:
-    file: payments/schema.ts
+    file: payments/types.ts
     after: |
-      import { z } from "zod";
+      export type CardPayment = { kind: "card"; cardToken: string };
+      export type BankPayment = { kind: string; iban: string };
 
-      const cardPayment = z.object({ kind: z.literal("card"), cardToken: z.string() });
-      const bankPayment = z.object({ kind: z.literal("bank"), iban: z.string() });
-
-      export const checkoutSchema = z.object({
-        amount: z.number().positive(),
-        payment: z.union([cardPayment, bankPayment]),
-      });
+      export type Payment = CardPayment | BankPayment;
   expected_output:
     outcome: invalid
-- name: a zod discriminated union variant declares its tag as any string
+- name: two variants of a tagged union of object types share a tag value
   inputs:
-    file: payments/schema.ts
+    file: events/types.ts
     after: |
-      import { z } from "zod";
+      export type OrderPlaced = { type: "order"; orderId: string };
+      export type OrderCancelled = { type: "order"; orderId: string; reason: string };
 
-      const cardPayment = z.object({ kind: z.literal("card"), cardToken: z.string() });
-      const bankPayment = z.object({ kind: z.string(), iban: z.string() });
-
-      export const checkoutSchema = z.object({
-        amount: z.number().positive(),
-        payment: z.discriminatedUnion("kind", [cardPayment, bankPayment]),
-      });
+      export type OrderEvent = OrderPlaced | OrderCancelled;
   expected_output:
     outcome: invalid
-- name: two zod object schemas in a discriminated union share a tag value
+- name: a tagged union of object types gives each variant its own tag value
   inputs:
-    file: events/schema.ts
+    file: payments/types.ts
     after: |
-      import { z } from "zod";
+      export type CardPayment = { kind: "card"; cardToken: string };
+      export type BankPayment = { kind: "bank"; iban: string };
 
-      const orderPlaced = z.object({ type: z.literal("order"), orderId: z.string() });
-      const orderCancelled = z.object({
-        type: z.literal("order"),
-        orderId: z.string(),
-        reason: z.string(),
-      });
-
-      export const eventSchema = z.discriminatedUnion("type", [orderPlaced, orderCancelled]);
-  expected_output:
-    outcome: invalid
-- name: a zod discriminated union of uniquely tagged object schemas
-  inputs:
-    file: payments/schema.ts
-    after: |
-      import { z } from "zod";
-
-      const cardPayment = z.object({ kind: z.literal("card"), cardToken: z.string() });
-      const bankPayment = z.object({ kind: z.literal("bank"), iban: z.string() });
-
-      export const checkoutSchema = z.object({
-        amount: z.number().positive(),
-        payment: z.discriminatedUnion("kind", [cardPayment, bankPayment]),
-      });
+      export type Payment = CardPayment | BankPayment;
   expected_output:
     outcome: valid

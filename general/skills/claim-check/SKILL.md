@@ -1,14 +1,12 @@
 ---
 name: claim-check
-description: A record that the program stores and loads again by its id never crosses into work that runs later or in another process through a call that serializes the call's arguments, whether the call passes the record, passes a copy of all the record's fields, or runs a function that takes the record as a parameter.
+description: A record that the program stores and loads again by its id never reaches work that is queued to run later or in another process as a copy of that record.
 ---
 
 # Claim Check
 
-A record that the program stores and loads again by its id never crosses into work that
-runs later or in another process through a call that serializes the call's arguments,
-whether the call passes the record, passes a copy of all the record's fields, or runs a
-function that takes the record as a parameter.
+A record that the program stores and loads again by its id never reaches work that is
+queued to run later or in another process as a copy of that record.
 
 ## Why
 

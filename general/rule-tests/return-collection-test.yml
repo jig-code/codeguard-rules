@@ -30,6 +30,18 @@ valid:
   def review(order) -> OrderReview:
       result = build(order)
       return result
+# Returns a variable that holds a plain value
+- |
+  def total(orders):
+      result = sum(order.total for order in orders)
+      return result
+# Builds a tuple in a variable and returns another value
+- |
+  def ship(order):
+      pair = (order.carrier, order.number)
+      number = order.number
+      send(pair)
+      return number
 invalid:
 # Returns a bare tuple
 - |
@@ -63,4 +75,22 @@ invalid:
 # Function annotated to return a typing Tuple
 - |
   def review() -> Tuple[str, bool]:
+      return result
+# Returns a list literal
+- |
+  def review():
+      return [reason, held]
+# Returns a dict built in a variable
+- |
+  def pack(a, b):
+      result = {'a': a, 'b': b}
+      return result
+# Returns a tuple built in a variable
+- |
+  def review():
+      result = reason, held
+      return result
+# Function annotated to return a qualified typing Tuple
+- |
+  def review() -> typing.Tuple[str, bool]:
       return result

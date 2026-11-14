@@ -1,0 +1,38 @@
+id: class-creation-call
+snapshots:
+  "LowStockAlerter = type(\"LowStockAlerter\", (SmsGateway,), {\"threshold\": 5})\n":
+    labels:
+    - source: "type(\"LowStockAlerter\", (SmsGateway,), {\"threshold\": 5})"
+      style: primary
+      start: 18
+      end: 74
+    - source: type
+      style: secondary
+      start: 18
+      end: 22
+    - source: "{\"threshold\": 5}"
+      style: secondary
+      start: 57
+      end: 73
+    - source: "{\"threshold\": 5}"
+      style: secondary
+      start: 57
+      end: 73
+  "LowStockAlerter = types.new_class(\"LowStockAlerter\", (SmsGateway,))\n":
+    labels:
+    - source: types.new_class("LowStockAlerter", (SmsGateway,))
+      style: primary
+      start: 18
+      end: 67
+    - source: types.new_class
+      style: secondary
+      start: 18
+      end: 33
+    - source: (SmsGateway,)
+      style: secondary
+      start: 53
+      end: 66
+    - source: (SmsGateway,)
+      style: secondary
+      start: 53
+      end: 66

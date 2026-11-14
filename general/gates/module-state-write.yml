@@ -3,46 +3,32 @@ language: python
 rule:
   any:
   - kind: global_statement
-  - any:
-    - kind: assignment
-    - kind: augmented_assignment
-    all:
-    - has:
-        field: left
-        kind: subscript
-        has:
-          field: value
-          kind: identifier
-          pattern: $N
+  - all:
+    - any:
+      - kind: assignment
+      - kind: augmented_assignment
     - inside:
         kind: function_definition
         stopBy: end
-    - inside:
-        kind: module
-        stopBy: end
-        has:
-          kind: expression_statement
-          has:
-            kind: assignment
-            has:
-              field: left
-              pattern: $N
-  - kind: call
-    all:
     - has:
-        field: function
-        kind: attribute
-        all:
-        - has:
+        field: left
+        any:
+        - kind: subscript
+          has:
+            field: value
+            any:
+            - kind: identifier
+              pattern: $N
+            - kind: attribute
+              has:
+                field: object
+                kind: identifier
+                pattern: $N
+        - kind: attribute
+          has:
             field: object
             kind: identifier
             pattern: $N
-        - has:
-            field: attribute
-            regex: ^(append|extend|insert|add|update|setdefault|pop|popitem|clear|remove|discard|appendleft)$
-    - inside:
-        kind: function_definition
-        stopBy: end
     - inside:
         kind: module
         stopBy: end
@@ -53,79 +39,88 @@ rule:
             has:
               field: left
               pattern: $N
-  - any:
-    - kind: assignment
-    - kind: augmented_assignment
-    all:
-    - has:
-        field: left
-        kind: subscript
-        has:
-          field: value
-          kind: attribute
-          regex: ^(self|cls)\.
-          has:
-            field: attribute
-            pattern: $N
-    - inside:
-        kind: class_definition
-        stopBy: end
-        has:
-          field: body
-          has:
-            kind: expression_statement
-            has:
-              kind: assignment
-              all:
-              - has:
-                  field: left
-                  pattern: $N
-              - has:
-                  field: right
-                  any:
-                  - kind: list
-                  - kind: dictionary
-                  - kind: set
-                  - kind: call
-                    has:
-                      field: function
-                      regex: ^(\w+\.)?(list|dict|set|defaultdict|OrderedDict|Counter|deque)$
   - kind: call
     all:
+    - inside:
+        kind: function_definition
+        stopBy: end
     - has:
         field: function
         kind: attribute
         all:
         - has:
             field: object
-            kind: attribute
-            regex: ^(self|cls)\.
-            has:
-              field: attribute
+            any:
+            - kind: identifier
               pattern: $N
+            - kind: attribute
+              has:
+                field: object
+                kind: identifier
+                pattern: $N
         - has:
             field: attribute
-            regex: ^(append|extend|insert|add|update|setdefault|pop|popitem|clear|remove|discard|appendleft)$
+            regex: ^(append|extend|insert|add|update|setdefault|pop|popitem|clear|remove|discard|appendleft|extendleft)$
+    - inside:
+        kind: module
+        stopBy: end
+        has:
+          kind: expression_statement
+          has:
+            kind: assignment
+            has:
+              field: left
+              pattern: $N
+  - all:
+    - any:
+      - all:
+        - any:
+          - kind: assignment
+          - kind: augmented_assignment
+        - has:
+            field: left
+            any:
+            - kind: attribute
+              has: {field: object, kind: identifier, regex: ^self$}
+            - kind: subscript
+              has:
+                field: value
+                kind: attribute
+                has: {field: object, kind: identifier, regex: ^self$}
+      - kind: call
+        has:
+          field: function
+          kind: attribute
+          all:
+          - has:
+              field: object
+              kind: attribute
+              has: {field: object, kind: identifier, regex: ^self$}
+          - has:
+              field: attribute
+              regex: ^(append|extend|insert|add|update|setdefault|pop|popitem|clear|remove|discard|appendleft|extendleft)$
+    - inside:
+        kind: function_definition
+        stopBy: end
+        not:
+          has: {field: name, regex: ^__init__$}
     - inside:
         kind: class_definition
         stopBy: end
         has:
-          field: body
+          field: name
+          pattern: $C
+    - inside:
+        kind: module
+        stopBy: end
+        has:
+          kind: expression_statement
           has:
-            kind: expression_statement
+            kind: assignment
             has:
-              kind: assignment
-              all:
-              - has:
-                  field: left
-                  pattern: $N
-              - has:
-                  field: right
-                  any:
-                  - kind: list
-                  - kind: dictionary
-                  - kind: set
-                  - kind: call
-                    has:
-                      field: function
-                      regex: ^(\w+\.)?(list|dict|set|defaultdict|OrderedDict|Counter|deque)$
+              field: right
+              kind: call
+              has:
+                field: function
+                kind: identifier
+                pattern: $C

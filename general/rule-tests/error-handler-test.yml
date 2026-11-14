@@ -14,6 +14,18 @@ valid:
 - |
   with example_lock:
       example_ledger.post(example_entry)
+# finally that only cleans up
+- |
+  def example_post(example_ledger, example_entry):
+      try:
+          example_ledger.post(example_entry)
+      finally:
+          example_ledger.close()
+      return example_entry.id
+# gather that lets errors propagate
+- |
+  async def example_run_all(example_tasks):
+      return await asyncio.gather(*example_tasks)
 invalid:
 # except clause that passes
 - |
@@ -47,3 +59,14 @@ invalid:
 - |
   with suppress(Exception):
       example_ledger.post(example_entry)
+# return inside finally
+- |
+  def example_post(example_ledger, example_entry):
+      try:
+          example_ledger.post(example_entry)
+      finally:
+          return example_entry.id
+# gather that returns errors as results
+- |
+  async def example_run_all(example_tasks):
+      return await asyncio.gather(*example_tasks, return_exceptions=True)

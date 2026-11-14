@@ -5,6 +5,10 @@ valid:
   class FakeQueue:
       def enqueue(self, name, message):
           self.messages.append(message)
+# A lambda bound in the body of a class with no base class
+- |
+  class FakeQueue:
+      size = lambda self: 0
 # A class whose only argument is a metaclass, with no base class
 - |
   class PluginRegistry(metaclass=RegistryMeta):
@@ -72,3 +76,7 @@ invalid:
   class Testimonial(Card):
       def render(self):
           return self.quote
+# A lambda bound in a subclass's body
+- |
+  class EmptyQueue(FakeQueue):
+      size = lambda self: 0
