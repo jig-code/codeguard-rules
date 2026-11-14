@@ -131,7 +131,7 @@ cases:
         const warnings: string[] = [];
         for (const [index, line] of text.trim().split("\n").entries()) {
           const [sku, quantity] = line.split(",");
-          const parsed = Number(quantity);
+          const parsed = Number.parseInt(quantity ?? "", 10);
           if (!sku || Number.isNaN(parsed)) {
             warnings.push(`line ${index + 1} skipped`);
             continue;
@@ -142,19 +142,22 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a React hook returns its value and setter
+- name: a signup check returns a flag and its errors in a string-keyed record
   inputs:
-    file: ui/useToggle.ts
+    file: signup/validation.ts
     after: |
-      import { useCallback, useState } from "react";
-
-      export function useToggle(initial: boolean): [boolean, () => void] {
-        const [on, setOn] = useState(initial);
-        const toggle = useCallback(() => setOn((value) => !value), []);
-        return [on, toggle];
+      export function checkSignup(email: string, password: string): Record<string, unknown> {
+        const errors: string[] = [];
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+          errors.push("email is not valid");
+        }
+        if (password.length < 12) {
+          errors.push("password is shorter than 12 characters");
+        }
+        return { valid: errors.length === 0, errors };
       }
   expected_output:
-    outcome: valid
+    outcome: invalid
 - name: a CSV parser returns an object naming its rows and warnings
   inputs:
     file: imports/csv.ts
@@ -169,7 +172,7 @@ cases:
         const warnings: string[] = [];
         for (const [index, line] of text.trim().split("\n").entries()) {
           const [sku, quantity] = line.split(",");
-          const parsed = Number(quantity);
+          const parsed = Number.parseInt(quantity ?? "", 10);
           if (!sku || Number.isNaN(parsed)) {
             warnings.push(`line ${index + 1} skipped`);
             continue;

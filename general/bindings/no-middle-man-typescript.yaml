@@ -1,8 +1,0 @@
-rule: no-middle-man-typescript
-paths: ["**/*.ts", "**/*.tsx"]
-exclude_paths:
-  - "**/tests/**"
-  - "**/*.test.ts"
-  - "**/*.test.tsx"
-  - "**/*.spec.ts"
-  - "**/*.spec.tsx"
