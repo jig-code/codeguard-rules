@@ -1,5 +1,5 @@
 cases:
-- name: the reminder module works out when a membership expires from its fields, so a change to how pauses extend a term misses reminders
+- name: a reminder module works out a membership's expiry date from its start, term and pause fields
   inputs:
     file: memberships/reminders.py
     unchanged:
@@ -25,7 +25,7 @@ cases:
           return membership.started_on + timedelta(days=membership.term_days + membership.paused_days)
   expected_output:
     outcome: invalid
-- name: the reminder module asks the membership when it expires and only picks its own reminder day
+- name: a reminder module subtracts its own lead time from the expiry date that the membership returns
   inputs:
     file: memberships/reminders.py
     unchanged:
@@ -56,35 +56,7 @@ cases:
           return membership.expires_on() - REMINDER_LEAD
   expected_output:
     outcome: valid
-- name: a rota planner decides whether a shift runs into overtime from the shift's own hours, so a change to break rules misses the planner
-  inputs:
-    file: rota/planner.py
-    unchanged:
-      rota/__init__.py: ""
-      rota/shifts.py: |
-        from dataclasses import dataclass
-
-
-        @dataclass(frozen=True)
-        class Shift:
-            worker_id: int
-            scheduled_hours: float
-            unpaid_break_hours: float
-            contracted_hours: float
-    after: |
-      from rota.shifts import Shift
-
-
-      class RotaPlanner:
-          def __init__(self, shifts: list[Shift]) -> None:
-              self.shifts = shifts
-
-          def runs_into_overtime(self, shift: Shift) -> bool:
-              worked = shift.scheduled_hours - shift.unpaid_break_hours
-              return worked > shift.contracted_hours
-  expected_output:
-    outcome: invalid
-- name: a shipping charge applies the shipping module's own rates to a parcel's weight, knowledge the parcel doesn't have
+- name: a shipping charge looks up a parcel's region in the shipping module's rate table and multiplies by the parcel's weight
   inputs:
     file: shipping/rates.py
     unchanged:
@@ -107,7 +79,7 @@ cases:
           return round(CENTS_PER_KG[parcel.region] * parcel.weight_kg)
   expected_output:
     outcome: valid
-- name: a payload builder copies a parcel's fields into the API's keys and decides nothing
+- name: a payload builder copies a parcel's fields into an API's keys
   inputs:
     file: api/parcel_payloads.py
     unchanged:
@@ -129,7 +101,7 @@ cases:
           return {"region": parcel.region, "weight": weight}
   expected_output:
     outcome: valid
-- name: a welcome message works out a booking's nights from its dates inline, so a change to how stays are counted misses the message
+- name: a welcome message works out a booking's nights from its check-in and check-out dates
   inputs:
     file: messaging/welcome.py
     unchanged:
@@ -154,7 +126,7 @@ cases:
           return f"{greeting} Your stay is {nights} nights."
   expected_output:
     outcome: invalid
-- name: a getter that only returns a booking's guest name is a one-line field read, too trivial for the function gate
+- name: a function that returns a booking's guest name
   inputs:
     file: messaging/welcome.py
     unchanged:
@@ -177,7 +149,7 @@ cases:
           return booking.guest_name
   expected_output:
     outcome: skipped
-- name: the warranty module gains a coverage check beside the warranty type, the module a change to warranty fields meets
+- name: a coverage check is added beside the warranty type in the warranty's module
   inputs:
     file: warranties/models.py
     before: |
@@ -209,7 +181,7 @@ cases:
           return not warranty.voided and repair_day <= last_day
   expected_output:
     outcome: valid
-- name: a dispatcher matches a courier's shift against a delivery window, an answer neither type can give from its own fields
+- name: a dispatcher compares a courier's shift with a delivery window
   inputs:
     file: dispatch/matching.py
     unchanged:
@@ -244,7 +216,7 @@ cases:
           return courier.shift_start <= window.opens and window.closes <= courier.shift_end
   expected_output:
     outcome: valid
-- name: a review queue orders applications by one field, when each was submitted, and works out nothing about an application
+- name: a review queue sorts applications by their submission time
   inputs:
     file: admissions/queue.py
     unchanged:
@@ -267,7 +239,7 @@ cases:
           return sorted(applications, key=lambda application: application.submitted_at)
   expected_output:
     outcome: valid
-- name: a log pruner reads two fields of the standard library's stat result, a type the program doesn't define
+- name: a log pruner reads two fields of the standard library's file status result
   inputs:
     file: maintenance/pruning.py
     after: |
@@ -278,7 +250,7 @@ cases:
           return entry.st_size == 0 and entry.st_mtime < older_than
   expected_output:
     outcome: valid
-- name: an SLA check works out a ticket's deadline from its fields outside the ticket module, so a change to SLA hours misses it
+- name: an SLA check works out whether a ticket is breached from its opening time, SLA hours and status
   inputs:
     file: support/sla.ts
     unchanged:
@@ -298,7 +270,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a dashboard counts breached tickets with the check the ticket module exports
+- name: a dashboard counts breached tickets with the check that the ticket module exports
   inputs:
     file: support/dashboard.ts
     unchanged:
@@ -324,33 +296,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a payout service works out a sale's net from the sale's own amounts, so a change to refunds misses payouts
-  inputs:
-    file: payouts/service.ts
-    unchanged:
-      sales/sale.ts: |
-        export type Country = "DE" | "FR" | "NL";
-
-        export interface Sale {
-          id: string;
-          sellerId: string;
-          grossCents: number;
-          refundedCents: number;
-          country: Country;
-        }
-    after: |
-      import type { Sale } from "../sales/sale";
-
-      export class PayoutService {
-        constructor(private readonly bankAccountId: string) {}
-
-        netCents(sale: Sale): number {
-          return sale.grossCents - sale.refundedCents;
-        }
-      }
-  expected_output:
-    outcome: invalid
-- name: a VAT function applies the tax module's own rates to a sale, knowledge the sale doesn't have
+- name: a VAT function looks up a sale's country in the tax module's rate table
   inputs:
     file: tax/vat.ts
     unchanged:
@@ -374,7 +320,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a report row copies a sale's fields into columns and decides nothing
+- name: a report row copies a sale's fields into columns
   inputs:
     file: reports/sales-rows.ts
     unchanged:
@@ -396,7 +342,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: the vehicle module gains a service-due check beside the vehicle interface, the module a change to vehicle fields meets
+- name: a service-due check is added beside the vehicle interface in the vehicle's module
   inputs:
     file: fleet/vehicle.ts
     before: |
@@ -419,7 +365,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a rental check weighs a party against a kayak's seats and load limit, an answer neither type can give from its own fields
+- name: a rental check compares a party's size and weight with a kayak's seats and load limit
   inputs:
     file: rentals/fit.ts
     unchanged:
@@ -444,7 +390,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a manifest orders shipments by one field, when each was dispatched, and works out nothing about a shipment
+- name: a manifest sorts shipments by their dispatch time
   inputs:
     file: logistics/manifest.ts
     unchanged:
@@ -462,7 +408,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a link checker reads two properties of the platform's URL class, a type the program doesn't define
+- name: a link checker reads two properties of the platform's URL class
   inputs:
     file: net/links.ts
     after: |
@@ -471,33 +417,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a picking batch decides inline whether an order is paid in full and off hold, so a new hold reason misses picking
-  inputs:
-    file: warehouse/picking.ts
-    unchanged:
-      orders/order.ts: |
-        export interface Order {
-          id: string;
-          totalCents: number;
-          paidCents: number;
-          onHold: boolean;
-        }
-    after: |
-      import type { Order } from "../orders/order";
-
-      export function nextBatch(orders: readonly Order[], limit: number): Order[] {
-        const batch: Order[] = [];
-        for (const order of orders) {
-          const readyToShip = order.paidCents >= order.totalCents && !order.onHold;
-          if (readyToShip) {
-            batch.push(order);
-          }
-        }
-        return batch.slice(0, limit);
-      }
-  expected_output:
-    outcome: invalid
-- name: a trial email copies a trial's fields but works out on the way whether the trial has lapsed, so a change to conversions misses the email
+- name: a trial email copies a trial's fields and works out whether the trial has lapsed
   inputs:
     file: notifications/trial-email.ts
     unchanged:

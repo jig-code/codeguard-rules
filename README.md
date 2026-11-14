@@ -35,7 +35,7 @@ the languages it runs on.
 | `domain-logic-separate-from-io` | Domain logic separate from I/O: a function whose own code applies business rules never reads or changes anything outside the program's memory, directly or through a function it calls | Not yet |
 | `single-responsibility` | Single responsibility: a function or class never holds code that belongs to two different concerns (one set of business rules, one outside system, one file or message format), counting only the code written in a function's own body | Not yet |
 | `no-repeated-switches` | No repeated switches: code never chooses behaviour by which kind a value is (its class, or an enum member or tag naming its variant) in a second place over the same kinds, in the file or a module it imports, when the type checker would accept either place with a kind that has no branch or table entry of its own | Not yet |
-| `no-feature-envy` | No feature envy: a domain answer computed from one type's data lives in that type's module, so code elsewhere doesn't work an answer out from one value's fields alone | Not yet |
+| `no-feature-envy` | No feature envy: code outside the module that defines one of the program's types never works out an answer the program's rules give about one value of that type from two or more of its fields alone, with no other program type and no constant or table of its own module | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
