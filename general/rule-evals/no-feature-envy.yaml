@@ -250,7 +250,7 @@ cases:
           return entry.st_size == 0 and entry.st_mtime < older_than
   expected_output:
     outcome: valid
-- name: an SLA check works out whether a ticket is breached from its opening time, SLA hours and status
+- name: an SLA module works out a ticket's response deadline from its opening time and SLA hours
   inputs:
     file: support/sla.ts
     unchanged:
@@ -264,9 +264,8 @@ cases:
     after: |
       import type { Ticket } from "./ticket";
 
-      export function isBreached(ticket: Ticket, now: Date): boolean {
-        const deadline = ticket.openedAt.getTime() + ticket.slaHours * 3_600_000;
-        return ticket.status !== "closed" && deadline < now.getTime();
+      export function responseDeadline(ticket: Ticket): Date {
+        return new Date(ticket.openedAt.getTime() + ticket.slaHours * 3_600_000);
       }
   expected_output:
     outcome: invalid
@@ -417,7 +416,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a trial email copies a trial's fields and works out whether the trial has lapsed
+- name: a trial email copies a trial's fields and works out whether the trial converted before it ended
   inputs:
     file: notifications/trial-email.ts
     unchanged:
@@ -434,14 +433,14 @@ cases:
       export interface TrialEmail {
         to: string;
         workspace: string;
-        lapsed: boolean;
+        convertedEarly: boolean;
       }
 
-      export function trialEmail(trial: Trial, now: Date): TrialEmail {
+      export function trialEmail(trial: Trial): TrialEmail {
         return {
           to: trial.ownerEmail,
           workspace: trial.workspaceName,
-          lapsed: trial.convertedAt === null && trial.endsAt.getTime() <= now.getTime(),
+          convertedEarly: trial.convertedAt !== null && trial.convertedAt.getTime() < trial.endsAt.getTime(),
         };
       }
   expected_output:

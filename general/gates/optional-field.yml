@@ -3,20 +3,29 @@ language: python
 rule:
   any:
   - kind: assignment
-    has:
-      field: type
-      regex: \bNone\b|\bOptional\[
-    any:
-    - inside:
-        kind: expression_statement
-        inside:
-          kind: block
+    all:
+    - any:
+      - has:
+          field: type
+          regex: \bNone\b|\bOptional\[|\bNotRequired\[
+      - has:
+          field: right
+          kind: none
+    - any:
+      - inside:
+          kind: expression_statement
           inside:
-            kind: class_definition
-            field: body
-    - has:
-        field: left
-        kind: attribute
-        regex: ^self\.
+            kind: block
+            inside:
+              kind: class_definition
+              field: body
+      - has:
+          field: left
+          kind: attribute
+          regex: ^self\.
   - kind: keyword_argument
-    regex: ^(null|nullable)\s*=\s*True$
+    regex: ^total\s*=\s*False$
+    inside:
+      kind: argument_list
+      inside:
+        kind: class_definition

@@ -24,3 +24,8 @@ invalid:
   class Order:
       class Line:
           pass
+# Decorated class name
+- |
+  @dataclass
+  class OrderSubmitter:
+      pass

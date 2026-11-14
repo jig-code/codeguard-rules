@@ -64,7 +64,7 @@ cases:
           fixture.home_club.stadium.last_attendance = spectators
   expected_output:
     outcome: invalid
-- name: billing calls the insurer's method through the appointment's and the patient's Django foreign keys
+- name: billing calls the insurer's method through the appointment's and the patient's foreign keys
   inputs:
     file: clinic/billing.py
     unchanged: &clinic_models
@@ -102,7 +102,7 @@ cases:
           appointment.patient.insurer.submit_claim(appointment.fee_cents)
   expected_output:
     outcome: invalid
-- name: a reminder reads the patient's phone number through the appointment's Django foreign key
+- name: a reminder reads the patient's phone number through the appointment's foreign key
   inputs:
     file: clinic/reminders.py
     unchanged: *clinic_models
@@ -166,7 +166,7 @@ cases:
               self._shipments.get(shipment_id).dispatch()
   expected_output:
     outcome: valid
-- name: a view queries the signed-in user's Django groups for editors
+- name: a view queries the groups of the signed-in user that the framework's request holds
   inputs:
     file: articles/views.py
     after: |
@@ -195,7 +195,7 @@ cases:
           return email.utils.formataddr((display_name, Sender.SUPPORT.value))
   expected_output:
     outcome: valid
-- name: a query chains a SQLAlchemy select through where, order_by and limit
+- name: a query chains a library's select through where, order_by and limit
   inputs:
     file: library/queries.py
     unchanged:
@@ -449,7 +449,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a Next.js route handler reads a preview flag from the request's URL search params
+- name: a route handler reads a preview flag from the search params of the framework request's URL
   inputs:
     file: app/api/page/route.ts
     after: |
@@ -460,7 +460,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: an asset path joins segments with the node path module's posix join
+- name: an asset path joins segments with the runtime path module's posix join
   inputs:
     file: assets/paths.ts
     after: |

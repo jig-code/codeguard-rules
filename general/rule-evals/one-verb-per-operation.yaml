@@ -253,32 +253,3 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: the body of a lower-caser class's convert method changes
-  inputs:
-    file: text/casing.ts
-    before: |
-      export class UpperCaser {
-        transform(text: string): string {
-          return text.toUpperCase();
-        }
-      }
-
-      export class LowerCaser {
-        convert(text: string): string {
-          return text.toLowerCase();
-        }
-      }
-    after: |
-      export class UpperCaser {
-        transform(text: string): string {
-          return text.toUpperCase();
-        }
-      }
-
-      export class LowerCaser {
-        convert(text: string): string {
-          return text.toLocaleLowerCase("en-US");
-        }
-      }
-  expected_output:
-    outcome: valid

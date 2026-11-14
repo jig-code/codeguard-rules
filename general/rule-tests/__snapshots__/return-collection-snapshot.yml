@@ -24,6 +24,39 @@ snapshots:
       style: secondary
       start: 24
       end: 32
+  "def pack(a, b):\n    result = {'a': a, 'b': b}\n    return result\n":
+    labels:
+    - source: return result
+      style: primary
+      start: 50
+      end: 63
+    - source: result
+      style: secondary
+      start: 20
+      end: 26
+    - source: "{'a': a, 'b': b}"
+      style: secondary
+      start: 29
+      end: 45
+    - source: "result = {'a': a, 'b': b}"
+      style: secondary
+      start: 20
+      end: 45
+    - source: "result = {'a': a, 'b': b}"
+      style: secondary
+      start: 20
+      end: 45
+    - source: |-
+        def pack(a, b):
+            result = {'a': a, 'b': b}
+            return result
+      style: secondary
+      start: 0
+      end: 63
+    - source: result
+      style: secondary
+      start: 57
+      end: 63
   "def payload() -> dict[str, str]:\n    return result\n":
     labels:
     - source: |-
@@ -73,6 +106,51 @@ snapshots:
       style: secondary
       start: 16
       end: 32
+  "def review() -> typing.Tuple[str, bool]:\n    return result\n":
+    labels:
+    - source: |-
+        def review() -> typing.Tuple[str, bool]:
+            return result
+      style: primary
+      start: 0
+      end: 58
+    - source: typing.Tuple[str, bool]
+      style: secondary
+      start: 16
+      end: 39
+  "def review():\n    result = reason, held\n    return result\n":
+    labels:
+    - source: return result
+      style: primary
+      start: 44
+      end: 57
+    - source: result
+      style: secondary
+      start: 18
+      end: 24
+    - source: reason, held
+      style: secondary
+      start: 27
+      end: 39
+    - source: result = reason, held
+      style: secondary
+      start: 18
+      end: 39
+    - source: result = reason, held
+      style: secondary
+      start: 18
+      end: 39
+    - source: |-
+        def review():
+            result = reason, held
+            return result
+      style: secondary
+      start: 0
+      end: 57
+    - source: result
+      style: secondary
+      start: 51
+      end: 57
   "def review():\n    return (reason, held)\n":
     labels:
     - source: return (reason, held)
@@ -80,6 +158,16 @@ snapshots:
       start: 18
       end: 39
     - source: (reason, held)
+      style: secondary
+      start: 25
+      end: 39
+  "def review():\n    return [reason, held]\n":
+    labels:
+    - source: return [reason, held]
+      style: primary
+      start: 18
+      end: 39
+    - source: "[reason, held]"
       style: secondary
       start: 25
       end: 39

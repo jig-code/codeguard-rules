@@ -1,13 +1,13 @@
 ---
 name: constructor-injection
-description: A method whose parameter list the method's own class decides never takes as a parameter an object that the method uses as a service to do the method's work, rather than as data that the one call works on.
+description: A class never chooses to make the callers of a method of that class pass in an object that the method uses as a service to do the method's work, rather than as data that the one call works on.
 ---
 
 # Constructor Injection
 
-A method whose parameter list the method's own class decides never takes as a parameter
-an object that the method uses as a service to do the method's work, rather than as data
-that the one call works on.
+A class never chooses to make the callers of a method of that class pass in an object
+that the method uses as a service to do the method's work, rather than as data that the
+one call works on.
 
 ## Why
 

@@ -1,13 +1,13 @@
 ---
 name: result-parts-named
-description: A function never returns values that answer different questions in a form that the program chooses and in which callers find each value by its position or by a key that nothing checks.
+description: A function never returns values that answer different questions in a form that neither the function's callers nor a well-known convention set and in which callers find each value by its position or by a key that nothing checks.
 ---
 
 # Result Parts Named
 
-A function never returns values that answer different questions in a form that the
-program chooses and in which callers find each value by its position or by a key that
-nothing checks.
+A function never returns values that answer different questions in a form that neither
+the function's callers nor a well-known convention set and in which callers find each
+value by its position or by a key that nothing checks.
 
 ## Why
 

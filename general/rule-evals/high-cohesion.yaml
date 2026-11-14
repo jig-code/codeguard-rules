@@ -98,6 +98,29 @@ cases:
               return ExportResult(path=path, rows=len(rows))
   expected_output:
     outcome: valid
+- name: an app's models module holds the models of different concepts
+  inputs:
+    file: storefront/models.py
+    after: |
+      from django.db import models
+
+
+      class Customer(models.Model):
+          email = models.EmailField(unique=True)
+          full_name = models.CharField(max_length=200)
+
+
+      class Product(models.Model):
+          sku = models.CharField(max_length=40, unique=True)
+          title = models.CharField(max_length=200)
+          price = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+      class Order(models.Model):
+          customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name="orders")
+          placed_at = models.DateTimeField(auto_now_add=True)
+  expected_output:
+    outcome: valid
 - name: a module holds one class
   inputs:
     file: reports/clock.py
