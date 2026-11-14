@@ -157,9 +157,13 @@ task eval                # codeguard eval: judge each judge rule eval case with 
 ```
 
 `CODEGUARD=<path>` runs another codeguard build, such as a checkout's `.venv/bin/codeguard`.
-`task eval` calls Gemini on Vertex AI, so it needs Google Cloud Application Default
-Credentials with the Vertex AI User role, `GOOGLE_CLOUD_PROJECT`, and
-`GOOGLE_CLOUD_LOCATION=global`.
+`task eval` calls Gemini on Vertex AI. codeguard signs in with the project in
+`CODEGUARD_JUDGE__GEMINI__PROJECT` and exactly one of `CODEGUARD_JUDGE__GEMINI__API_KEY`
+or `CODEGUARD_JUDGE__GEMINI__CREDENTIALS_FILE` (a service account key with the Vertex AI
+User role); `CODEGUARD_JUDGE__GEMINI__LOCATION` defaults to `global`. A Claude Code
+session here signs in with `CODEGUARD_JUDGE__GEMINI__PROJECT=730802237087` and
+`CODEGUARD_JUDGE__GEMINI__API_KEY=proxy-injected`: the session's network proxy supplies
+the real key, so that value is a placeholder, never the key.
 
 A Claude Code session here installs codeguard at the commit CI pins (`CODEGUARD_REF`
 in `.github/workflows/ci.yaml`) when it starts, through `.claude/hooks/session-start.sh`,
@@ -197,8 +201,10 @@ with GitHub's OIDC token by assuming the role in the repository variable
 `BEDROCK_MODEL`, passed to `codeguard eval --model`. The `gemini` leg runs each
 binding's model on Vertex AI in the `global` location, the only one that serves
 `gemini-4-argon`: the job signs in with `google-github-actions/auth` using the secret
-`GOOGLE_CREDENTIALS` (a service account key with the Vertex AI User role), and bills
-the project in the variable `GOOGLE_CLOUD_PROJECT`. codeguard's README, under "Judge with Gemini on Google
+`GOOGLE_CREDENTIALS` (a service account key with the Vertex AI User role), and the eval
+step passes the key file that step writes as `CODEGUARD_JUDGE__GEMINI__CREDENTIALS_FILE`
+and the project in the variable `GOOGLE_CLOUD_PROJECT` as
+`CODEGUARD_JUDGE__GEMINI__PROJECT`. codeguard's README, under "Judge with Gemini on Google
 Cloud", has the setup.
 CI runs the codeguard commit in `CODEGUARD_REF` in `.github/workflows/ci.yaml`, so
 moving to a new commit is a change here, which judges every rule.
