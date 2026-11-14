@@ -1,5 +1,5 @@
 cases:
-- name: a function named validate only submits and saves the order
+- name: a function named validate submits and saves the order
   inputs:
     file: orders/submit.py
     after: |
@@ -31,36 +31,17 @@ cases:
           repository.save(order)
   expected_output:
     outcome: valid
-- name: a function named for its cache fetches the rates on every call
+- name: a function named for open orders counts the customer's undelivered shipments
   inputs:
-    file: fx/rates.py
+    file: shipping/counts.py
     after: |
-      from decimal import Decimal
-
-      import httpx
-
-
-      def get_cached_rates(base: str) -> dict[str, Decimal]:
-          response = httpx.get(f"https://rates.example.com/latest/{base}", timeout=5.0)
-          response.raise_for_status()
-          return {code: Decimal(str(rate)) for code, rate in response.json().items()}
-  expected_output:
-    outcome: invalid
-- name: a vague name fits what its body does
-  inputs:
-    file: shipping/delivery.py
-    after: |
-      from datetime import datetime
-
       from shipping.models import Shipment
 
 
-      def handle_shipments(shipments: list[Shipment], now: datetime) -> None:
-          for shipment in shipments:
-              shipment.delivered_at = now
-              shipment.save()
+      def count_open_orders(customer_id: int) -> int:
+          return Shipment.objects.filter(customer_id=customer_id, delivered_at__isnull=True).count()
   expected_output:
-    outcome: valid
+    outcome: invalid
 - name: a class named for PDF renders HTML
   inputs:
     file: billing/rendering.py
@@ -79,7 +60,7 @@ cases:
               return f"<h1>Invoice {escape(invoice.number)}</h1><table>{rows}</table>"
   expected_output:
     outcome: invalid
-- name: a Django model's save hook also sets the slug
+- name: a Django model's save hook sets the slug before saving
   inputs:
     file: blog/models.py
     after: |
@@ -106,7 +87,7 @@ cases:
       POSTS_PER_PAGE = 20
   expected_output:
     outcome: skipped
-- name: a function named delete disables the user instead
+- name: a function named delete disables the user
   inputs:
     file: accounts/users.ts
     after: |
@@ -120,17 +101,38 @@ cases:
       }
   expected_output:
     outcome: invalid
+- name: a function named for discounts sums the invoices' tax
+  inputs:
+    file: billing/totals.ts
+    after: |
+      import { Invoice } from "./invoice";
+
+      export function totalDiscounts(invoices: Invoice[]): number {
+        return invoices.reduce((sum, invoice) => sum + invoice.taxCents, 0);
+      }
+  expected_output:
+    outcome: invalid
+- name: a function named sorted by date filters out cancelled events
+  inputs:
+    file: calendar/events.ts
+    after: |
+      import { CalendarEvent } from "./event";
+
+      export function sortedByDate(events: CalendarEvent[]): CalendarEvent[] {
+        return events.filter((event) => !event.cancelled);
+      }
+  expected_output:
+    outcome: invalid
 - name: a function named parse parses the amount
   inputs:
     file: billing/amount.ts
     after: |
       export function parseAmount(text: string): number {
-        const cleaned = text.replace(/[^0-9.]/g, "");
-        const amount = Number.parseFloat(cleaned);
-        if (Number.isNaN(amount)) {
+        const amount = Number(text.trim());
+        if (text.trim() === "" || !Number.isFinite(amount)) {
           throw new Error(`not an amount: ${text}`);
         }
-        return Math.round(amount * 100);
+        return amount;
       }
   expected_output:
     outcome: valid
