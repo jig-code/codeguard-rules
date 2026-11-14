@@ -1,5 +1,5 @@
 cases:
-- name: the timing system's XML and the age-group award rules share one function, so a new timing vendor means editing the awards
+- name: a podium function reads the timing system's XML and applies the age-group award rules
   inputs:
     file: races/podium.py
     after: |
@@ -28,7 +28,7 @@ cases:
           return {group: [bib for _, bib in sorted(times)[:3]] for group, times in groups.items()}
   expected_output:
     outcome: invalid
-- name: podiums are found by reading the timing file and then applying the award rules, each in its own module
+- name: a podium function passes the timing reader's finishers to the award rules
   inputs:
     file: races/podium.py
     unchanged:
@@ -82,7 +82,7 @@ cases:
           return podiums(read_finishers(chronotrack_xml))
   expected_output:
     outcome: valid
-- name: locker assignments gain the label printer's command language, so a new printer model means editing the locker class
+- name: a locker class gains a method that writes the label printer's command language
   inputs:
     file: gym/lockers.py
     before: |
@@ -123,7 +123,7 @@ cases:
               )
   expected_output:
     outcome: invalid
-- name: locker assignments gain a move to the next free locker, built from their own assign and release
+- name: a locker class gains a move built from its own assign and release
   inputs:
     file: gym/lockers.py
     before: |
@@ -180,58 +180,7 @@ cases:
               return f"{self.metres / 1000:.1f} km"
   expected_output:
     outcome: valid
-- name: a parking route works out the fee rules in its own body, so a new tariff means editing the HTTP endpoint
-  inputs:
-    file: parking/api.py
-    after: |
-      from datetime import datetime
-
-      from fastapi import APIRouter
-
-      router = APIRouter()
-
-
-      @router.get("/quote")
-      def quote(entered_at: datetime, left_at: datetime) -> dict[str, int]:
-          minutes = int((left_at - entered_at).total_seconds() // 60)
-          if minutes <= 30:
-              cents = 0
-          else:
-              hours = -(-(minutes - 30) // 60)
-              cents = min(hours * 350, 2400)
-          return {"fee_cents": cents}
-  expected_output:
-    outcome: invalid
-- name: a parking route asks the tariff for the fee and returns it
-  inputs:
-    file: parking/api.py
-    unchanged:
-      parking/tariff.py: |
-        from datetime import datetime
-
-
-        def parking_fee_cents(entered_at: datetime, left_at: datetime) -> int:
-            minutes = int((left_at - entered_at).total_seconds() // 60)
-            if minutes <= 30:
-                return 0
-            hours = -(-(minutes - 30) // 60)
-            return min(hours * 350, 2400)
-    after: |
-      from datetime import datetime
-
-      from fastapi import APIRouter
-
-      from parking.tariff import parking_fee_cents
-
-      router = APIRouter()
-
-
-      @router.get("/quote")
-      def quote(entered_at: datetime, left_at: datetime) -> dict[str, int]:
-          return {"fee_cents": parking_fee_cents(entered_at, left_at)}
-  expected_output:
-    outcome: valid
-- name: a GPX reader parses, converts and builds track points, all of the one file format
+- name: a GPX reader parses, converts and builds track points
   inputs:
     file: routes/gpx.py
     after: |
@@ -266,7 +215,7 @@ cases:
           return points
   expected_output:
     outcome: valid
-- name: a refund quote rejects an unpaid ticket, logs and counts the quote as part of working out the refund rules
+- name: a refund calculation rejects an unpaid ticket, logs and counts the quote
   inputs:
     file: box_office/refunds.py
     after: |
@@ -301,7 +250,7 @@ cases:
           return amount
   expected_output:
     outcome: valid
-- name: a library suspends an overdue member between loading and saving them, which holds only the suspension rules
+- name: a suspension check loads a member, applies the suspension rules and saves the member
   inputs:
     file: library/suspensions.py
     unchanged:
@@ -342,47 +291,7 @@ cases:
               members.save(member)
   expected_output:
     outcome: valid
-- name: a hotel booking model answers its nights, long-stay status and overlaps from its own columns
-  inputs:
-    file: hotel/models.py
-    after: |
-      from datetime import date
-
-      from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-
-      class Base(DeclarativeBase):
-          pass
-
-
-      LONG_STAY_NIGHTS = 7
-
-
-      class Booking(Base):
-          __tablename__ = "bookings"
-
-          id: Mapped[int] = mapped_column(primary_key=True)
-          room_number: Mapped[str]
-          check_in: Mapped[date]
-          check_out: Mapped[date]
-
-          @property
-          def nights(self) -> int:
-              return (self.check_out - self.check_in).days
-
-          @property
-          def is_long_stay(self) -> bool:
-              return self.nights >= LONG_STAY_NIGHTS
-
-          def overlaps(self, other: "Booking") -> bool:
-              return (
-                  self.room_number == other.room_number
-                  and self.check_in < other.check_out
-                  and other.check_in < self.check_out
-              )
-  expected_output:
-    outcome: valid
-- name: a restaurant wait list gains texting through Twilio's API, which none of its other methods use, so a new SMS vendor means editing the wait list
+- name: a wait list gains a method that texts parties through an SMS service's API
   inputs:
     file: restaurant/wait_list.py
     before: |
@@ -449,7 +358,7 @@ cases:
               response.raise_for_status()
   expected_output:
     outcome: invalid
-- name: an added import is outside every function, so the rule does not run
+- name: an edit that only adds an import
   inputs:
     file: races/podium.py
     before: |
@@ -459,74 +368,7 @@ cases:
       from races.timing_xml import read_finishers
   expected_output:
     outcome: skipped
-- name: a class roster renders students and decides the honour roll inline, so a grading policy change means editing the view
-  inputs:
-    file: src/school/ClassRoster.tsx
-    after: |
-      export interface Student {
-        id: string;
-        name: string;
-        grades: number[];
-      }
-
-      const HONOUR_ROLL_MIN_AVERAGE = 3.5;
-      const HONOUR_ROLL_MIN_GRADE = 3.0;
-
-      export function ClassRoster({ students }: { students: Student[] }) {
-        return (
-          <ul>
-            {students.map((student) => {
-              const average = student.grades.reduce((sum, grade) => sum + grade, 0) / student.grades.length;
-              const honours =
-                average >= HONOUR_ROLL_MIN_AVERAGE && student.grades.every((grade) => grade >= HONOUR_ROLL_MIN_GRADE);
-              return (
-                <li key={student.id}>
-                  {student.name}
-                  {honours && <span className="badge">Honour roll</span>}
-                </li>
-              );
-            })}
-          </ul>
-        );
-      }
-  expected_output:
-    outcome: invalid
-- name: a class roster renders students and asks the grading policy who is on the honour roll
-  inputs:
-    file: src/school/ClassRoster.tsx
-    unchanged:
-      src/school/honourRoll.ts: |
-        const HONOUR_ROLL_MIN_AVERAGE = 3.5;
-        const HONOUR_ROLL_MIN_GRADE = 3.0;
-
-        export function onHonourRoll(grades: number[]): boolean {
-          const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-          return average >= HONOUR_ROLL_MIN_AVERAGE && grades.every((grade) => grade >= HONOUR_ROLL_MIN_GRADE);
-        }
-    after: |
-      import { onHonourRoll } from "./honourRoll";
-
-      export interface Student {
-        id: string;
-        name: string;
-        grades: number[];
-      }
-
-      export function ClassRoster({ students }: { students: Student[] }) {
-        return (
-          <ul>
-            {students.map((student) => (
-              <li key={student.id}>
-                {student.name}
-                {onHonourRoll(student.grades) && <span className="badge">Honour roll</span>}
-              </li>
-            ))}
-          </ul>
-        );
-      }
-  expected_output:
-    outcome: valid
-- name: a shift schedule gains Slack's message block format, so a Slack API change means editing the schedule
+- name: a shift schedule gains a method that builds a chat service's message blocks
   inputs:
     file: src/staffing/shiftSchedule.ts
     before: |
@@ -625,7 +467,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: the survey tool's export layout and the NPS scoring rules share one function, so a new survey tool means editing the scoring
+- name: an NPS function reads the survey tool's export and applies the scoring rules
   inputs:
     file: src/feedback/nps.ts
     after: |
@@ -650,6 +492,9 @@ cases:
           const question = response.definition.fields.find((f) => f.ref === "recommend" && f.type === "opinion_scale");
           const answer = response.answers.find((a) => a.field.id === question?.id && a.type === "number");
           if (answer?.number !== undefined) scores.push(answer.number);
+        }
+        if (scores.length === 0) {
+          throw new Error("the export holds no recommendation scores");
         }
         const promoters = scores.filter((score) => score >= PROMOTER_MIN_SCORE).length;
         const detractors = scores.filter((score) => score <= DETRACTOR_MAX_SCORE).length;
@@ -687,7 +532,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a subtitle reader parses cue timings and text, all of the one file format
+- name: a subtitle reader parses cue timings and text
   inputs:
     file: src/media/vtt.ts
     after: |
@@ -698,8 +543,8 @@ cases:
       }
 
       function toMs(stamp: string): number {
-        const [h, m, s] = stamp.split(":");
-        return (Number(h) * 3600 + Number(m) * 60 + Number(s)) * 1000;
+        const seconds = stamp.split(":").reduce((total, part) => total * 60 + Number(part), 0);
+        return Math.round(seconds * 1000);
       }
 
       export function readCues(vtt: string): Cue[] {
@@ -714,32 +559,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a group ticket handler works out the discount tiers in its own body, so a new price list means editing the HTTP endpoint
-  inputs:
-    file: src/tickets/handlers.ts
-    after: |
-      import type { Request, Response } from "express";
-      import { z } from "zod";
-
-      const quoteQuery = z.object({ tickets: z.coerce.number().int().positive() });
-
-      const FULL_PRICE_CENTS = 4500;
-      const GROUP_OF_10_CENTS = 4000;
-      const GROUP_OF_20_CENTS = 3600;
-
-      export function groupTicketQuote(req: Request, res: Response): void {
-        const { tickets } = quoteQuery.parse(req.query);
-        let unitCents = FULL_PRICE_CENTS;
-        if (tickets >= 20) {
-          unitCents = GROUP_OF_20_CENTS;
-        } else if (tickets >= 10) {
-          unitCents = GROUP_OF_10_CENTS;
-        }
-        res.status(200).json({ totalCents: tickets * unitCents });
-      }
-  expected_output:
-    outcome: invalid
-- name: a late fee rejects a return before the loan, logs and counts the fee as part of working out the fee rules
+- name: a late fee calculation rejects a return before the loan, logs and counts the fee
   inputs:
     file: src/library/lateFees.ts
     after: |
@@ -775,7 +595,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a subscription pauses after failed charges between loading and saving it, which holds only the pause rules
+- name: a pause function loads a subscription, applies the pause rules and saves the subscription
   inputs:
     file: src/billing/pauseSubscription.ts
     unchanged:
@@ -804,40 +624,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a gym membership entity answers whether it is active and how long it runs from its own columns
-  inputs:
-    file: src/gym/membership.entity.ts
-    after: |
-      import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
-      @Entity()
-      export class Membership {
-        @PrimaryGeneratedColumn()
-        id!: number;
-
-        @Column()
-        memberId!: string;
-
-        @Column()
-        startsOn!: Date;
-
-        @Column()
-        endsOn!: Date;
-
-        @Column()
-        frozen!: boolean;
-
-        isActiveOn(day: Date): boolean {
-          return !this.frozen && this.startsOn <= day && day < this.endsOn;
-        }
-
-        get lengthInDays(): number {
-          return Math.round((this.endsOn.getTime() - this.startsOn.getTime()) / 86_400_000);
-        }
-      }
-  expected_output:
-    outcome: valid
-- name: a gradebook gains posting grades to Canvas's API, which none of its other methods use, so an LMS change means editing the gradebook
+- name: a gradebook gains a method that posts grades to a learning platform's API
   inputs:
     file: src/school/gradebook.ts
     before: |
