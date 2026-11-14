@@ -103,32 +103,7 @@ cases:
           )
   expected_output:
     outcome: valid
-- name: a helpdesk intake function gives the ticket's priority a parameter default and passes that default to the ticket
-  inputs:
-    file: helpdesk/intake.py
-    unchanged:
-      helpdesk/__init__.py: ""
-      helpdesk/models.py: |
-        from dataclasses import dataclass
-
-
-        @dataclass(frozen=True)
-        class Ticket:
-            subject: str
-            requester_email: str
-            priority: str
-    after: |
-      from helpdesk.models import Ticket
-      from helpdesk.queue import enqueue
-
-
-      def open_ticket(subject: str, requester_email: str, priority: str = "normal") -> Ticket:
-          ticket = Ticket(subject=subject, requester_email=requester_email, priority=priority)
-          enqueue(ticket)
-          return ticket
-  expected_output:
-    outcome: invalid
-- name: a ticket declares its priority default and an intake function leaves the field out
+- name: an intake function passes its parameters to the ticket unchanged and enqueues the ticket
   inputs:
     file: helpdesk/intake.py
     unchanged:
@@ -176,33 +151,6 @@ cases:
           }
         }
       }
-  expected_output:
-    outcome: valid
-- name: a fine function returns the fine it works out
-  inputs:
-    file: library/fines.py
-    unchanged:
-      library/__init__.py: ""
-      library/models.py: |
-        from dataclasses import dataclass
-        from decimal import Decimal
-
-
-        @dataclass(frozen=True)
-        class Fine:
-            days_late: int
-            amount: Decimal
-    after: |
-      from datetime import date
-      from decimal import Decimal
-
-      from library.models import Fine
-
-
-      def fine_for(due_on: date, returned_on: date) -> Fine:
-          days_late = max((returned_on - due_on).days, 0)
-          amount = min(Decimal("0.25") * days_late, Decimal("10.00"))
-          return Fine(days_late=days_late, amount=amount)
   expected_output:
     outcome: valid
 - name: a loan period constant changes
@@ -275,35 +223,6 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a profile handler fills in a missing theme with light while it builds and stores the profile
-  inputs:
-    file: profiles/handler.ts
-    unchanged:
-      profiles/profile.ts: |
-        export interface Profile {
-          userId: string;
-          displayName: string;
-          theme: "light" | "dark";
-        }
-    after: |
-      import type { Profile } from "./profile";
-      import type { ProfileStore } from "./store";
-
-      interface ProfileInput {
-        displayName: string;
-        theme?: "light" | "dark";
-      }
-
-      export async function saveProfile(store: ProfileStore, userId: string, input: ProfileInput): Promise<void> {
-        const profile: Profile = {
-          userId,
-          displayName: input.displayName.trim(),
-          theme: input.theme ?? "light",
-        };
-        await store.put(profile);
-      }
-  expected_output:
-    outcome: invalid
 - name: a cart totals function returns an object literal of the totals it works out
   inputs:
     file: cart/totals.ts

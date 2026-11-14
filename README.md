@@ -33,16 +33,16 @@ the languages it runs on.
 |---|---|---|
 | `dry` | Don't Repeat Yourself: code the change adds doesn't state a computation, process, set or outside shape again when the file or a module it imports already states it | Not yet |
 | `domain-logic-separate-from-io` | Domain logic separate from I/O: a function whose own code applies business rules never reads or changes anything outside the program's memory, directly or through a function it calls | Not yet |
-| `single-responsibility` | Single responsibility: a function or class never holds code that belongs to two different concerns (one set of business rules, one outside system, one file or message format), counting only the code written in a function's own body | Not yet |
-| `no-repeated-switches` | No repeated switches: code never chooses behaviour by which kind a value is (its class, or an enum member or tag naming its variant) in a second place over the same kinds, in the file or a module it imports, when the type checker would accept either place with a kind that has no branch or table entry of its own | Not yet |
-| `no-feature-envy` | No feature envy: code outside the module that defines one of the program's types never works out an answer the program's rules give about one value of that type from two or more of its fields alone, with no other program type and no constant or table of its own module | Not yet |
+| `single-responsibility` | Single responsibility: a function or class never holds both business rules and the details of a data format or of an outside system's interface | Not yet |
+| `no-repeated-switches` | No repeated switches: code never repeats a choice of behaviour by which of a type's variants a value is, in a place that the type checker would still accept if that place handled only some of those variants | Not yet |
+| `no-feature-envy` | No feature envy: code outside the module that defines one of the program's own types never works out a fact about a value of that type from that value's fields alone | Not yet |
 | `fail-fast` | Fail fast: code never turns an error an operation reports, data the program requires but finds missing, or a state the program's own rules make impossible into a result with which the work carries on as if it had not occurred | Not yet |
-| `no-shared-mutable-state` | Call data stays local: code never keeps the input, working values or results that only one call, request or job needs in state that every call, request or job sees | Not yet |
-| `liskov-substitution` | Liskov substitution: a subclass's method never breaks a promise that the base method of the same name makes in its signature, body or documentation about the arguments it accepts and uses, what it returns, the errors it raises or the work it does | Not yet |
-| `no-shotgun-surgery` | No shotgun surgery: a type's public method never itself does a job to something the program models when a public method of another type already does that same job to the same thing | Not yet |
-| `construction-in-its-home` | Construction in its home: a function that does work besides building never itself decides a value a new instance of a program data type holds, whether read off another object, translated from outside data or picked | Not yet |
-| `make-illegal-states-unrepresentable` | Make illegal states unrepresentable: a type never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type | Not yet |
-| `composition-over-inheritance` | Composition over inheritance: a class never inherits from another class whose job is different from the job of the inheriting class | Not yet |
+| `no-shared-mutable-state` | Call data stays local: code never keeps the input, working values or results that only one call, request or job needs in module-level state that every call, request or job sees | Not yet |
+| `liskov-substitution` | Liskov substitution: a subclass's method never breaks a promise that the method of the same name in the base class or interface makes, in the base method's signature, body or documentation, about which arguments the base method accepts and uses, what the base method returns, which errors the base method raises or which changes the base method makes that callers of the base class or interface can see | Not yet |
+| `no-shotgun-surgery` | No shotgun surgery: a type's public method never itself does a job to something the program models when a public method of another type, found by searching the program for the name of that thing, already does that same job to the same thing | Not yet |
+| `construction-in-its-home` | Construction in its home: a function never decides a value that a new instance of a data type the program declares holds when the function also does work other than building that instance | Not yet |
+| `make-illegal-states-unrepresentable` | Make illegal states unrepresentable: a type whose instances exist only in the program's memory never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type | Not yet |
+| `composition-over-inheritance` | Composition over inheritance: a class never inherits from another class that gives the inheriting class a public method or field outside the job of the inheriting class | Not yet |
 | `single-source-of-truth` | Single source of truth: a class never stores a value in a field when that value must always equal the result of a computation on a single other value that the class holds, in another field or in a field of a held object | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
@@ -88,7 +88,6 @@ code skip test files:
 | `no-tuple-fixtures` | A pytest fixture returns or yields one object, never a tuple |
 | `one-form-per-input` | No parameter reconciled from another parameter when missing (`if index is None: index = build(catalog)`) |
 | `typed-dispatch-registries` | A class takes a registry, not a `dict[str, Callable]` |
-| `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
 
 The `python` ruleset has no judge rules yet. Its judge rules, and some pattern rules, are drafts in
 `drafts/python/`, which codeguard doesn't load. A draft moves into a ruleset one rule at a time, in the order in
@@ -109,6 +108,14 @@ flag. Its binding's `triggers` names that code: a change kind built into codegua
 as `fixture` or `import`, or a gate in the ruleset's `gates/`, an ast-grep rule
 such as `mock-use`. A rule ast-grep or the type checker can check is a pattern rule or a checker
 setting, never a judge rule.
+
+### `typescript`
+
+Rules for any TypeScript project. Pattern rules (ast-grep); they skip test files:
+
+| Rule | Checks |
+|---|---|
+| `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
 
 ## Use a ruleset
 
@@ -131,6 +138,8 @@ packages:
 - `rules.<id>` overrides `paths`, `exclude_paths` or `severity`. `exclude_paths: []`
   brings test files back into an app rule.
 - `codeguard update` moves `ref` to the newest tag.
+- A project gets only the rulesets it lists under `rulesets`. List `typescript` to add
+  the TypeScript pattern rules.
 
 Diagnostics name a rule by package, ruleset and id: `betterwithranch/python/no-del-param`.
 
@@ -141,7 +150,7 @@ project that sets `ast-grep` in its config must pick a version in that range.
 
 ```
 codeguard-package.yaml       # name, rulesets, and supported ast-grep and codeguard versions
-general/, python/            # one directory per ruleset
+general/, python/, typescript/ # one directory per ruleset
   rules/pattern/<id>.yml     # ast-grep rules
   gates/<id>.yml             # ast-grep rules that decide when a judge rule runs
   rule-tests/<id>-test.yml   # tests for both, with __snapshots__/
