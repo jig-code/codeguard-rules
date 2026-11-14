@@ -1,20 +1,18 @@
 ---
 name: high-cohesion
-description: A module that defines several public classes never defines a public class that is neither the one class that the module is about, nor one of a family of classes that share a base or a union type that the module defines, nor a class that has no behavior of its own and that appears only in the fields or method signatures of the class that the module is about.
+description: A module never holds public classes of different concepts that the project, rather than a library that the project uses, put in one module.
 ---
 
 # High Cohesion
 
-A module that defines several public classes never defines a public class that is
-neither the one class that the module is about, nor one of a family of classes that
-share a base or a union type that the module defines, nor a class that has no behavior
-of its own and that appears only in the fields or method signatures of the class that
-the module is about.
+A module never holds public classes of different concepts that the project, rather than
+a library that the project uses, put in one module.
 
 ## Why
 
-Knowledge grouped by kind is found by guessing which kind module holds it; grouped by
-concept, it sits where its next change will look.
+Classes that the project groups by anything but their concept are found by guessing
+which module holds them; grouped by concept, each class sits where its next change will
+look.
 
 Source: Larry Constantine and Edward Yourdon, *Structured Design* (1979), cohesion;
 Robert C. Martin, the Common Closure Principle; package by feature.

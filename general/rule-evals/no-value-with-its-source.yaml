@@ -1,60 +1,55 @@
 cases:
 - name: a receipt call passes an order's email with the order
   inputs:
-    file: orders/complete.py
+    file: orders/receipt_for.py
     unchanged:
       orders/receipts.py: |
-        def send_receipt(email, order):
+        from orders.models import Order
+
+
+        def receipt_message(email: str, order: Order) -> dict[str, str]:
             body = f"Order {order.id}: {order.total_cents / 100:.2f}"
             return {"to": email, "subject": "Your receipt", "body": body}
     after: |
-      from orders.receipts import send_receipt
+      from orders.models import Order
+      from orders.receipts import receipt_message
 
 
-      def complete(order):
-          order.status = "complete"
-          return send_receipt(order.email, order)
+      def receipt_for(order: Order) -> dict[str, str]:
+          return receipt_message(order.email, order)
   expected_output:
     outcome: invalid
 - name: an invoice total takes a customer and a rate computed from that customer earlier in the caller
   inputs:
     file: billing/invoice.py
     after: |
-      def tax_rate(customer):
-          return 0 if customer.tax_exempt else customer.region_rate
-
-
-      def invoice_total(subtotal, rate, customer):
-          total = subtotal * (1 + rate)
-          if customer.is_member:
-              total *= 0.95
-          return total
-
-
-      def bill(customer, subtotal):
-          rate = tax_rate(customer)
-          return invoice_total(subtotal, rate, customer)
-  expected_output:
-    outcome: invalid
-- name: a summary dataclass is built from lines and the total of those lines
-  inputs:
-    file: reports/summary.py
-    after: |
       from dataclasses import dataclass
+      from decimal import Decimal
 
-
-      def total_of(lines):
-          return sum(line.amount for line in lines)
+      MEMBER_DISCOUNT = Decimal("0.95")
 
 
       @dataclass(frozen=True)
-      class Summary:
-          total: int
-          lines: list
+      class Customer:
+          tax_exempt: bool
+          region_rate: Decimal
+          is_member: bool
 
 
-      def summarize(lines):
-          return Summary(total=total_of(lines), lines=lines)
+      def tax_rate(customer: Customer) -> Decimal:
+          return Decimal(0) if customer.tax_exempt else customer.region_rate
+
+
+      def invoice_total(subtotal: Decimal, rate: Decimal, customer: Customer) -> Decimal:
+          total = subtotal * (1 + rate)
+          if customer.is_member:
+              total *= MEMBER_DISCOUNT
+          return total
+
+
+      def bill(customer: Customer, subtotal: Decimal) -> Decimal:
+          rate = tax_rate(customer)
+          return invoice_total(subtotal, rate, customer)
   expected_output:
     outcome: invalid
 - name: a dict lookup takes a key and a default computed from that key
@@ -64,11 +59,11 @@ cases:
       DEFAULTS = {"connect": 5, "read": 30}
 
 
-      def default_for(name):
+      def default_for(name: str) -> int:
           return DEFAULTS.get(name, 10)
 
 
-      def timeout(settings, name):
+      def timeout(settings: dict[str, int], name: str) -> int:
           return settings.get(name, default_for(name))
   expected_output:
     outcome: valid
@@ -76,26 +71,30 @@ cases:
   inputs:
     file: orders/wiring.py
     after: |
+      from orders.db import Session
+      from orders.models import Order
+
+
       class OrderRepository:
-          def __init__(self, session):
+          def __init__(self, session: Session) -> None:
               self._session = session
 
-          def get(self, order_id):
-              return self._session.get("orders", order_id)
+          def get(self, order_id: int) -> Order:
+              return self._session.get(Order, order_id)
 
 
       class OrderService:
-          def __init__(self, repo, session):
+          def __init__(self, repo: OrderRepository, session: Session) -> None:
               self._repo = repo
               self._session = session
 
-          def cancel(self, order_id):
+          def cancel(self, order_id: int) -> None:
               order = self._repo.get(order_id)
               order.status = "cancelled"
               self._session.commit()
 
 
-      def build_service(session):
+      def build_service(session: Session) -> OrderService:
           return OrderService(repo=OrderRepository(session), session=session)
   expected_output:
     outcome: valid
@@ -103,12 +102,15 @@ cases:
   inputs:
     file: orders/notify.py
     after: |
-      def send_email(address, subject):
+      from orders.models import Order
+
+
+      def shipped_email(address: str, subject: str) -> dict[str, str]:
           return {"to": address, "subject": subject}
 
 
-      def notify(order):
-          return send_email(order.email, f"Order {order.id} shipped")
+      def notify(order: Order) -> dict[str, str]:
+          return shipped_email(order.email, f"Order {order.id} shipped")
   expected_output:
     outcome: skipped
 - name: a notify function call passes an order's email with the order
@@ -125,7 +127,7 @@ cases:
         return { to: email, body: `Order ${order.id} shipped` };
       }
 
-      export function ship(order: Order) {
+      export function ship(order: Order): { to: string; body: string } {
         return notify(order.email, order);
       }
   expected_output:
@@ -156,43 +158,48 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: a summary class is built from lines and the total of those lines
+- name: a JSON string is built from a value and an indent computed from that value
   inputs:
-    file: reports/summary.ts
+    file: export/json.ts
     after: |
-      export interface Line {
-        label: string;
-        amount: number;
+      export function indentFor(value: Record<string, unknown>): number {
+        return Object.keys(value).length > 5 ? 2 : 0;
       }
 
-      export class Summary {
-        constructor(
-          readonly total: number,
-          readonly lines: readonly Line[],
-        ) {}
-      }
-
-      export function totalOf(lines: readonly Line[]): number {
-        return lines.reduce((sum, line) => sum + line.amount, 0);
-      }
-
-      export function summarize(lines: readonly Line[]): Summary {
-        return new Summary(totalOf(lines), lines);
+      export function render(value: Record<string, unknown>): string {
+        return JSON.stringify(value, null, indentFor(value));
       }
   expected_output:
-    outcome: invalid
-- name: a map lookup falls back to a default computed from its key
+    outcome: valid
+- name: a service is built from a database and a repository made from that database
   inputs:
-    file: config/limits.ts
+    file: orders/wiring.ts
     after: |
-      const DEFAULTS: Record<string, number> = { upload: 10, download: 50 };
+      import type { Database } from "./db";
+      import type { Order } from "./order";
 
-      export function defaultFor(name: string): number {
-        return DEFAULTS[name] ?? 5;
+      export class OrderRepository {
+        constructor(private readonly db: Database) {}
+
+        async find(id: string): Promise<Order> {
+          return this.db.get("orders", id);
+        }
       }
 
-      export function limit(limits: Map<string, number>, name: string): number {
-        return limits.get(name) ?? defaultFor(name);
+      export class OrderService {
+        constructor(
+          private readonly repo: OrderRepository,
+          private readonly db: Database,
+        ) {}
+
+        async cancel(id: string): Promise<void> {
+          const order = await this.repo.find(id);
+          await this.db.update("orders", id, { ...order, status: "cancelled" });
+        }
+      }
+
+      export function buildService(db: Database): OrderService {
+        return new OrderService(new OrderRepository(db), db);
       }
   expected_output:
     outcome: valid

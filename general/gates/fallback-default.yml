@@ -43,3 +43,36 @@ rule:
     has:
       kind: comparison_operator
       regex: \bis (not )?None\b
+  - kind: call
+    all:
+    - has:
+        field: function
+        regex: ^next$
+    - has:
+        field: arguments
+        has:
+          nthChild: 2
+  - kind: boolean_operator
+    all:
+    - has:
+        field: operator
+        regex: ^or$
+    - has:
+        field: right
+        any:
+        - kind: identifier
+          regex: ^[A-Z][A-Z0-9_]*$
+        - kind: call
+  - kind: if_statement
+    all:
+    - has:
+        field: condition
+        regex: \bis None$
+    - has:
+        field: consequence
+        has:
+          any:
+          - kind: return_statement
+          - kind: expression_statement
+            has:
+              kind: assignment

@@ -1,0 +1,119 @@
+id: field-write
+snapshots:
+  "class Counter:\n    def next(self):\n        self._last += 1\n        return self._last\n":
+    labels:
+    - source: self._last += 1
+      style: primary
+      start: 43
+      end: 58
+    - source: self._last
+      style: secondary
+      start: 43
+      end: 53
+    - source: |-
+        def next(self):
+                self._last += 1
+                return self._last
+      style: secondary
+      start: 19
+      end: 84
+  "class Point:\n    def move(self, x, y):\n        self.x, self.y = x, y\n":
+    labels:
+    - source: self.x, self.y = x, y
+      style: primary
+      start: 47
+      end: 68
+    - source: self.x
+      style: secondary
+      start: 47
+      end: 53
+    - source: self.x, self.y
+      style: secondary
+      start: 47
+      end: 61
+    - source: |-
+        def move(self, x, y):
+                self.x, self.y = x, y
+      style: secondary
+      start: 17
+      end: 68
+  "class Thermostat:\n    def set_target(self, celsius):\n        self._target = celsius\n":
+    labels:
+    - source: self._target = celsius
+      style: primary
+      start: 61
+      end: 83
+    - source: self._target
+      style: secondary
+      start: 61
+      end: 73
+    - source: |-
+        def set_target(self, celsius):
+                self._target = celsius
+      style: secondary
+      start: 22
+      end: 83
+  "def clear(order):\n    del order.coupon\n":
+    labels:
+    - source: del order.coupon
+      style: primary
+      start: 22
+      end: 38
+    - source: order.coupon
+      style: secondary
+      start: 26
+      end: 38
+    - source: |-
+        def clear(order):
+            del order.coupon
+      style: secondary
+      start: 0
+      end: 38
+  "def forget(rates, postcode):\n    del rates[postcode]\n":
+    labels:
+    - source: del rates[postcode]
+      style: primary
+      start: 33
+      end: 52
+    - source: rates[postcode]
+      style: secondary
+      start: 37
+      end: 52
+    - source: |-
+        def forget(rates, postcode):
+            del rates[postcode]
+      style: secondary
+      start: 0
+      end: 52
+  "def remember(rates, postcode, rate):\n    rates[postcode] = rate\n":
+    labels:
+    - source: rates[postcode] = rate
+      style: primary
+      start: 41
+      end: 63
+    - source: rates[postcode]
+      style: secondary
+      start: 41
+      end: 56
+    - source: |-
+        def remember(rates, postcode, rate):
+            rates[postcode] = rate
+      style: secondary
+      start: 0
+      end: 63
+  "def renew(loan, due_on):\n    loan.due_on = due_on\n":
+    labels:
+    - source: loan.due_on = due_on
+      style: primary
+      start: 29
+      end: 49
+    - source: loan.due_on
+      style: secondary
+      start: 29
+      end: 40
+    - source: |-
+        def renew(loan, due_on):
+            loan.due_on = due_on
+      style: secondary
+      start: 0
+      end: 49

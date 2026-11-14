@@ -1,5 +1,17 @@
 id: class-name
 snapshots:
+  "@dataclass\nclass OrderSubmitter:\n    pass\n":
+    labels:
+    - source: OrderSubmitter
+      style: primary
+      start: 17
+      end: 31
+    - source: |-
+        class OrderSubmitter:
+            pass
+      style: secondary
+      start: 11
+      end: 41
   "class Order:\n    class Line:\n        pass\n":
     labels:
     - source: Order

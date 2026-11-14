@@ -1,0 +1,52 @@
+id: field-write
+valid:
+# Local name assigned in a function
+- |
+  def total(prices):
+      result = sum(prices)
+      return result
+# Attribute assigned at module level
+- |
+  config.debug = True
+# Attribute read in a function
+- |
+  def due(loan):
+      return loan.due_on
+# Local name deleted in a function
+- |
+  def drop(rows):
+      first = rows[0]
+      del first
+invalid:
+# Assignment to an attribute of self
+- |
+  class Thermostat:
+      def set_target(self, celsius):
+          self._target = celsius
+# Assignment to an attribute of a parameter
+- |
+  def renew(loan, due_on):
+      loan.due_on = due_on
+# Augmented assignment to an attribute
+- |
+  class Counter:
+      def next(self):
+          self._last += 1
+          return self._last
+# Assignment to a subscript
+- |
+  def remember(rates, postcode, rate):
+      rates[postcode] = rate
+# Tuple assignment to attributes
+- |
+  class Point:
+      def move(self, x, y):
+          self.x, self.y = x, y
+# Deletion of a subscript
+- |
+  def forget(rates, postcode):
+      del rates[postcode]
+# Deletion of an attribute
+- |
+  def clear(order):
+      del order.coupon

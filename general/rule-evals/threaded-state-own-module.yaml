@@ -27,7 +27,7 @@ cases:
           return charge(state, gateway)
   expected_output:
     outcome: invalid
-- name: an import state module also defines a supplier record
+- name: an import state module also defines a function for supplier emails
   inputs:
     file: imports/state.py
     unchanged:
@@ -55,70 +55,8 @@ cases:
           errors: list[str] = field(default_factory=list)
 
 
-      @dataclass(frozen=True)
-      class Supplier:
-          name: str
-          email: str
-  expected_output:
-    outcome: invalid
-- name: a shipment state alone in a module named for carriers
-  inputs:
-    file: shipping/carriers.py
-    unchanged:
-      shipping/flow.py: |
-        from dataclasses import replace
-
-        from shipping.carriers import ShipmentState
-
-
-        def book(state: ShipmentState, booking_id: str) -> ShipmentState:
-            return replace(state, booking_id=booking_id)
-
-
-        def dispatch(state: ShipmentState, tracking_code: str) -> ShipmentState:
-            return replace(state, tracking_code=tracking_code)
-    after: |
-      from dataclasses import dataclass
-
-
-      @dataclass(frozen=True)
-      class ShipmentState:
-          order_id: str
-          booking_id: str | None = None
-          tracking_code: str | None = None
-  expected_output:
-    outcome: invalid
-- name: a profile step is added to the module that defines the onboarding state
-  inputs:
-    file: onboarding/state.py
-    unchanged:
-      onboarding/flow.py: |
-        from onboarding.state import OnboardingState
-
-
-        def verify_email(state: OnboardingState) -> OnboardingState:
-            return state.model_copy(update={"email_verified": True})
-    before: |
-      from pydantic import BaseModel
-
-
-      class OnboardingState(BaseModel):
-          user_id: str
-          email_verified: bool = False
-          profile_done: bool = False
-    after: |
-      from pydantic import BaseModel
-
-
-      class OnboardingState(BaseModel):
-          user_id: str
-          email_verified: bool = False
-          profile_done: bool = False
-
-
-      def complete_profile(state: OnboardingState, profile: dict) -> OnboardingState:
-          done = bool(profile.get("name")) and bool(profile.get("country"))
-          return state.model_copy(update={"profile_done": done})
+      def supplier_domain(email: str) -> str:
+          return email.rsplit("@", 1)[-1].lower()
   expected_output:
     outcome: invalid
 - name: a checkout state module holds the state and its update method
@@ -231,6 +169,39 @@ cases:
           return load(settings, sink, extract(settings, source))
   expected_output:
     outcome: valid
+- name: a fulfilment state module also defines the stage enum that a field of the state uses
+  inputs:
+    file: fulfilment/state.py
+    unchanged:
+      fulfilment/flow.py: |
+        from dataclasses import replace
+
+        from fulfilment.state import FulfilmentState, Stage
+
+
+        def pick(state: FulfilmentState) -> FulfilmentState:
+            return replace(state, stage=Stage.PICKED)
+
+
+        def pack(state: FulfilmentState) -> FulfilmentState:
+            return replace(state, stage=Stage.PACKED)
+    after: |
+      from dataclasses import dataclass
+      from enum import StrEnum
+
+
+      class Stage(StrEnum):
+          RECEIVED = "received"
+          PICKED = "picked"
+          PACKED = "packed"
+
+
+      @dataclass(frozen=True)
+      class FulfilmentState:
+          order_id: str
+          stage: Stage = Stage.RECEIVED
+  expected_output:
+    outcome: valid
 - name: a step body in the checkout workflow changes its rounding
   inputs:
     file: checkout/workflow.py
@@ -281,7 +252,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: an import state module also exports a supplier record
+- name: an import state module also exports a function for supplier emails
   inputs:
     file: imports/state.ts
     unchanged:
@@ -303,31 +274,90 @@ cases:
         readonly errors: readonly string[];
       }
 
-      export interface Supplier {
-        readonly name: string;
-        readonly email: string;
+      export function supplierDomain(email: string): string {
+        return email.slice(email.lastIndexOf("@") + 1).toLowerCase();
       }
   expected_output:
     outcome: invalid
-- name: a shipment state interface alone in a module named for carriers
+- name: a fulfilment state module also exports the stage type that a field of the state uses
   inputs:
-    file: shipping/carriers.ts
+    file: fulfilment/state.ts
     unchanged:
-      shipping/flow.ts: |
-        import type { ShipmentState } from "./carriers";
+      fulfilment/flow.ts: |
+        import type { FulfilmentState } from "./state";
 
-        export function book(state: ShipmentState, bookingId: string): ShipmentState {
-          return { ...state, bookingId };
+        export function pick(state: FulfilmentState): FulfilmentState {
+          return { ...state, stage: "picked" };
         }
 
-        export function dispatch(state: ShipmentState, trackingCode: string): ShipmentState {
-          return { ...state, trackingCode };
+        export function pack(state: FulfilmentState): FulfilmentState {
+          return { ...state, stage: "packed" };
         }
     after: |
-      export interface ShipmentState {
+      export type Stage = "received" | "picked" | "packed";
+
+      export interface FulfilmentState {
         readonly orderId: string;
-        readonly bookingId: string | null;
-        readonly trackingCode: string | null;
+        readonly stage: Stage;
       }
   expected_output:
-    outcome: invalid
+    outcome: valid
+- name: a checkout pipeline module adds a step that imports the state from its own module
+  inputs:
+    file: checkout/pipeline.ts
+    unchanged:
+      checkout/state.ts: |
+        export interface CheckoutState {
+          readonly cartId: string;
+          readonly totalCents: number;
+          readonly receipt: string | null;
+        }
+    before: |
+      import type { CheckoutState } from "./state";
+
+      export function price(state: CheckoutState, totalCents: number): CheckoutState {
+        return { ...state, totalCents };
+      }
+    after: |
+      import type { CheckoutState } from "./state";
+
+      export function price(state: CheckoutState, totalCents: number): CheckoutState {
+        return { ...state, totalCents };
+      }
+
+      export function receipt(state: CheckoutState): CheckoutState {
+        return { ...state, receipt: `${state.cartId}: ${(state.totalCents / 100).toFixed(2)}` };
+      }
+  expected_output:
+    outcome: valid
+- name: a settings interface that every pipeline step reads and never updates
+  inputs:
+    file: etl/pipeline.ts
+    after: |
+      export interface PipelineSettings {
+        readonly batchSize: number;
+        readonly dryRun: boolean;
+      }
+
+      export interface Source {
+        fetch(limit: number): Promise<Record<string, unknown>[]>;
+      }
+
+      export interface Sink {
+        write(rows: Record<string, unknown>[]): Promise<number>;
+      }
+
+      export function extract(settings: PipelineSettings, source: Source): Promise<Record<string, unknown>[]> {
+        return source.fetch(settings.batchSize);
+      }
+
+      export async function load(settings: PipelineSettings, sink: Sink, rows: Record<string, unknown>[]): Promise<number> {
+        if (settings.dryRun) return 0;
+        return sink.write(rows);
+      }
+
+      export async function run(settings: PipelineSettings, source: Source, sink: Sink): Promise<number> {
+        return load(settings, sink, await extract(settings, source));
+      }
+  expected_output:
+    outcome: valid
