@@ -12,6 +12,19 @@ valid:
 # abs is not a clamp
 - |
   example_delta = abs(example_balance)
+# conditional expression without a comparison
+- |
+  example_fee = 500 if example_order.rush else 0
+# conditional expression choosing between strings
+- |
+  example_label = "big" if example_total > 100 else "small"
+# if on a comparison that assigns a string
+- |
+  def example_label(example_total):
+      example_size = "small"
+      if example_total > 100:
+          example_size = "big"
+      return example_size
 invalid:
 # max with zero first
 - |
@@ -28,3 +41,16 @@ invalid:
 # max with a float
 - |
   example_ratio = max(0.0, example_ratio)
+# clip call
+- |
+  example_ratio = numpy.clip(example_ratio, 0.0, 1.0)
+# conditional expression that floors at zero
+- |
+  example_stock = 0 if example_stock < 0 else example_stock
+# if on a comparison that resets to zero
+- |
+  def example_left(example_flight):
+      example_seats = example_flight.capacity - example_flight.booked
+      if example_seats < 0:
+          example_seats = 0
+      return example_seats

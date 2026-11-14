@@ -22,6 +22,19 @@ valid:
 - |
   def example_fail(example_order):
       raise ExampleError(example_order.id)
+# if that ends in a return and has an else branch
+- |
+  def example_label(example_order):
+      if example_order.paid:
+          archive(example_order)
+          return "paid"
+      else:
+          remind(example_order)
+      return "due"
+# if that calls a function named like exit on an object
+- |
+  if example_order.paid:
+      example_session.exit_queue(example_order)
 invalid:
 # assert
 - |
@@ -83,3 +96,14 @@ invalid:
 # Conditional expression on a None check
 - |
   name = example_order.carrier.name if example_order.carrier is not None else "none"
+# if that logs and then returns early
+- |
+  def example_ship(example_order):
+      if example_order.carrier is None:
+          log(example_order.id)
+          return
+      book(example_order)
+# if that exits the process
+- |
+  if example_config is None:
+      sys.exit(1)

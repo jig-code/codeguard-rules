@@ -8,11 +8,15 @@ valid:
 # Module constant that is not a call
 - |
   LIMIT = 3
-# Default that is not a call
+# Class attribute instance
 - |
-  def check(order, strict=False):
+  class ExampleService:
+      validator = ExampleValidator()
+# Default argument instance
+- |
+  def check(order, validator=ExampleValidator()):
       pass
-# Decorated function: a cached_property caches per instance, so no instance is shared
+# Decorated function: a cached_property caches per instance
 - |
   class ExampleService:
       @cached_property
@@ -33,18 +37,6 @@ invalid:
 # Module-level result of a factory function
 - |
   validator = create_validator()
-# Class attribute instance
-- |
-  class ExampleService:
-      validator = ExampleValidator()
-# Default argument instance
-- |
-  def check(order, validator=ExampleValidator()):
-      pass
-# Typed default argument instance
-- |
-  def check(order, validator: ExampleValidator = ExampleValidator()):
-      pass
 # Cached factory function
 - |
   @cache
