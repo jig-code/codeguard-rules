@@ -1,0 +1,87 @@
+id: class-construction
+valid:
+# Construction at module level, outside any function
+- |
+  DEFAULT = Settings(page_size=50)
+# Construction with no arguments
+- |
+  def handler_for():
+      return Handler()
+# Lowercase call
+- |
+  def label_for(order):
+      return build_label(order.id)
+# Dictionary assigned to a lowercase annotation
+- |
+  def headers(token):
+      sent: dict[str, str] = {"Authorization": token}
+      return sent
+invalid:
+# Returned construction with keyword arguments
+- |
+  def make_shipment(order):
+      return Shipment(order_id=order.id)
+# Assigned construction with an attribute argument
+- |
+  def ship(self, order):
+      shipment = Shipment(order.id)
+      self.repo.add(shipment)
+# Construction with a subscript argument
+- |
+  def to_line(row):
+      return ReportLine(row["sku"])
+# Alternative constructor with a call argument
+- |
+  def quote(self, response):
+      return Quote.model_validate(response.json())
+# Yielded construction
+- |
+  def lines(rows):
+      for row in rows:
+          yield ReportLine(sku=row.sku)
+# Construction in a list comprehension
+- |
+  def parcels(order):
+      return [Parcel(sku=order_line.sku) for order_line in order.lines]
+# Construction in a returned list
+- |
+  def pair(order):
+      return [Parcel(sku=order.sku), Parcel(sku=order.spare)]
+# Private class name
+- |
+  def build(order):
+      return _Draft(order_id=order.id)
+# Assignment to a subscript target
+- |
+  def handler_for(name):
+      _handlers[name] = Handler(name=name, level=level_for(name))
+# Construction passed straight to another call
+- |
+  def lend(self, book, member):
+      self.loans.add(Loan(book_id=book.id, member_id=member.id))
+# Construction with a literal positional argument
+- |
+  def open_ticket(subject, email):
+      return Ticket(subject, email, "normal")
+# Construction with an arithmetic argument
+- |
+  def lend(book_id, member_id, today):
+      return Loan(book_id, member_id, today + timedelta(days=21))
+# Construction from local names worked out earlier
+- |
+  def lend(book, member, today):
+      due_on = today + timedelta(days=21)
+      return Loan(book.id, member.id, due_on)
+# Construction whose result is discarded
+- |
+  def warn(message):
+      Warning(text=message.strip())
+# Construction from unpacked fields
+- |
+  def profile_from(data):
+      return Profile(**data)
+# Dictionary assigned to a variable annotated with a declared type
+- |
+  def save_profile(store, user_id, display_name):
+      profile: Profile = {"user_id": user_id, "display_name": display_name.strip()}
+      store.put(profile)

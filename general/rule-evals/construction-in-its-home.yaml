@@ -1,0 +1,216 @@
+cases:
+- name: a lending service builds a loan from the book and member fields while it stores and mails the loan
+  inputs:
+    file: library/lending.py
+    unchanged:
+      library/__init__.py: ""
+      library/models.py: |
+        from dataclasses import dataclass
+        from datetime import date
+
+
+        @dataclass(frozen=True)
+        class Loan:
+            book_id: int
+            member_id: int
+            due_on: date
+    after: |
+      from datetime import date, timedelta
+
+      from library.models import Loan
+      from library.mail import Mailer
+      from library.repositories import LoanRepository
+
+
+      class LendingService:
+          def __init__(self, loans: LoanRepository, mailer: Mailer) -> None:
+              self.loans = loans
+              self.mailer = mailer
+
+          def lend(self, book, member, today: date) -> None:
+              loan = Loan(book_id=book.id, member_id=member.id, due_on=today + timedelta(days=21))
+              self.loans.add(loan)
+              self.mailer.send_due_date(member.email, loan.due_on)
+  expected_output:
+    outcome: invalid
+- name: a lending service calls the loan's alternative constructor and then stores and mails the loan
+  inputs:
+    file: library/lending.py
+    unchanged:
+      library/__init__.py: ""
+      library/models.py: |
+        from dataclasses import dataclass
+        from datetime import date, timedelta
+
+
+        @dataclass(frozen=True)
+        class Loan:
+            book_id: int
+            member_id: int
+            due_on: date
+
+            @classmethod
+            def start(cls, book, member, today: date) -> "Loan":
+                return cls(book_id=book.id, member_id=member.id, due_on=today + timedelta(days=21))
+    after: |
+      from datetime import date
+
+      from library.models import Loan
+      from library.mail import Mailer
+      from library.repositories import LoanRepository
+
+
+      class LendingService:
+          def __init__(self, loans: LoanRepository, mailer: Mailer) -> None:
+              self.loans = loans
+              self.mailer = mailer
+
+          def lend(self, book, member, today: date) -> None:
+              loan = Loan.start(book, member, today=today)
+              self.loans.add(loan)
+              self.mailer.send_due_date(member.email, loan.due_on)
+  expected_output:
+    outcome: valid
+- name: a payment mapping function translates a charge payload into a payment
+  inputs:
+    file: payments/stripe_mapping.py
+    unchanged:
+      payments/__init__.py: ""
+      payments/models.py: |
+        from dataclasses import dataclass
+        from decimal import Decimal
+
+
+        @dataclass(frozen=True)
+        class Payment:
+            reference: str
+            amount: Decimal
+            currency: str
+            card_last4: str
+    after: |
+      from decimal import Decimal
+      from typing import Any
+
+      from payments.models import Payment
+
+
+      def payment_from_charge(charge: dict[str, Any]) -> Payment:
+          return Payment(
+              reference=charge["id"],
+              amount=Decimal(charge["amount"]) / 100,
+              currency=charge["currency"].upper(),
+              card_last4=charge["payment_method_details"]["card"]["last4"],
+          )
+  expected_output:
+    outcome: valid
+- name: an intake function passes its parameters to the ticket unchanged and enqueues the ticket
+  inputs:
+    file: helpdesk/intake.py
+    unchanged:
+      helpdesk/__init__.py: ""
+      helpdesk/models.py: |
+        from dataclasses import dataclass
+
+
+        @dataclass(frozen=True)
+        class Ticket:
+            subject: str
+            requester_email: str
+            priority: str = "normal"
+    after: |
+      from helpdesk.models import Ticket
+      from helpdesk.queue import enqueue
+
+
+      def open_ticket(subject: str, requester_email: str) -> Ticket:
+          ticket = Ticket(subject=subject, requester_email=requester_email)
+          enqueue(ticket)
+          return ticket
+  expected_output:
+    outcome: valid
+- name: a loan period constant changes
+  inputs:
+    file: library/policy.py
+    before: |
+      LOAN_DAYS = 21
+    after: |
+      LOAN_DAYS = 28
+  expected_output:
+    outcome: skipped
+- name: a check-in service builds a boarding pass from the booking's fields while it marks the check-in and prints the pass
+  inputs:
+    file: checkin/service.ts
+    unchanged:
+      boarding/pass.ts: |
+        export class BoardingPass {
+          constructor(
+            readonly passenger: string,
+            readonly flight: string,
+            readonly seat: string,
+          ) {}
+        }
+    after: |
+      import { BoardingPass } from "../boarding/pass";
+      import type { BookingStore, PassPrinter } from "./ports";
+
+      export class CheckInService {
+        constructor(private readonly bookings: BookingStore, private readonly printer: PassPrinter) {}
+
+        async checkIn(reference: string): Promise<void> {
+          const booking = await this.bookings.find(reference);
+          const pass = new BoardingPass(booking.passengerName, booking.flightNumber, booking.seat);
+          await this.bookings.markCheckedIn(reference);
+          await this.printer.print(pass);
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: a check-in service calls the boarding pass's static constructor with the booking
+  inputs:
+    file: checkin/service.ts
+    unchanged:
+      boarding/pass.ts: |
+        import type { Booking } from "../checkin/ports";
+
+        export class BoardingPass {
+          constructor(
+            readonly passenger: string,
+            readonly flight: string,
+            readonly seat: string,
+          ) {}
+
+          static forBooking(booking: Booking): BoardingPass {
+            return new BoardingPass(booking.passengerName, booking.flightNumber, booking.seat);
+          }
+        }
+    after: |
+      import { BoardingPass } from "../boarding/pass";
+      import type { BookingStore, PassPrinter } from "./ports";
+
+      export class CheckInService {
+        constructor(private readonly bookings: BookingStore, private readonly printer: PassPrinter) {}
+
+        async checkIn(reference: string): Promise<void> {
+          const booking = await this.bookings.find(reference);
+          await this.bookings.markCheckedIn(reference);
+          await this.printer.print(BoardingPass.forBooking(booking));
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a cart totals function returns an object literal of the totals it works out
+  inputs:
+    file: cart/totals.ts
+    after: |
+      export interface CartTotals {
+        itemCount: number;
+        subtotalCents: number;
+      }
+
+      export function cartTotals(lines: { quantity: number; unitCents: number }[]): CartTotals {
+        const itemCount = lines.reduce((sum, line) => sum + line.quantity, 0);
+        const subtotalCents = lines.reduce((sum, line) => sum + line.quantity * line.unitCents, 0);
+        return { itemCount, subtotalCents };
+      }
+  expected_output:
+    outcome: valid
