@@ -3,11 +3,9 @@ language: python
 severity: warning
 message: Every method of this class only forwards to the same collaborator.
 note: |
-  The class adds nothing: every method passes its call to the same collaborator. Have
-  callers use the collaborator directly, or give the class work of its own. A class
-  with a base class is not matched, since forwarding there adapts the collaborator to
-  the base's interface. A decorated method, a property among them, counts as work of
-  the class's own: the decorator may add behaviour the rule can't see.
+  The class adds nothing: every method passes its call to the same collaborator, so a
+  reader goes through one more layer to find the object that does the work. Have
+  callers use the collaborator directly, or give the class work of its own.
 metadata:
   why: A layer that only forwards is one more place to read and change, and hides which object does the work.
   severity: A warning, not an error, because a class that forwards on purpose (a seam kept for a planned second implementation, or one a framework requires) looks the same to the pattern.

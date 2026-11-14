@@ -1,6 +1,6 @@
 id: no-middle-man
 valid:
-  # A method that does work of its own
+  # A method that counts the items of what the collaborator returns
   - |
     class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
@@ -29,7 +29,7 @@ valid:
       }
     }
 
-  # One forwarding method
+  # A class with one forwarding method
   - |
     class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
@@ -39,7 +39,7 @@ valid:
       }
     }
 
-  # An interface the forwarding adapts to
+  # A class that implements an interface, its methods all forwarding
   - |
     class ExampleStore implements Store {
       constructor(private readonly repository: ExampleRepository) {}
@@ -82,7 +82,7 @@ valid:
       }
     }
 
-  # A function held in a field counts as work of the class's own
+  # A forwarding function held in a field, beside a forwarding method
   - |
     class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
@@ -95,7 +95,7 @@ valid:
     }
 
 invalid:
-  # Returned and bare forwarding calls
+  # A returned and a bare forwarding call to the same collaborator
   - |
     class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
@@ -109,7 +109,7 @@ invalid:
       }
     }
 
-  # Awaited calls in exported async methods
+  # An exported class whose async methods await the same collaborator
   - |
     export class ExampleService {
       constructor(private readonly repository: ExampleRepository) {}
