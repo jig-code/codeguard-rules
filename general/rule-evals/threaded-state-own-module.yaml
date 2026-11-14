@@ -1,0 +1,363 @@
+cases:
+- name: a checkout workflow module defines the state that its steps pass along
+  inputs:
+    file: checkout/workflow.py
+    after: |
+      from dataclasses import dataclass, replace
+
+
+      @dataclass(frozen=True)
+      class CheckoutState:
+          cart_id: str
+          total_cents: int = 0
+          charge_id: str | None = None
+
+
+      def price(state: CheckoutState, prices: dict[str, int]) -> CheckoutState:
+          return replace(state, total_cents=prices[state.cart_id])
+
+
+      def charge(state: CheckoutState, gateway) -> CheckoutState:
+          return replace(state, charge_id=gateway.charge(state.total_cents))
+
+
+      def run(cart_id: str, prices: dict[str, int], gateway) -> CheckoutState:
+          state = CheckoutState(cart_id=cart_id)
+          state = price(state, prices)
+          return charge(state, gateway)
+  expected_output:
+    outcome: invalid
+- name: an import state module also defines a function for supplier emails
+  inputs:
+    file: imports/state.py
+    unchanged:
+      imports/pipeline.py: |
+        from dataclasses import replace
+
+        from imports.state import ImportState
+
+
+        def parse(state: ImportState, raw: str) -> ImportState:
+            return replace(state, rows=[line.split(",") for line in raw.splitlines()])
+
+
+        def validate(state: ImportState) -> ImportState:
+            bad = [row for row in state.rows if len(row) != 3]
+            return replace(state, errors=[f"bad row: {row}" for row in bad])
+    after: |
+      from dataclasses import dataclass, field
+
+
+      @dataclass(frozen=True)
+      class ImportState:
+          source: str
+          rows: list[list[str]] = field(default_factory=list)
+          errors: list[str] = field(default_factory=list)
+
+
+      def supplier_domain(email: str) -> str:
+          return email.rsplit("@", 1)[-1].lower()
+  expected_output:
+    outcome: invalid
+- name: a checkout state module holds the state and its update method
+  inputs:
+    file: checkout/state.py
+    unchanged:
+      checkout/workflow.py: |
+        from checkout.state import CheckoutState
+
+
+        def price(state: CheckoutState, prices: dict[str, int]) -> CheckoutState:
+            return state.with_total(prices[state.cart_id])
+    after: |
+      from dataclasses import dataclass, replace
+
+
+      @dataclass(frozen=True)
+      class CheckoutState:
+          cart_id: str
+          total_cents: int = 0
+
+          def with_total(self, total_cents: int) -> "CheckoutState":
+              return replace(self, total_cents=total_cents)
+  expected_output:
+    outcome: valid
+- name: a checkout workflow module adds a step that imports the state from its own module
+  inputs:
+    file: checkout/workflow.py
+    unchanged:
+      checkout/state.py: |
+        from dataclasses import dataclass, replace
+
+
+        @dataclass(frozen=True)
+        class CheckoutState:
+            cart_id: str
+            total_cents: int = 0
+            receipt: str | None = None
+
+            def with_total(self, total_cents: int) -> "CheckoutState":
+                return replace(self, total_cents=total_cents)
+    before: |
+      from checkout.state import CheckoutState
+
+
+      def price(state: CheckoutState, prices: dict[str, int]) -> CheckoutState:
+          return state.with_total(prices[state.cart_id])
+    after: |
+      from dataclasses import replace
+
+      from checkout.state import CheckoutState
+
+
+      def price(state: CheckoutState, prices: dict[str, int]) -> CheckoutState:
+          return state.with_total(prices[state.cart_id])
+
+
+      def receipt(state: CheckoutState) -> CheckoutState:
+          return replace(state, receipt=f"{state.cart_id}: {state.total_cents / 100:.2f}")
+  expected_output:
+    outcome: valid
+- name: a report request is built once and passed to the renderer beside it
+  inputs:
+    file: reports/monthly.py
+    after: |
+      from dataclasses import dataclass
+      from datetime import date
+
+
+      @dataclass(frozen=True)
+      class ReportRequest:
+          month: date
+          account_id: str
+
+
+      def render(request: ReportRequest, rows: list[dict]) -> str:
+          lines = [f"Report for {request.account_id}, {request.month:%B %Y}"]
+          lines += [f"{row['label']}: {row['amount']}" for row in rows]
+          return "\n".join(lines)
+
+
+      def monthly_report(account_id: str, month: date, rows: list[dict]) -> str:
+          return render(ReportRequest(month=month, account_id=account_id), rows)
+  expected_output:
+    outcome: valid
+- name: pipeline settings are read by every step and never updated
+  inputs:
+    file: etl/pipeline.py
+    after: |
+      from dataclasses import dataclass
+
+
+      @dataclass(frozen=True)
+      class PipelineSettings:
+          batch_size: int
+          dry_run: bool
+
+
+      def extract(settings: PipelineSettings, source) -> list[dict]:
+          return source.fetch(limit=settings.batch_size)
+
+
+      def load(settings: PipelineSettings, sink, rows: list[dict]) -> int:
+          if settings.dry_run:
+              return 0
+          return sink.write(rows)
+
+
+      def run(settings: PipelineSettings, source, sink) -> int:
+          return load(settings, sink, extract(settings, source))
+  expected_output:
+    outcome: valid
+- name: a fulfilment state module also defines the stage enum that a field of the state uses
+  inputs:
+    file: fulfilment/state.py
+    unchanged:
+      fulfilment/flow.py: |
+        from dataclasses import replace
+
+        from fulfilment.state import FulfilmentState, Stage
+
+
+        def pick(state: FulfilmentState) -> FulfilmentState:
+            return replace(state, stage=Stage.PICKED)
+
+
+        def pack(state: FulfilmentState) -> FulfilmentState:
+            return replace(state, stage=Stage.PACKED)
+    after: |
+      from dataclasses import dataclass
+      from enum import StrEnum
+
+
+      class Stage(StrEnum):
+          RECEIVED = "received"
+          PICKED = "picked"
+          PACKED = "packed"
+
+
+      @dataclass(frozen=True)
+      class FulfilmentState:
+          order_id: str
+          stage: Stage = Stage.RECEIVED
+  expected_output:
+    outcome: valid
+- name: a step body in the checkout workflow changes its rounding
+  inputs:
+    file: checkout/workflow.py
+    before: |
+      from dataclasses import dataclass, replace
+
+
+      @dataclass(frozen=True)
+      class CheckoutState:
+          cart_id: str
+          total_cents: int = 0
+
+
+      def price(state: CheckoutState, prices: dict[str, float]) -> CheckoutState:
+          return replace(state, total_cents=int(prices[state.cart_id]))
+    after: |
+      from dataclasses import dataclass, replace
+
+
+      @dataclass(frozen=True)
+      class CheckoutState:
+          cart_id: str
+          total_cents: int = 0
+
+
+      def price(state: CheckoutState, prices: dict[str, float]) -> CheckoutState:
+          return replace(state, total_cents=round(prices[state.cart_id]))
+  expected_output:
+    outcome: skipped
+- name: a checkout pipeline module declares the state that its steps copy
+  inputs:
+    file: checkout/pipeline.ts
+    after: |
+      export class CheckoutState {
+        constructor(
+          readonly cartId: string,
+          readonly totalCents = 0,
+          readonly chargeId: string | null = null,
+        ) {}
+      }
+
+      export function price(state: CheckoutState, totalCents: number): CheckoutState {
+        return new CheckoutState(state.cartId, totalCents, state.chargeId);
+      }
+
+      export function charge(state: CheckoutState, chargeId: string): CheckoutState {
+        return new CheckoutState(state.cartId, state.totalCents, chargeId);
+      }
+  expected_output:
+    outcome: invalid
+- name: an import state module also exports a function for supplier emails
+  inputs:
+    file: imports/state.ts
+    unchanged:
+      imports/pipeline.ts: |
+        import type { ImportState } from "./state";
+
+        export function parse(state: ImportState, raw: string): ImportState {
+          return { ...state, rows: raw.split("\n").map((line) => line.split(",")) };
+        }
+
+        export function validate(state: ImportState): ImportState {
+          const bad = state.rows.filter((row) => row.length !== 3);
+          return { ...state, errors: bad.map((row) => `bad row: ${row.join(",")}`) };
+        }
+    after: |
+      export interface ImportState {
+        readonly source: string;
+        readonly rows: readonly string[][];
+        readonly errors: readonly string[];
+      }
+
+      export function supplierDomain(email: string): string {
+        return email.slice(email.lastIndexOf("@") + 1).toLowerCase();
+      }
+  expected_output:
+    outcome: invalid
+- name: a fulfilment state module also exports the stage type that a field of the state uses
+  inputs:
+    file: fulfilment/state.ts
+    unchanged:
+      fulfilment/flow.ts: |
+        import type { FulfilmentState } from "./state";
+
+        export function pick(state: FulfilmentState): FulfilmentState {
+          return { ...state, stage: "picked" };
+        }
+
+        export function pack(state: FulfilmentState): FulfilmentState {
+          return { ...state, stage: "packed" };
+        }
+    after: |
+      export type Stage = "received" | "picked" | "packed";
+
+      export interface FulfilmentState {
+        readonly orderId: string;
+        readonly stage: Stage;
+      }
+  expected_output:
+    outcome: valid
+- name: a checkout pipeline module adds a step that imports the state from its own module
+  inputs:
+    file: checkout/pipeline.ts
+    unchanged:
+      checkout/state.ts: |
+        export interface CheckoutState {
+          readonly cartId: string;
+          readonly totalCents: number;
+          readonly receipt: string | null;
+        }
+    before: |
+      import type { CheckoutState } from "./state";
+
+      export function price(state: CheckoutState, totalCents: number): CheckoutState {
+        return { ...state, totalCents };
+      }
+    after: |
+      import type { CheckoutState } from "./state";
+
+      export function price(state: CheckoutState, totalCents: number): CheckoutState {
+        return { ...state, totalCents };
+      }
+
+      export function receipt(state: CheckoutState): CheckoutState {
+        return { ...state, receipt: `${state.cartId}: ${(state.totalCents / 100).toFixed(2)}` };
+      }
+  expected_output:
+    outcome: valid
+- name: a settings interface that every pipeline step reads and never updates
+  inputs:
+    file: etl/pipeline.ts
+    after: |
+      export interface PipelineSettings {
+        readonly batchSize: number;
+        readonly dryRun: boolean;
+      }
+
+      export interface Source {
+        fetch(limit: number): Promise<Record<string, unknown>[]>;
+      }
+
+      export interface Sink {
+        write(rows: Record<string, unknown>[]): Promise<number>;
+      }
+
+      export function extract(settings: PipelineSettings, source: Source): Promise<Record<string, unknown>[]> {
+        return source.fetch(settings.batchSize);
+      }
+
+      export async function load(settings: PipelineSettings, sink: Sink, rows: Record<string, unknown>[]): Promise<number> {
+        if (settings.dryRun) return 0;
+        return sink.write(rows);
+      }
+
+      export async function run(settings: PipelineSettings, source: Source, sink: Sink): Promise<number> {
+        return load(settings, sink, await extract(settings, source));
+      }
+  expected_output:
+    outcome: valid
