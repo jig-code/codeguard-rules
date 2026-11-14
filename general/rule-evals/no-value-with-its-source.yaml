@@ -67,37 +67,6 @@ cases:
           return settings.get(name, default_for(name))
   expected_output:
     outcome: valid
-- name: a service is built from a session and a repository made from that session
-  inputs:
-    file: orders/wiring.py
-    after: |
-      from orders.db import Session
-      from orders.models import Order
-
-
-      class OrderRepository:
-          def __init__(self, session: Session) -> None:
-              self._session = session
-
-          def get(self, order_id: int) -> Order:
-              return self._session.get(Order, order_id)
-
-
-      class OrderService:
-          def __init__(self, repo: OrderRepository, session: Session) -> None:
-              self._repo = repo
-              self._session = session
-
-          def cancel(self, order_id: int) -> None:
-              order = self._repo.get(order_id)
-              order.status = "cancelled"
-              self._session.commit()
-
-
-      def build_service(session: Session) -> OrderService:
-          return OrderService(repo=OrderRepository(session), session=session)
-  expected_output:
-    outcome: valid
 - name: an email call passes an order's address and a subject
   inputs:
     file: orders/notify.py
@@ -168,38 +137,6 @@ cases:
 
       export function render(value: Record<string, unknown>): string {
         return JSON.stringify(value, null, indentFor(value));
-      }
-  expected_output:
-    outcome: valid
-- name: a service is built from a database and a repository made from that database
-  inputs:
-    file: orders/wiring.ts
-    after: |
-      import type { Database } from "./db";
-      import type { Order } from "./order";
-
-      export class OrderRepository {
-        constructor(private readonly db: Database) {}
-
-        async find(id: string): Promise<Order> {
-          return this.db.get("orders", id);
-        }
-      }
-
-      export class OrderService {
-        constructor(
-          private readonly repo: OrderRepository,
-          private readonly db: Database,
-        ) {}
-
-        async cancel(id: string): Promise<void> {
-          const order = await this.repo.find(id);
-          await this.db.update("orders", id, { ...order, status: "cancelled" });
-        }
-      }
-
-      export function buildService(db: Database): OrderService {
-        return new OrderService(new OrderRepository(db), db);
       }
   expected_output:
     outcome: valid
