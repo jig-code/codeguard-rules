@@ -41,54 +41,7 @@ cases:
           return len(_users)
   expected_output:
     outcome: valid
-- name: one function records the last sync time that a status function reads
-  inputs:
-    file: sync/status.py
-    after: |
-      from datetime import datetime, timezone
-
-      from sync.client import pull_changes
-
-      _last_sync: datetime | None = None
-
-
-      def sync() -> int:
-          global _last_sync
-          changed = pull_changes()
-          _last_sync = datetime.now(timezone.utc)
-          return changed
-
-
-      def status() -> str:
-          if _last_sync is None:
-              return "never synced"
-          return f"last synced {_last_sync.isoformat()}"
-  expected_output:
-    outcome: valid
-- name: two functions rebind the module's maintenance flag
-  inputs:
-    file: ops/maintenance.py
-    after: |
-      from ops.settings import Settings
-
-      _maintenance = False
-
-
-      def start_maintenance() -> None:
-          global _maintenance
-          _maintenance = True
-
-
-      def apply_settings(settings: Settings) -> None:
-          global _maintenance
-          _maintenance = settings.maintenance
-
-
-      def in_maintenance() -> bool:
-          return _maintenance
-  expected_output:
-    outcome: invalid
-- name: exporters register themselves into a module registry at import
+- name: a registration decorator fills a module registry that an export function reads
   inputs:
     file: exports/registry.py
     after: |
@@ -145,6 +98,25 @@ cases:
       export function handleMaintenanceToggle(request: { enabled: boolean }): { ok: true } {
         settings.maintenance = request.enabled;
         return { ok: true };
+      }
+  expected_output:
+    outcome: invalid
+- name: two functions reassign the module's current locale
+  inputs:
+    file: i18n/locale.ts
+    after: |
+      let currentLocale = "en";
+
+      export function setLocale(locale: string): void {
+        currentLocale = locale;
+      }
+
+      export function loadPreferences(user: { preferredLocale: string }): void {
+        currentLocale = user.preferredLocale;
+      }
+
+      export function locale(): string {
+        return currentLocale;
       }
   expected_output:
     outcome: invalid
