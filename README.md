@@ -36,6 +36,7 @@ the languages it runs on.
 | `single-responsibility` | Single responsibility: a function or class never holds both business rules and the details of a data format or of an outside system's interface | Not yet |
 | `no-repeated-switches` | No repeated switches: code never repeats a choice of behaviour by which of a type's variants a value is, in a place that the type checker would still accept if that place handled only some of those variants | Not yet |
 | `no-feature-envy` | No feature envy: code outside the module that defines one of the program's own types never works out a fact about a value of that type that depends on nothing but that value's fields | Not yet |
+| `fail-fast` | Fail fast: code never turns an error an operation reports, data the program requires but finds missing, or a state the program's own rules make impossible into a result with which the work carries on as if it had not occurred | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:

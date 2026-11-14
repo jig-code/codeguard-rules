@@ -1,0 +1,21 @@
+id: error-handler
+language: python
+rule:
+  any:
+  - kind: except_clause
+  - kind: call
+    has:
+      field: function
+      regex: (^|\.)suppress$
+  - kind: finally_clause
+    has:
+      stopBy: end
+      kind: return_statement
+  - kind: keyword_argument
+    all:
+    - has:
+        field: name
+        regex: ^return_exceptions$
+    - has:
+        field: value
+        kind: "true"
