@@ -52,7 +52,7 @@ the languages it runs on.
 | `validator-depends-on-its-data` | Validator depends on its data: code that a data type runs to accept or reject a value as an instance is built decides only from that instance's values and constants, so it parses the same anywhere and its tests need no setup. | Not yet |
 | `no-recheck-of-guaranteed-condition` | No recheck of guaranteed condition: a check never tests a condition that earlier code, or validation in the value's type, already makes true, so one place owns each guarantee. | Not yet |
 | `discriminated-unions` | Discriminated unions: a union of record types that a parser builds from outside data lets the parser pick the variant only by one named field with a different literal value in each variant, so parsing is fast and its errors name one variant. | Not yet |
-| `no-stamp-coupling` | No stamp coupling: a function takes the values it reads, not a bundle it mostly ignores, so its signature says what it depends on. | Not yet |
+| `no-stamp-coupling` | No stamp coupling: a function whose parameters no framework dictates never takes an object carrying unrelated values for many parts of the program when it reads half of its fields or fewer, so its signature says what it depends on. | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
