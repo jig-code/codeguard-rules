@@ -1,0 +1,599 @@
+id: module-state-write
+snapshots:
+  "LIMIT = 10\n_seen = set()\n\ndef mark(key):\n    _seen.add(key)\n":
+    labels:
+    - source: _seen.add(key)
+      style: primary
+      start: 45
+      end: 59
+    - source: |-
+        def mark(key):
+            _seen.add(key)
+      style: secondary
+      start: 26
+      end: 59
+    - source: _seen
+      style: secondary
+      start: 45
+      end: 50
+    - source: add
+      style: secondary
+      start: 51
+      end: 54
+    - source: _seen.add
+      style: secondary
+      start: 45
+      end: 54
+    - source: _seen
+      style: secondary
+      start: 11
+      end: 16
+    - source: _seen = set()
+      style: secondary
+      start: 11
+      end: 24
+    - source: _seen = set()
+      style: secondary
+      start: 11
+      end: 24
+    - source: |
+        LIMIT = 10
+        _seen = set()
+
+        def mark(key):
+            _seen.add(key)
+      style: secondary
+      start: 0
+      end: 60
+  "_CACHE = {}\n\ndef remember(key, value):\n    _CACHE[key] = value\n":
+    labels:
+    - source: _CACHE[key] = value
+      style: primary
+      start: 43
+      end: 62
+    - source: |-
+        def remember(key, value):
+            _CACHE[key] = value
+      style: secondary
+      start: 13
+      end: 62
+    - source: _CACHE
+      style: secondary
+      start: 43
+      end: 49
+    - source: _CACHE[key]
+      style: secondary
+      start: 43
+      end: 54
+    - source: _CACHE
+      style: secondary
+      start: 0
+      end: 6
+    - source: _CACHE = {}
+      style: secondary
+      start: 0
+      end: 11
+    - source: _CACHE = {}
+      style: secondary
+      start: 0
+      end: 11
+    - source: |
+        _CACHE = {}
+
+        def remember(key, value):
+            _CACHE[key] = value
+      style: secondary
+      start: 0
+      end: 63
+  "_context = ExampleContext()\n\ndef set_locale(locale):\n    _context.locale = locale\n":
+    labels:
+    - source: _context.locale = locale
+      style: primary
+      start: 57
+      end: 81
+    - source: |-
+        def set_locale(locale):
+            _context.locale = locale
+      style: secondary
+      start: 29
+      end: 81
+    - source: _context
+      style: secondary
+      start: 57
+      end: 65
+    - source: _context.locale
+      style: secondary
+      start: 57
+      end: 72
+    - source: _context
+      style: secondary
+      start: 0
+      end: 8
+    - source: _context = ExampleContext()
+      style: secondary
+      start: 0
+      end: 27
+    - source: _context = ExampleContext()
+      style: secondary
+      start: 0
+      end: 27
+    - source: |
+        _context = ExampleContext()
+
+        def set_locale(locale):
+            _context.locale = locale
+      style: secondary
+      start: 0
+      end: 82
+  "_count = 0\n\ndef next_id():\n    global _count\n    _count += 1\n    return _count\n":
+    labels:
+    - source: global _count
+      style: primary
+      start: 31
+      end: 44
+  "_counts: dict[str, int] = {}\n\ndef count(key):\n    _counts[key] += 1\n":
+    labels:
+    - source: _counts[key] += 1
+      style: primary
+      start: 50
+      end: 67
+    - source: |-
+        def count(key):
+            _counts[key] += 1
+      style: secondary
+      start: 30
+      end: 67
+    - source: _counts
+      style: secondary
+      start: 50
+      end: 57
+    - source: _counts[key]
+      style: secondary
+      start: 50
+      end: 62
+    - source: _counts
+      style: secondary
+      start: 0
+      end: 7
+    - source: "_counts: dict[str, int] = {}"
+      style: secondary
+      start: 0
+      end: 28
+    - source: "_counts: dict[str, int] = {}"
+      style: secondary
+      start: 0
+      end: 28
+    - source: |
+        _counts: dict[str, int] = {}
+
+        def count(key):
+            _counts[key] += 1
+      style: secondary
+      start: 0
+      end: 68
+  "_errors = []\n\ndef check(order):\n    _errors.append(order)\n":
+    labels:
+    - source: _errors.append(order)
+      style: primary
+      start: 36
+      end: 57
+    - source: |-
+        def check(order):
+            _errors.append(order)
+      style: secondary
+      start: 14
+      end: 57
+    - source: _errors
+      style: secondary
+      start: 36
+      end: 43
+    - source: append
+      style: secondary
+      start: 44
+      end: 50
+    - source: _errors.append
+      style: secondary
+      start: 36
+      end: 50
+    - source: _errors
+      style: secondary
+      start: 0
+      end: 7
+    - source: _errors = []
+      style: secondary
+      start: 0
+      end: 12
+    - source: _errors = []
+      style: secondary
+      start: 0
+      end: 12
+    - source: |
+        _errors = []
+
+        def check(order):
+            _errors.append(order)
+      style: secondary
+      start: 0
+      end: 58
+  "_handlers = {}\n\ndef handles(kind):\n    def register(handler):\n        _handlers[kind] = handler\n        return handler\n    return register\n":
+    labels:
+    - source: _handlers[kind] = handler
+      style: primary
+      start: 70
+      end: 95
+    - source: |-
+        def register(handler):
+                _handlers[kind] = handler
+                return handler
+      style: secondary
+      start: 39
+      end: 118
+    - source: _handlers
+      style: secondary
+      start: 70
+      end: 79
+    - source: _handlers[kind]
+      style: secondary
+      start: 70
+      end: 85
+    - source: _handlers
+      style: secondary
+      start: 0
+      end: 9
+    - source: _handlers = {}
+      style: secondary
+      start: 0
+      end: 14
+    - source: _handlers = {}
+      style: secondary
+      start: 0
+      end: 14
+    - source: |
+        _handlers = {}
+
+        def handles(kind):
+            def register(handler):
+                _handlers[kind] = handler
+                return handler
+            return register
+      style: secondary
+      start: 0
+      end: 139
+  "_state = ExampleState()\n\ndef remember(key, value):\n    _state.entries[key] = value\n":
+    labels:
+    - source: _state.entries[key] = value
+      style: primary
+      start: 55
+      end: 82
+    - source: |-
+        def remember(key, value):
+            _state.entries[key] = value
+      style: secondary
+      start: 25
+      end: 82
+    - source: _state
+      style: secondary
+      start: 55
+      end: 61
+    - source: _state.entries
+      style: secondary
+      start: 55
+      end: 69
+    - source: _state.entries[key]
+      style: secondary
+      start: 55
+      end: 74
+    - source: _state
+      style: secondary
+      start: 0
+      end: 6
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: |
+        _state = ExampleState()
+
+        def remember(key, value):
+            _state.entries[key] = value
+      style: secondary
+      start: 0
+      end: 83
+  "_state = ExampleState()\n\ndef report(error):\n    _state.errors.append(error)\n":
+    labels:
+    - source: _state.errors.append(error)
+      style: primary
+      start: 48
+      end: 75
+    - source: |-
+        def report(error):
+            _state.errors.append(error)
+      style: secondary
+      start: 25
+      end: 75
+    - source: _state
+      style: secondary
+      start: 48
+      end: 54
+    - source: _state.errors
+      style: secondary
+      start: 48
+      end: 61
+    - source: append
+      style: secondary
+      start: 62
+      end: 68
+    - source: _state.errors.append
+      style: secondary
+      start: 48
+      end: 68
+    - source: _state
+      style: secondary
+      start: 0
+      end: 6
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: _state = ExampleState()
+      style: secondary
+      start: 0
+      end: 23
+    - source: |
+        _state = ExampleState()
+
+        def report(error):
+            _state.errors.append(error)
+      style: secondary
+      start: 0
+      end: 76
+  "_stats = ExampleStats()\n\ndef record(order):\n    _stats.total += order.amount\n":
+    labels:
+    - source: _stats.total += order.amount
+      style: primary
+      start: 48
+      end: 76
+    - source: |-
+        def record(order):
+            _stats.total += order.amount
+      style: secondary
+      start: 25
+      end: 76
+    - source: _stats
+      style: secondary
+      start: 48
+      end: 54
+    - source: _stats.total
+      style: secondary
+      start: 48
+      end: 60
+    - source: _stats
+      style: secondary
+      start: 0
+      end: 6
+    - source: _stats = ExampleStats()
+      style: secondary
+      start: 0
+      end: 23
+    - source: _stats = ExampleStats()
+      style: secondary
+      start: 0
+      end: 23
+    - source: |
+        _stats = ExampleStats()
+
+        def record(order):
+            _stats.total += order.amount
+      style: secondary
+      start: 0
+      end: 77
+  "class ExampleCache:\n    def __init__(self):\n        self.entries = {}\n\n    def put(self, key, value):\n        self.entries[key] = value\n\ncache = ExampleCache()\n":
+    labels:
+    - source: self.entries[key] = value
+      style: primary
+      start: 110
+      end: 135
+    - source: self
+      style: secondary
+      start: 110
+      end: 114
+    - source: self.entries
+      style: secondary
+      start: 110
+      end: 122
+    - source: self.entries[key]
+      style: secondary
+      start: 110
+      end: 127
+    - source: |-
+        def put(self, key, value):
+                self.entries[key] = value
+      style: secondary
+      start: 75
+      end: 135
+    - source: ExampleCache
+      style: secondary
+      start: 6
+      end: 18
+    - source: |-
+        class ExampleCache:
+            def __init__(self):
+                self.entries = {}
+
+            def put(self, key, value):
+                self.entries[key] = value
+      style: secondary
+      start: 0
+      end: 135
+    - source: ExampleCache
+      style: secondary
+      start: 145
+      end: 157
+    - source: ExampleCache()
+      style: secondary
+      start: 145
+      end: 159
+    - source: cache = ExampleCache()
+      style: secondary
+      start: 137
+      end: 159
+    - source: cache = ExampleCache()
+      style: secondary
+      start: 137
+      end: 159
+    - source: |
+        class ExampleCache:
+            def __init__(self):
+                self.entries = {}
+
+            def put(self, key, value):
+                self.entries[key] = value
+
+        cache = ExampleCache()
+      style: secondary
+      start: 0
+      end: 160
+  "class ExampleEstimator:\n    def __init__(self, rate):\n        self.rate = rate\n        self.counted = 0\n\n    def minutes(self, words):\n        self.counted += words\n        return self.counted // self.rate\n\nestimator = ExampleEstimator(rate=230)\n":
+    labels:
+    - source: self.counted += words
+      style: primary
+      start: 143
+      end: 164
+    - source: self
+      style: secondary
+      start: 143
+      end: 147
+    - source: self.counted
+      style: secondary
+      start: 143
+      end: 155
+    - source: |-
+        def minutes(self, words):
+                self.counted += words
+                return self.counted // self.rate
+      style: secondary
+      start: 109
+      end: 205
+    - source: ExampleEstimator
+      style: secondary
+      start: 6
+      end: 22
+    - source: |-
+        class ExampleEstimator:
+            def __init__(self, rate):
+                self.rate = rate
+                self.counted = 0
+
+            def minutes(self, words):
+                self.counted += words
+                return self.counted // self.rate
+      style: secondary
+      start: 0
+      end: 205
+    - source: ExampleEstimator
+      style: secondary
+      start: 219
+      end: 235
+    - source: ExampleEstimator(rate=230)
+      style: secondary
+      start: 219
+      end: 245
+    - source: estimator = ExampleEstimator(rate=230)
+      style: secondary
+      start: 207
+      end: 245
+    - source: estimator = ExampleEstimator(rate=230)
+      style: secondary
+      start: 207
+      end: 245
+    - source: |
+        class ExampleEstimator:
+            def __init__(self, rate):
+                self.rate = rate
+                self.counted = 0
+
+            def minutes(self, words):
+                self.counted += words
+                return self.counted // self.rate
+
+        estimator = ExampleEstimator(rate=230)
+      style: secondary
+      start: 0
+      end: 246
+  "class ExamplePrinter:\n    def __init__(self):\n        self.lines = []\n\n    def print(self, line):\n        self.lines.append(line)\n        return \"\\n\".join(self.lines)\n\nprinter = ExamplePrinter()\n":
+    labels:
+    - source: self.lines.append(line)
+      style: primary
+      start: 106
+      end: 129
+    - source: self
+      style: secondary
+      start: 106
+      end: 110
+    - source: self.lines
+      style: secondary
+      start: 106
+      end: 116
+    - source: append
+      style: secondary
+      start: 117
+      end: 123
+    - source: self.lines.append
+      style: secondary
+      start: 106
+      end: 123
+    - source: |-
+        def print(self, line):
+                self.lines.append(line)
+                return "\n".join(self.lines)
+      style: secondary
+      start: 75
+      end: 166
+    - source: ExamplePrinter
+      style: secondary
+      start: 6
+      end: 20
+    - source: |-
+        class ExamplePrinter:
+            def __init__(self):
+                self.lines = []
+
+            def print(self, line):
+                self.lines.append(line)
+                return "\n".join(self.lines)
+      style: secondary
+      start: 0
+      end: 166
+    - source: ExamplePrinter
+      style: secondary
+      start: 178
+      end: 192
+    - source: ExamplePrinter()
+      style: secondary
+      start: 178
+      end: 194
+    - source: printer = ExamplePrinter()
+      style: secondary
+      start: 168
+      end: 194
+    - source: printer = ExamplePrinter()
+      style: secondary
+      start: 168
+      end: 194
+    - source: |
+        class ExamplePrinter:
+            def __init__(self):
+                self.lines = []
+
+            def print(self, line):
+                self.lines.append(line)
+                return "\n".join(self.lines)
+
+        printer = ExamplePrinter()
+      style: secondary
+      start: 0
+      end: 195
