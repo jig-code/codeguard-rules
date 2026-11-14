@@ -1,0 +1,426 @@
+cases:
+- name: renewing a loan saves the new due date and returns how many of the member's loans are overdue
+  inputs:
+    file: library/loans.py
+    after: |
+      from datetime import date, timedelta
+
+      from library.models import Loan
+
+      RENEWAL_DAYS = 14
+
+
+      def renew_loan(loan: Loan, today: date) -> int:
+          loan.due_on = today + timedelta(days=RENEWAL_DAYS)
+          loan.save(update_fields=["due_on"])
+          return Loan.objects.filter(member_id=loan.member_id, due_on__lt=today).count()
+  expected_output:
+    outcome: invalid
+- name: setting a thermostat's target assigns its own field and returns how far the room is from the target
+  inputs:
+    file: climate/thermostat.py
+    after: |
+      class Thermostat:
+          def __init__(self, room_celsius: float, target_celsius: float) -> None:
+              self._room_celsius = room_celsius
+              self._target_celsius = target_celsius
+
+          def set_target(self, celsius: float) -> float:
+              self._target_celsius = celsius
+              return celsius - self._room_celsius
+  expected_output:
+    outcome: invalid
+- name: totalling a customer's open invoices
+  inputs:
+    file: billing/queries.py
+    after: |
+      from billing.models import Invoice
+
+
+      def open_balance_cents(customer_id: int) -> int:
+          invoices = Invoice.objects.filter(customer_id=customer_id, paid_on__isnull=True)
+          return sum(invoice.total_cents for invoice in invoices)
+  expected_output:
+    outcome: valid
+- name: opening a support ticket creates it and returns the created ticket
+  inputs:
+    file: support/tickets.py
+    after: |
+      from support.models import Ticket
+
+
+      def open_ticket(customer_id: int, subject: str) -> Ticket:
+          return Ticket.objects.create(customer_id=customer_id, subject=subject)
+  expected_output:
+    outcome: valid
+- name: deactivating a coupon returns whether one coupon was updated
+  inputs:
+    file: shop/coupons.py
+    after: |
+      from shop.models import Coupon
+
+
+      def deactivate_coupon(code: str) -> bool:
+          updated = Coupon.objects.filter(code=code, active=True).update(active=False)
+          return updated == 1
+  expected_output:
+    outcome: valid
+- name: an email draft adds a recipient and returns itself
+  inputs:
+    file: mail/draft.py
+    after: |
+      from typing import Self
+
+
+      class EmailDraft:
+          def __init__(self, subject: str) -> None:
+              self._subject = subject
+              self._recipients: list[str] = []
+
+          def add_recipient(self, address: str) -> Self:
+              self._recipients.append(address)
+              return self
+  expected_output:
+    outcome: valid
+- name: a job queue removes the next job and returns it
+  inputs:
+    file: jobs/queue.py
+    after: |
+      from collections import deque
+      from dataclasses import dataclass
+
+
+      @dataclass(frozen=True)
+      class Job:
+          id: str
+          payload: dict[str, str]
+
+
+      class JobQueue:
+          def __init__(self) -> None:
+              self._jobs: deque[Job] = deque()
+
+          def claim_next(self) -> Job | None:
+              if not self._jobs:
+                  return None
+              return self._jobs.popleft()
+  expected_output:
+    outcome: valid
+- name: an invoice numberer increments its counter and returns the new number
+  inputs:
+    file: billing/numbering.py
+    after: |
+      class InvoiceNumbers:
+          def __init__(self, last_issued: int) -> None:
+              self._last_issued = last_issued
+
+          def next_number(self) -> int:
+              self._last_issued += 1
+              return self._last_issued
+  expected_output:
+    outcome: valid
+- name: overdue reminders are appended to a list the function builds and returns
+  inputs:
+    file: billing/reminders.py
+    after: |
+      from dataclasses import dataclass
+      from datetime import date
+
+
+      @dataclass(frozen=True)
+      class Invoice:
+          number: str
+          due_on: date
+
+
+      @dataclass(frozen=True)
+      class Reminder:
+          invoice_number: str
+          days_late: int
+
+
+      def overdue_reminders(invoices: list[Invoice], today: date) -> list[Reminder]:
+          reminders: list[Reminder] = []
+          for invoice in invoices:
+              if invoice.due_on < today:
+                  reminders.append(Reminder(invoice.number, (today - invoice.due_on).days))
+          return reminders
+  expected_output:
+    outcome: valid
+- name: a rate lookup stores the carrier's rate for each postcode and returns the stored rate
+  inputs:
+    file: shipping/rates.py
+    after: |
+      from decimal import Decimal
+      from typing import Protocol
+
+
+      class CarrierClient(Protocol):
+          def fetch_rate(self, postcode: str) -> Decimal: ...
+
+
+      class ShippingRates:
+          def __init__(self, carrier: CarrierClient) -> None:
+              self._carrier = carrier
+              self._rates: dict[str, Decimal] = {}
+
+          def rate_for(self, postcode: str) -> Decimal:
+              if postcode not in self._rates:
+                  self._rates[postcode] = self._carrier.fetch_rate(postcode)
+              return self._rates[postcode]
+  expected_output:
+    outcome: valid
+- name: a method marks a message read and returns nothing
+  inputs:
+    file: inbox/message.py
+    after: |
+      from datetime import UTC, datetime
+
+
+      class Message:
+          def __init__(self, body: str) -> None:
+              self.body = body
+              self.read_at: datetime | None = None
+
+          def mark_read(self) -> None:
+              self.read_at = datetime.now(UTC)
+  expected_output:
+    outcome: valid
+- name: an enumeration of order statuses
+  inputs:
+    file: shop/status.py
+    after: |
+      from enum import StrEnum
+
+
+      class OrderStatus(StrEnum):
+          PLACED = "placed"
+          SHIPPED = "shipped"
+          DELIVERED = "delivered"
+  expected_output:
+    outcome: skipped
+- name: applying a clearance discount changes the cart lines' prices and returns the cart's new total
+  inputs:
+    file: cart/discounts.ts
+    after: |
+      export interface CartLine {
+        sku: string;
+        priceCents: number;
+      }
+
+      export function applyClearance(lines: CartLine[], clearanceSkus: ReadonlySet<string>): number {
+        let totalCents = 0;
+        for (const line of lines) {
+          if (clearanceSkus.has(line.sku)) {
+            line.priceCents = Math.round(line.priceCents / 2);
+          }
+          totalCents += line.priceCents;
+        }
+        return totalCents;
+      }
+  expected_output:
+    outcome: invalid
+- name: recording a score sets it in the leaderboard's map and returns the player's rank
+  inputs:
+    file: games/leaderboard.ts
+    after: |
+      export class Leaderboard {
+        private readonly scores = new Map<string, number>();
+
+        recordScore(player: string, score: number): number {
+          this.scores.set(player, score);
+          return [...this.scores.values()].filter((other) => other > score).length + 1;
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: recording a login inserts it into the database and returns how many logins the user has
+  inputs:
+    file: auth/logins.ts
+    after: |
+      export interface LoginStore {
+        insert(userId: string, at: Date): Promise<void>;
+        countFor(userId: string): Promise<number>;
+      }
+
+      export class LoginHistory {
+        constructor(private readonly store: LoginStore) {}
+
+        async record(userId: string, at: Date): Promise<number> {
+          await this.store.insert(userId, at);
+          return this.store.countFor(userId);
+        }
+      }
+  expected_output:
+    outcome: invalid
+- name: listing the low-stock SKUs
+  inputs:
+    file: inventory/stock.ts
+    after: |
+      export interface StockItem {
+        sku: string;
+        onHand: number;
+      }
+
+      export function lowStockSkus(items: readonly StockItem[], threshold: number): string[] {
+        return items.filter((item) => item.onHand < threshold).map((item) => item.sku);
+      }
+  expected_output:
+    outcome: valid
+- name: creating a project inserts it and returns the created project
+  inputs:
+    file: projects/create.ts
+    after: |
+      import { randomUUID } from "node:crypto";
+
+      export interface Project {
+        id: string;
+        name: string;
+        ownerId: string;
+      }
+
+      export interface ProjectStore {
+        insert(project: Project): Promise<void>;
+      }
+
+      export class ProjectCreator {
+        constructor(private readonly store: ProjectStore) {}
+
+        async create(name: string, ownerId: string): Promise<Project> {
+          const project: Project = { id: randomUUID(), name, ownerId };
+          await this.store.insert(project);
+          return project;
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: setting a profile's time zone returns an error for an unknown zone and nothing otherwise
+  inputs:
+    file: accounts/timezone.ts
+    after: |
+      export interface Profile {
+        timeZone: string;
+      }
+
+      export function setTimeZone(profile: Profile, timeZone: string): RangeError | undefined {
+        if (!Intl.supportedValuesOf("timeZone").includes(timeZone)) {
+          return new RangeError(`Unknown time zone: ${timeZone}`);
+        }
+        profile.timeZone = timeZone;
+        return undefined;
+      }
+  expected_output:
+    outcome: valid
+- name: a chart builder sets a title and returns itself
+  inputs:
+    file: charts/builder.ts
+    after: |
+      export interface ChartSpec {
+        title: string;
+        series: string[];
+      }
+
+      export class ChartBuilder {
+        private title = "";
+        private readonly series: string[] = [];
+
+        withTitle(title: string): this {
+          this.title = title;
+          return this;
+        }
+
+        build(): ChartSpec {
+          return { title: this.title, series: [...this.series] };
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a print queue removes the next job and returns it
+  inputs:
+    file: printing/queue.ts
+    after: |
+      export interface PrintJob {
+        documentId: string;
+        copies: number;
+      }
+
+      export class PrintQueue {
+        private readonly pending: PrintJob[] = [];
+
+        add(job: PrintJob): void {
+          this.pending.push(job);
+        }
+
+        takeNext(): PrintJob | undefined {
+          return this.pending.shift();
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: grouping orders by supplier fills a map the function builds and returns
+  inputs:
+    file: purchasing/grouping.ts
+    after: |
+      export interface PurchaseOrder {
+        id: string;
+        supplierId: string;
+      }
+
+      export function groupBySupplier(orders: readonly PurchaseOrder[]): Map<string, PurchaseOrder[]> {
+        const bySupplier = new Map<string, PurchaseOrder[]>();
+        for (const order of orders) {
+          const group = bySupplier.get(order.supplierId);
+          if (group) {
+            group.push(order);
+          } else {
+            bySupplier.set(order.supplierId, [order]);
+          }
+        }
+        return bySupplier;
+      }
+  expected_output:
+    outcome: valid
+- name: an edit moves a table reservation's free-table count into a separate method
+  inputs:
+    file: dining/reservations.ts
+    before: |
+      export class Reservations {
+        private readonly reserved = new Set<number>();
+
+        constructor(private readonly tableCount: number) {}
+
+        reserve(table: number): number {
+          this.reserved.add(table);
+          return this.tableCount - this.reserved.size;
+        }
+      }
+    after: |
+      export class Reservations {
+        private readonly reserved = new Set<number>();
+
+        constructor(private readonly tableCount: number) {}
+
+        reserve(table: number): void {
+          this.reserved.add(table);
+        }
+
+        freeTables(): number {
+          return this.tableCount - this.reserved.size;
+        }
+      }
+  expected_output:
+    outcome: valid
+- name: a function sets a note's archive time and returns nothing
+  inputs:
+    file: notes/archive.ts
+    after: |
+      export interface Note {
+        text: string;
+        archivedAt?: Date;
+      }
+
+      export function archiveNote(note: Note, at: Date): void {
+        note.archivedAt = at;
+      }
+  expected_output:
+    outcome: valid
