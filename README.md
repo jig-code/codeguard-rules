@@ -56,6 +56,7 @@ the languages it runs on.
 | `high-cohesion` | High cohesion: a module never holds public types of different concepts that the project, rather than a library that the project uses, put in one module | Not yet |
 | `packages-under-import-contract` | Packages under import contract: a package the change adds is under the project's import-boundary configuration, so the boundary tool keeps it from importing its siblings. | Not yet |
 | `command-query-separation` | Command-query separation: a function that changes data that outlives the call never also returns an answer about any data other than the data the change creates, removes or sets | Not yet |
+| `law-of-demeter` | Law of Demeter: a function never reads, assigns or calls a member of an object that it reaches as a field of a field of another object and whose class the program defines with methods of its own | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:
