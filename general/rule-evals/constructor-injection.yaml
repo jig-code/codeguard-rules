@@ -85,6 +85,27 @@ cases:
                   bus.send(ReserveStock(sku=line.sku, quantity=line.quantity))
   expected_output:
     outcome: valid
+- name: a model field converts its value with the database connection the framework passes in
+  inputs:
+    file: catalog/fields.py
+    after: |
+      from django.db import models
+
+      from catalog.money import Money
+
+
+      class MoneyField(models.DecimalField):
+          def get_prep_value(self, value):
+              if isinstance(value, Money):
+                  value = value.amount
+              return super().get_prep_value(value)
+
+          def get_db_prep_value(self, value, connection, prepared=False):
+              if not prepared:
+                  value = self.get_prep_value(value)
+              return connection.ops.adapt_decimalfield_value(value, self.max_digits, self.decimal_places)
+  expected_output:
+    outcome: valid
 - name: a module function takes a mailer
   inputs:
     file: accounts/welcome.py
