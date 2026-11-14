@@ -46,7 +46,7 @@ cases:
           return max((today - invoice.due_on).days, 0)
   expected_output:
     outcome: valid
-- name: a Django view reads the user from its request
+- name: a web framework's view reads the user from its request
   inputs:
     file: accounts/views.py
     after: |
@@ -59,27 +59,33 @@ cases:
               return JsonResponse({"email": request.user.email})
   expected_output:
     outcome: valid
-- name: a function reads every field of the checkout context it takes
+- name: a checkout step reads the session id of the context it takes and passes the context on whole
   inputs:
-    file: checkout/receipt.py
+    file: checkout/run.py
+    unchanged:
+      checkout/context.py: |
+        from dataclasses import dataclass
+
+
+        @dataclass(frozen=True)
+        class CheckoutContext:
+            customer_id: str
+            subtotal_cents: int
+            region: str
+            coupon_code: str | None
+            locale: str
+            session_id: str
     after: |
-      from dataclasses import dataclass
+      from checkout.cart import Cart
+      from checkout.context import CheckoutContext
+      from checkout.errors import EmptyCartError
+      from checkout.orders import Order, place_order
 
 
-      @dataclass(frozen=True)
-      class CheckoutContext:
-          customer_id: str
-          subtotal_cents: int
-          region: str
-          coupon_code: str | None
-
-
-      def receipt_header(context: CheckoutContext) -> str:
-          coupon = context.coupon_code or "none"
-          return (
-              f"customer {context.customer_id} ({context.region}), "
-              f"subtotal {context.subtotal_cents / 100:.2f}, coupon {coupon}"
-          )
+      def run_checkout(context: CheckoutContext, cart: Cart) -> Order:
+          if not cart.lines:
+              raise EmptyCartError(context.session_id)
+          return place_order(context, cart)
   expected_output:
     outcome: valid
 - name: a function totals a list of prices
