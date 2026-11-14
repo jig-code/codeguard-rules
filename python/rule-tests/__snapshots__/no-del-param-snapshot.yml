@@ -1,10 +1,7 @@
 id: no-del-param
 snapshots:
-  ? |
-    class ExampleHandler:
-        def handle(self, *, request=None):
-            del request
-  : labels:
+  "class ExampleHandler:\n    def handle(self, *, request=None):\n        del request\n":
+    labels:
     - source: del request
       style: primary
       start: 69
@@ -23,11 +20,8 @@ snapshots:
       style: secondary
       start: 26
       end: 80
-  ? |
-    def handle(request, response):
-        del request
-        return response
-  : labels:
+  "def handle(request, response):\n    del request\n    return response\n":
+    labels:
     - source: del request
       style: primary
       start: 35
@@ -47,11 +41,8 @@ snapshots:
       style: secondary
       start: 0
       end: 66
-  ? |
-    def handle(request: ExampleRequest, response):
-        del request
-        return response
-  : labels:
+  "def handle(request: ExampleRequest, response):\n    del request\n    return response\n":
+    labels:
     - source: del request
       style: primary
       start: 51

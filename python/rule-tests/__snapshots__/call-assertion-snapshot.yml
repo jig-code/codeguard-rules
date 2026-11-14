@@ -1,8 +1,7 @@
 id: call-assertion
 snapshots:
-  ? |
-    assert not repository.delete.called
-  : labels:
+  "assert not repository.delete.called\n":
+    labels:
     - source: repository.delete.called
       style: primary
       start: 11
@@ -11,9 +10,8 @@ snapshots:
       style: secondary
       start: 29
       end: 35
-  ? |
-    assert pricing.quote.call_args_list == [call(order)]
-  : labels:
+  "assert pricing.quote.call_args_list == [call(order)]\n":
+    labels:
     - source: pricing.quote.call_args_list
       style: primary
       start: 7
@@ -22,9 +20,8 @@ snapshots:
       style: secondary
       start: 21
       end: 35
-  ? |
-    assert repository.save.call_args == call(invoice)
-  : labels:
+  "assert repository.save.call_args == call(invoice)\n":
+    labels:
     - source: repository.save.call_args
       style: primary
       start: 7
@@ -33,9 +30,8 @@ snapshots:
       style: secondary
       start: 23
       end: 32
-  ? |
-    assert service.mock_calls == [call.reserve(order)]
-  : labels:
+  "assert service.mock_calls == [call.reserve(order)]\n":
+    labels:
     - source: service.mock_calls
       style: primary
       start: 7
@@ -44,9 +40,8 @@ snapshots:
       style: secondary
       start: 15
       end: 25
-  ? |
-    assert spy.call_count == 1
-  : labels:
+  "assert spy.call_count == 1\n":
+    labels:
     - source: spy.call_count
       style: primary
       start: 7
@@ -55,9 +50,8 @@ snapshots:
       style: secondary
       start: 11
       end: 21
-  ? |
-    calculate_tax.assert_called_once_with(100)
-  : labels:
+  "calculate_tax.assert_called_once_with(100)\n":
+    labels:
     - source: calculate_tax.assert_called_once_with(100)
       style: primary
       start: 0
@@ -70,9 +64,8 @@ snapshots:
       style: secondary
       start: 0
       end: 37
-  ? |
-    client.fetch.assert_awaited_once_with("orders")
-  : labels:
+  "client.fetch.assert_awaited_once_with(\"orders\")\n":
+    labels:
     - source: client.fetch.assert_awaited_once_with("orders")
       style: primary
       start: 0
@@ -85,9 +78,8 @@ snapshots:
       style: secondary
       start: 0
       end: 37
-  ? |
-    mailer.send.assert_not_called()
-  : labels:
+  "mailer.send.assert_not_called()\n":
+    labels:
     - source: mailer.send.assert_not_called()
       style: primary
       start: 0
@@ -100,9 +92,8 @@ snapshots:
       style: secondary
       start: 0
       end: 29
-  ? |
-    notifier.notify.assert_has_calls([call("a"), call("b")])
-  : labels:
+  "notifier.notify.assert_has_calls([call(\"a\"), call(\"b\")])\n":
+    labels:
     - source: notifier.notify.assert_has_calls([call("a"), call("b")])
       style: primary
       start: 0
@@ -115,9 +106,8 @@ snapshots:
       style: secondary
       start: 0
       end: 32
-  ? |
-    repository.save.assert_called_with(invoice)
-  : labels:
+  "repository.save.assert_called_with(invoice)\n":
+    labels:
     - source: repository.save.assert_called_with(invoice)
       style: primary
       start: 0

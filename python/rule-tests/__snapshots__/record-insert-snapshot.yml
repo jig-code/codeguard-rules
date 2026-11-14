@@ -1,8 +1,7 @@
 id: record-insert
 snapshots:
-  ? |
-    ExampleModel.objects.bulk_create([ExampleModel(name="a")])
-  : labels:
+  "ExampleModel.objects.bulk_create([ExampleModel(name=\"a\")])\n":
+    labels:
     - source: ExampleModel.objects.bulk_create([ExampleModel(name="a")])
       style: primary
       start: 0
@@ -15,9 +14,8 @@ snapshots:
       style: secondary
       start: 0
       end: 32
-  ? |
-    ExampleModel.objects.create(name="a")
-  : labels:
+  "ExampleModel.objects.create(name=\"a\")\n":
+    labels:
     - source: ExampleModel.objects.create(name="a")
       style: primary
       start: 0
@@ -30,9 +28,8 @@ snapshots:
       style: secondary
       start: 0
       end: 27
-  ? |
-    ExampleModel.objects.get_or_create(name="a")
-  : labels:
+  "ExampleModel.objects.get_or_create(name=\"a\")\n":
+    labels:
     - source: ExampleModel.objects.get_or_create(name="a")
       style: primary
       start: 0
@@ -45,9 +42,8 @@ snapshots:
       style: secondary
       start: 0
       end: 34
-  ? |
-    ExampleModel.objects.update_or_create(name="a")
-  : labels:
+  "ExampleModel.objects.update_or_create(name=\"a\")\n":
+    labels:
     - source: ExampleModel.objects.update_or_create(name="a")
       style: primary
       start: 0
@@ -60,9 +56,8 @@ snapshots:
       style: secondary
       start: 0
       end: 37
-  ? |
-    ExampleService(session).create(name="a")
-  : labels:
+  "ExampleService(session).create(name=\"a\")\n":
+    labels:
     - source: ExampleService(session).create(name="a")
       style: primary
       start: 0
@@ -75,10 +70,9 @@ snapshots:
       style: secondary
       start: 0
       end: 30
-  ? |
-    collection.insert_many([{"name": "a"}])
-  : labels:
-    - source: 'collection.insert_many([{"name": "a"}])'
+  "collection.insert_many([{\"name\": \"a\"}])\n":
+    labels:
+    - source: "collection.insert_many([{\"name\": \"a\"}])"
       style: primary
       start: 0
       end: 39
@@ -90,10 +84,9 @@ snapshots:
       style: secondary
       start: 0
       end: 22
-  ? |
-    collection.insert_one({"name": "a"})
-  : labels:
-    - source: 'collection.insert_one({"name": "a"})'
+  "collection.insert_one({\"name\": \"a\"})\n":
+    labels:
+    - source: "collection.insert_one({\"name\": \"a\"})"
       style: primary
       start: 0
       end: 36
@@ -105,9 +98,8 @@ snapshots:
       style: secondary
       start: 0
       end: 21
-  ? |
-    connection.execute(example_table.insert().values(name="a"))
-  : labels:
+  "connection.execute(example_table.insert().values(name=\"a\"))\n":
+    labels:
     - source: connection.execute(example_table.insert().values(name="a"))
       style: primary
       start: 0
@@ -120,9 +112,8 @@ snapshots:
       style: secondary
       start: 0
       end: 18
-  ? |
-    cursor.executemany("INSERT INTO examples VALUES (?)", rows)
-  : labels:
+  "cursor.executemany(\"INSERT INTO examples VALUES (?)\", rows)\n":
+    labels:
     - source: cursor.executemany("INSERT INTO examples VALUES (?)", rows)
       style: primary
       start: 0
@@ -135,9 +126,8 @@ snapshots:
       style: secondary
       start: 0
       end: 18
-  ? |
-    example.save()
-  : labels:
+  "example.save()\n":
+    labels:
     - source: example.save()
       style: primary
       start: 0
@@ -150,9 +140,8 @@ snapshots:
       style: secondary
       start: 0
       end: 12
-  ? |
-    session.add(ExampleModel(name="a"))
-  : labels:
+  "session.add(ExampleModel(name=\"a\"))\n":
+    labels:
     - source: session.add(ExampleModel(name="a"))
       style: primary
       start: 0
@@ -165,9 +154,8 @@ snapshots:
       style: secondary
       start: 0
       end: 11
-  ? |
-    session.add_all([ExampleModel(name="a")])
-  : labels:
+  "session.add_all([ExampleModel(name=\"a\")])\n":
+    labels:
     - source: session.add_all([ExampleModel(name="a")])
       style: primary
       start: 0
@@ -180,9 +168,8 @@ snapshots:
       style: secondary
       start: 0
       end: 15
-  ? |
-    session.bulk_save_objects([ExampleModel(name="a")])
-  : labels:
+  "session.bulk_save_objects([ExampleModel(name=\"a\")])\n":
+    labels:
     - source: session.bulk_save_objects([ExampleModel(name="a")])
       style: primary
       start: 0
@@ -195,9 +182,8 @@ snapshots:
       style: secondary
       start: 0
       end: 25
-  ? |
-    session.execute(insert(example_table).values(name="a"))
-  : labels:
+  "session.execute(insert(example_table).values(name=\"a\"))\n":
+    labels:
     - source: session.execute(insert(example_table).values(name="a"))
       style: primary
       start: 0
@@ -210,9 +196,8 @@ snapshots:
       style: secondary
       start: 0
       end: 15
-  ? |
-    session.merge(ExampleModel(name="a"))
-  : labels:
+  "session.merge(ExampleModel(name=\"a\"))\n":
+    labels:
     - source: session.merge(ExampleModel(name="a"))
       style: primary
       start: 0
@@ -225,10 +210,9 @@ snapshots:
       style: secondary
       start: 0
       end: 13
-  ? |
-    table.put_item(Item={"name": "a"})
-  : labels:
-    - source: 'table.put_item(Item={"name": "a"})'
+  "table.put_item(Item={\"name\": \"a\"})\n":
+    labels:
+    - source: "table.put_item(Item={\"name\": \"a\"})"
       style: primary
       start: 0
       end: 34

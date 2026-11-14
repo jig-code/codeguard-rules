@@ -1,10 +1,7 @@
 id: chained-calls
 snapshots:
-  ? |
-    async def example_flow(example_id):
-        plan = await example_planner.plan(example_id)
-        return plan
-  : labels:
+  "async def example_flow(example_id):\n    plan = await example_planner.plan(example_id)\n    return plan\n":
+    labels:
     - source: |-
         async def example_flow(example_id):
             plan = await example_planner.plan(example_id)
@@ -24,10 +21,8 @@ snapshots:
       style: secondary
       start: 40
       end: 85
-  ? |
-    async def example_flow(example_id):
-        return await example_packer.pack(await example_planner.plan(example_id))
-  : labels:
+  "async def example_flow(example_id):\n    return await example_packer.pack(await example_planner.plan(example_id))\n":
+    labels:
     - source: |-
         async def example_flow(example_id):
             return await example_packer.pack(await example_planner.plan(example_id))
@@ -50,11 +45,8 @@ snapshots:
       style: secondary
       start: 53
       end: 112
-  ? |
-    def example_flow(example_id):
-        for plan in example_planner.plans(example_id):
-            example_packer.pack(plan)
-  : labels:
+  "def example_flow(example_id):\n    for plan in example_planner.plans(example_id):\n        example_packer.pack(plan)\n":
+    labels:
     - source: |-
         def example_flow(example_id):
             for plan in example_planner.plans(example_id):
@@ -72,11 +64,8 @@ snapshots:
       style: secondary
       start: 34
       end: 114
-  ? |
-    def example_flow(example_id):
-        plan = example_planner.plan(example_id)
-        return example_packer.pack(plan)
-  : labels:
+  "def example_flow(example_id):\n    plan = example_planner.plan(example_id)\n    return example_packer.pack(plan)\n":
+    labels:
     - source: |-
         def example_flow(example_id):
             plan = example_planner.plan(example_id)
@@ -92,10 +81,8 @@ snapshots:
       style: secondary
       start: 34
       end: 73
-  ? |
-    def example_flow(example_id):
-        return example_packer.pack(example_planner.plan(example_id))
-  : labels:
+  "def example_flow(example_id):\n    return example_packer.pack(example_planner.plan(example_id))\n":
+    labels:
     - source: |-
         def example_flow(example_id):
             return example_packer.pack(example_planner.plan(example_id))
@@ -114,9 +101,8 @@ snapshots:
       style: secondary
       start: 41
       end: 94
-  ? |
-    example_packer.pack(example_planner.plan(example_id))
-  : labels:
+  "example_packer.pack(example_planner.plan(example_id))\n":
+    labels:
     - source: example_packer.pack(example_planner.plan(example_id))
       style: primary
       start: 0
@@ -129,9 +115,8 @@ snapshots:
       style: secondary
       start: 20
       end: 52
-  ? |
-    example_packer.pack(plan=example_planner.plan(example_id))
-  : labels:
+  "example_packer.pack(plan=example_planner.plan(example_id))\n":
+    labels:
     - source: example_packer.pack(plan=example_planner.plan(example_id))
       style: primary
       start: 0

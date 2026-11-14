@@ -1,13 +1,7 @@
 id: multi-method-class
 snapshots:
-  ? |
-    class ExampleService:
-        async def place(self):
-            return 1
-
-        async def cancel(self):
-            return 2
-  : labels:
+  "class ExampleService:\n    async def place(self):\n        return 1\n\n    async def cancel(self):\n        return 2\n":
+    labels:
     - source: |-
         class ExampleService:
             async def place(self):
@@ -36,15 +30,8 @@ snapshots:
       style: secondary
       start: 71
       end: 111
-  ? |
-    class ExampleService:
-        def place(self):
-            return 1
-
-        @property
-        def name(self):
-            return "x"
-  : labels:
+  "class ExampleService:\n    def place(self):\n        return 1\n\n    @property\n    def name(self):\n        return \"x\"\n":
+    labels:
     - source: |-
         class ExampleService:
             def place(self):
@@ -76,14 +63,8 @@ snapshots:
       style: secondary
       start: 65
       end: 113
-  ? |
-    class ExampleService:
-        def place(self):
-            return 1
-
-        def cancel(self):
-            return 2
-  : labels:
+  "class ExampleService:\n    def place(self):\n        return 1\n\n    def cancel(self):\n        return 2\n":
+    labels:
     - source: |-
         class ExampleService:
             def place(self):

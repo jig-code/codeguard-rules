@@ -1,0 +1,45 @@
+id: union-declares-discriminator
+valid:
+  # A z.discriminatedUnion of two named object schemas
+  - |
+    const exampleA = z.object({ kind: z.literal("a"), name: z.string() });
+    const exampleB = z.object({ kind: z.literal("b"), code: z.number() });
+    export const example = z.discriminatedUnion("kind", [exampleA, exampleB]);
+
+  # A union of one object schema and a plain value
+  - |
+    const exampleA = z.object({ name: z.string() });
+    export const example = z.union([exampleA, z.string()]);
+
+  # A union of two schemas imported from another module
+  - |
+    import { exampleA, exampleB } from "./examples";
+    export const example = z.union([exampleA, exampleB]);
+
+invalid:
+  # A union of two named object schemas
+  - |
+    const exampleA = z.object({ kind: z.literal("a"), name: z.string() });
+    const exampleB = z.object({ kind: z.literal("b"), code: z.number() });
+    export const example = z.union([exampleA, exampleB]);
+
+  # A union of two inline object schemas
+  - |
+    export const example = z.union([
+      z.object({ kind: z.literal("a"), name: z.string() }),
+      z.object({ kind: z.literal("b"), code: z.number() }),
+    ]);
+
+  # A union mixing a named and an inline object schema
+  - |
+    const exampleA = z.object({ kind: z.literal("a"), name: z.string() });
+    export const example = z.union([
+      exampleA,
+      z.object({ kind: z.literal("b"), code: z.number() }),
+    ]);
+
+  # A union with a plain value between its two object schemas
+  - |
+    const exampleA = z.object({ kind: z.literal("a"), name: z.string() });
+    const exampleB = z.object({ kind: z.literal("b"), code: z.number() });
+    export const example = z.union([exampleA, z.string(), exampleB]);

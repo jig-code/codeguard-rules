@@ -1,10 +1,7 @@
 id: wide-scope-fixture
 snapshots:
-  ? |
-    @fixture(scope="session")
-    def catalog():
-        return {}
-  : labels:
+  "@fixture(scope=\"session\")\ndef catalog():\n    return {}\n":
+    labels:
     - source: |-
         @fixture(scope="session")
         def catalog():
@@ -12,7 +9,7 @@ snapshots:
       style: primary
       start: 0
       end: 54
-    - source: '@fixture(scope="session")'
+    - source: "@fixture(scope=\"session\")"
       style: secondary
       start: 0
       end: 25
@@ -22,12 +19,8 @@ snapshots:
       style: secondary
       start: 26
       end: 54
-  ? |
-    @pytest.fixture(scope="module", autouse=True)
-    def reset_registry():
-        yield
-        registry.clear()
-  : labels:
+  "@pytest.fixture(scope=\"module\", autouse=True)\ndef reset_registry():\n    yield\n    registry.clear()\n":
+    labels:
     - source: |-
         @pytest.fixture(scope="module", autouse=True)
         def reset_registry():
@@ -36,7 +29,7 @@ snapshots:
       style: primary
       start: 0
       end: 98
-    - source: '@pytest.fixture(scope="module", autouse=True)'
+    - source: "@pytest.fixture(scope=\"module\", autouse=True)"
       style: secondary
       start: 0
       end: 45
@@ -47,11 +40,8 @@ snapshots:
       style: secondary
       start: 46
       end: 98
-  ? |
-    @pytest.fixture(scope="session")
-    def catalog():
-        return []
-  : labels:
+  "@pytest.fixture(scope=\"session\")\ndef catalog():\n    return []\n":
+    labels:
     - source: |-
         @pytest.fixture(scope="session")
         def catalog():
@@ -59,7 +49,7 @@ snapshots:
       style: primary
       start: 0
       end: 61
-    - source: '@pytest.fixture(scope="session")'
+    - source: "@pytest.fixture(scope=\"session\")"
       style: secondary
       start: 0
       end: 32
@@ -69,11 +59,8 @@ snapshots:
       style: secondary
       start: 33
       end: 61
-  ? |
-    @pytest.fixture(scope='class')
-    def cart():
-        return Cart()
-  : labels:
+  "@pytest.fixture(scope='class')\ndef cart():\n    return Cart()\n":
+    labels:
     - source: |-
         @pytest.fixture(scope='class')
         def cart():
@@ -81,7 +68,7 @@ snapshots:
       style: primary
       start: 0
       end: 60
-    - source: '@pytest.fixture(scope=''class'')'
+    - source: "@pytest.fixture(scope='class')"
       style: secondary
       start: 0
       end: 30
@@ -91,11 +78,8 @@ snapshots:
       style: secondary
       start: 31
       end: 60
-  ? |
-    @pytest.fixture(scope=pick_scope)
-    def catalog():
-        return []
-  : labels:
+  "@pytest.fixture(scope=pick_scope)\ndef catalog():\n    return []\n":
+    labels:
     - source: |-
         @pytest.fixture(scope=pick_scope)
         def catalog():
@@ -103,7 +87,7 @@ snapshots:
       style: primary
       start: 0
       end: 62
-    - source: '@pytest.fixture(scope=pick_scope)'
+    - source: "@pytest.fixture(scope=pick_scope)"
       style: secondary
       start: 0
       end: 33
@@ -113,11 +97,8 @@ snapshots:
       style: secondary
       start: 34
       end: 62
-  ? |
-    @pytest_asyncio.fixture(scope="package")
-    async def client():
-        return Client()
-  : labels:
+  "@pytest_asyncio.fixture(scope=\"package\")\nasync def client():\n    return Client()\n":
+    labels:
     - source: |-
         @pytest_asyncio.fixture(scope="package")
         async def client():
@@ -125,7 +106,7 @@ snapshots:
       style: primary
       start: 0
       end: 80
-    - source: '@pytest_asyncio.fixture(scope="package")'
+    - source: "@pytest_asyncio.fixture(scope=\"package\")"
       style: secondary
       start: 0
       end: 40

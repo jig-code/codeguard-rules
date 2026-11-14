@@ -1,10 +1,7 @@
 id: forwarding-method
 snapshots:
-  ? |
-    class ExampleGateway:
-        async def fetch(self, key):
-            return await self._client.fetch(key)
-  : labels:
+  "class ExampleGateway:\n    async def fetch(self, key):\n        return await self._client.fetch(key)\n":
+    labels:
     - source: |-
         async def fetch(self, key):
                 return await self._client.fetch(key)
@@ -40,11 +37,8 @@ snapshots:
       style: secondary
       start: 62
       end: 98
-  ? |
-    class ExampleNotifier:
-        def send(self, message):
-            self.sender.send(message)
-  : labels:
+  "class ExampleNotifier:\n    def send(self, message):\n        self.sender.send(message)\n":
+    labels:
     - source: |-
         def send(self, message):
                 self.sender.send(message)
@@ -80,12 +74,8 @@ snapshots:
       style: secondary
       start: 60
       end: 85
-  ? |
-    class ExampleRepository:
-        def get(self, key):
-            """Get one."""
-            return self._store.get(key)
-  : labels:
+  "class ExampleRepository:\n    def get(self, key):\n        \"\"\"Get one.\"\"\"\n        return self._store.get(key)\n":
+    labels:
     - source: |-
         def get(self, key):
                 """Get one."""
@@ -126,11 +116,8 @@ snapshots:
       style: secondary
       start: 57
       end: 107
-  ? |
-    class ExampleRepository:
-        def get(self, key):
-            return self._store.get(key)
-  : labels:
+  "class ExampleRepository:\n    def get(self, key):\n        return self._store.get(key)\n":
+    labels:
     - source: |-
         def get(self, key):
                 return self._store.get(key)
@@ -166,12 +153,8 @@ snapshots:
       style: secondary
       start: 57
       end: 84
-  ? |
-    class ExampleSettings:
-        @property
-        def region(self):
-            return self._config.region_name()
-  : labels:
+  "class ExampleSettings:\n    @property\n    def region(self):\n        return self._config.region_name()\n":
+    labels:
     - source: |-
         def region(self):
                 return self._config.region_name()

@@ -1,10 +1,7 @@
 id: builder-class
 snapshots:
-  ? |
-    class ExampleInvoiceBuilder:
-        def build(self):
-            pass
-  : labels:
+  "class ExampleInvoiceBuilder:\n    def build(self):\n        pass\n":
+    labels:
     - source: |-
         class ExampleInvoiceBuilder:
             def build(self):

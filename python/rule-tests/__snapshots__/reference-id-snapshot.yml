@@ -1,8 +1,7 @@
 id: reference-id
 snapshots:
-  ? |
-    batch = ExampleBatch(order_ids=[order.id])
-  : labels:
+  "batch = ExampleBatch(order_ids=[order.id])\n":
+    labels:
     - source: order_ids=[order.id]
       style: primary
       start: 21
@@ -11,9 +10,8 @@ snapshots:
       style: secondary
       start: 21
       end: 30
-  ? |
-    example = ExampleModel(ULID())
-  : labels:
+  "example = ExampleModel(ULID())\n":
+    labels:
     - source: ULID()
       style: primary
       start: 23
@@ -22,9 +20,8 @@ snapshots:
       style: secondary
       start: 23
       end: 27
-  ? |
-    example = ExampleModel(UUID("8f14e45f-ceea-4672-9c3d-1b2a5f7e6d10"))
-  : labels:
+  "example = ExampleModel(UUID(\"8f14e45f-ceea-4672-9c3d-1b2a5f7e6d10\"))\n":
+    labels:
     - source: UUID("8f14e45f-ceea-4672-9c3d-1b2a5f7e6d10")
       style: primary
       start: 23
@@ -33,9 +30,8 @@ snapshots:
       style: secondary
       start: 23
       end: 27
-  ? |
-    example = ExampleModel(kind=random.choice(["a", "b"]))
-  : labels:
+  "example = ExampleModel(kind=random.choice([\"a\", \"b\"]))\n":
+    labels:
     - source: random.choice(["a", "b"])
       style: primary
       start: 28
@@ -44,9 +40,8 @@ snapshots:
       style: secondary
       start: 28
       end: 41
-  ? |
-    example = ExampleModel(random.getrandbits(32))
-  : labels:
+  "example = ExampleModel(random.getrandbits(32))\n":
+    labels:
     - source: random.getrandbits(32)
       style: primary
       start: 23
@@ -55,9 +50,8 @@ snapshots:
       style: secondary
       start: 23
       end: 41
-  ? |
-    example = ExampleModel(random.randint(1, 9))
-  : labels:
+  "example = ExampleModel(random.randint(1, 9))\n":
+    labels:
     - source: random.randint(1, 9)
       style: primary
       start: 23
@@ -66,9 +60,8 @@ snapshots:
       style: secondary
       start: 23
       end: 37
-  ? |
-    example = ExampleModel(secrets.token_hex(8))
-  : labels:
+  "example = ExampleModel(secrets.token_hex(8))\n":
+    labels:
     - source: secrets.token_hex(8)
       style: primary
       start: 23
@@ -77,9 +70,8 @@ snapshots:
       style: secondary
       start: 23
       end: 40
-  ? |
-    example = ExampleModel(secrets.token_urlsafe())
-  : labels:
+  "example = ExampleModel(secrets.token_urlsafe())\n":
+    labels:
     - source: secrets.token_urlsafe()
       style: primary
       start: 23
@@ -88,9 +80,8 @@ snapshots:
       style: secondary
       start: 23
       end: 44
-  ? |
-    example = ExampleModel(ulid())
-  : labels:
+  "example = ExampleModel(ulid())\n":
+    labels:
     - source: ulid()
       style: primary
       start: 23
@@ -99,9 +90,8 @@ snapshots:
       style: secondary
       start: 23
       end: 27
-  ? |
-    example = ExampleModel(uuid.uuid4())
-  : labels:
+  "example = ExampleModel(uuid.uuid4())\n":
+    labels:
     - source: uuid.uuid4()
       style: primary
       start: 23
@@ -110,9 +100,8 @@ snapshots:
       style: secondary
       start: 23
       end: 33
-  ? |
-    example = ExampleModel(uuid1())
-  : labels:
+  "example = ExampleModel(uuid1())\n":
+    labels:
     - source: uuid1()
       style: primary
       start: 23
@@ -121,9 +110,8 @@ snapshots:
       style: secondary
       start: 23
       end: 28
-  ? |
-    example = ExampleModel(uuid4())
-  : labels:
+  "example = ExampleModel(uuid4())\n":
+    labels:
     - source: uuid4()
       style: primary
       start: 23
@@ -132,9 +120,8 @@ snapshots:
       style: secondary
       start: 23
       end: 28
-  ? |
-    example = ExampleModel(uuid7())
-  : labels:
+  "example = ExampleModel(uuid7())\n":
+    labels:
     - source: uuid7()
       style: primary
       start: 23
@@ -143,9 +130,8 @@ snapshots:
       style: secondary
       start: 23
       end: 28
-  ? |
-    line = ExampleLine(invoice_pk=invoice.pk)
-  : labels:
+  "line = ExampleLine(invoice_pk=invoice.pk)\n":
+    labels:
     - source: invoice_pk=invoice.pk
       style: primary
       start: 19
@@ -154,9 +140,8 @@ snapshots:
       style: secondary
       start: 19
       end: 29
-  ? |
-    line = ExampleLine(invoice_uuid=invoice.uuid)
-  : labels:
+  "line = ExampleLine(invoice_uuid=invoice.uuid)\n":
+    labels:
     - source: invoice_uuid=invoice.uuid
       style: primary
       start: 19
@@ -165,9 +150,8 @@ snapshots:
       style: secondary
       start: 19
       end: 31
-  ? |
-    node = ExampleNode(parent=root)
-  : labels:
+  "node = ExampleNode(parent=root)\n":
+    labels:
     - source: parent=root
       style: primary
       start: 19
@@ -176,20 +160,18 @@ snapshots:
       style: secondary
       start: 19
       end: 25
-  ? |
-    payload = {"order_id": order.id}
-  : labels:
-    - source: '"order_id": order.id'
+  "payload = {\"order_id\": order.id}\n":
+    labels:
+    - source: "\"order_id\": order.id"
       style: primary
       start: 11
       end: 31
-    - source: '"order_id"'
+    - source: "\"order_id\""
       style: secondary
       start: 11
       end: 21
-  ? |
-    shipment = ExampleShipment(order_id=order.id)
-  : labels:
+  "shipment = ExampleShipment(order_id=order.id)\n":
+    labels:
     - source: order_id=order.id
       style: primary
       start: 27
@@ -198,9 +180,8 @@ snapshots:
       style: secondary
       start: 27
       end: 35
-  ? |
-    shipment.order_id = order.id
-  : labels:
+  "shipment.order_id = order.id\n":
+    labels:
     - source: shipment.order_id = order.id
       style: primary
       start: 0

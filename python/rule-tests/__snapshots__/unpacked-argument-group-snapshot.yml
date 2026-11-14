@@ -1,9 +1,7 @@
 id: unpacked-argument-group
 snapshots:
-  ? |
-    def quote(args):
-        return build_quote(**args._asdict())
-  : labels:
+  "def quote(args):\n    return build_quote(**args._asdict())\n":
+    labels:
     - source: build_quote(**args._asdict())
       style: primary
       start: 28
@@ -16,18 +14,16 @@ snapshots:
       style: secondary
       start: 42
       end: 56
-    - source: '**args._asdict()'
+    - source: "**args._asdict()"
       style: secondary
       start: 40
       end: 56
-    - source: '**args._asdict()'
+    - source: "**args._asdict()"
       style: secondary
       start: 40
       end: 56
-  ? |
-    def quote(args):
-        return build_quote(**args.model_dump())
-  : labels:
+  "def quote(args):\n    return build_quote(**args.model_dump())\n":
+    labels:
     - source: build_quote(**args.model_dump())
       style: primary
       start: 28
@@ -40,18 +36,16 @@ snapshots:
       style: secondary
       start: 42
       end: 59
-    - source: '**args.model_dump()'
+    - source: "**args.model_dump()"
       style: secondary
       start: 40
       end: 59
-    - source: '**args.model_dump()'
+    - source: "**args.model_dump()"
       style: secondary
       start: 40
       end: 59
-  ? |
-    def quote(args):
-        return build_quote(**vars(args))
-  : labels:
+  "def quote(args):\n    return build_quote(**vars(args))\n":
+    labels:
     - source: build_quote(**vars(args))
       style: primary
       start: 28
@@ -64,19 +58,16 @@ snapshots:
       style: secondary
       start: 42
       end: 52
-    - source: '**vars(args)'
+    - source: "**vars(args)"
       style: secondary
       start: 40
       end: 52
-    - source: '**vars(args)'
+    - source: "**vars(args)"
       style: secondary
       start: 40
       end: 52
-  ? |
-    def quote(cart, region):
-        args = QuoteArgs(cart, region)
-        return build_quote(normalize(args.cart))
-  : labels:
+  "def quote(cart, region):\n    args = QuoteArgs(cart, region)\n    return build_quote(normalize(args.cart))\n":
+    labels:
     - source: build_quote(normalize(args.cart))
       style: primary
       start: 71
@@ -124,11 +115,8 @@ snapshots:
       style: secondary
       start: 0
       end: 104
-  ? |
-    def quote(cart, region):
-        args = QuoteArgs(cart=cart, region=region)
-        return build_quote(**args)
-  : labels:
+  "def quote(cart, region):\n    args = QuoteArgs(cart=cart, region=region)\n    return build_quote(**args)\n":
+    labels:
     - source: build_quote(**args)
       style: primary
       start: 83
@@ -137,11 +125,11 @@ snapshots:
       style: secondary
       start: 97
       end: 101
-    - source: '**args'
+    - source: "**args"
       style: secondary
       start: 95
       end: 101
-    - source: '**args'
+    - source: "**args"
       style: secondary
       start: 95
       end: 101
@@ -176,11 +164,8 @@ snapshots:
       style: secondary
       start: 0
       end: 102
-  ? |
-    def quote(cart, region):
-        args = QuoteArgs(cart=cart, region=region)
-        return build_quote(args.cart, args.region)
-  : labels:
+  "def quote(cart, region):\n    args = QuoteArgs(cart=cart, region=region)\n    return build_quote(args.cart, args.region)\n":
+    labels:
     - source: build_quote(args.cart, args.region)
       style: primary
       start: 83
@@ -228,11 +213,8 @@ snapshots:
       style: secondary
       start: 0
       end: 118
-  ? |
-    def quote(cart, region):
-        args = QuoteArgs(cart=cart, region=region)
-        return build_quote(args["cart"], args["region"])
-  : labels:
+  "def quote(cart, region):\n    args = QuoteArgs(cart=cart, region=region)\n    return build_quote(args[\"cart\"], args[\"region\"])\n":
+    labels:
     - source: build_quote(args["cart"], args["region"])
       style: primary
       start: 83
@@ -241,7 +223,7 @@ snapshots:
       style: secondary
       start: 95
       end: 99
-    - source: '"cart"'
+    - source: "\"cart\""
       style: secondary
       start: 100
       end: 106
@@ -284,11 +266,8 @@ snapshots:
       style: secondary
       start: 0
       end: 124
-  ? |
-    def quote(cart, region):
-        args = quoting.QuoteArgs(cart, region)
-        return build_quote(cart=args.cart)
-  : labels:
+  "def quote(cart, region):\n    args = quoting.QuoteArgs(cart, region)\n    return build_quote(cart=args.cart)\n":
+    labels:
     - source: build_quote(cart=args.cart)
       style: primary
       start: 79
@@ -336,10 +315,8 @@ snapshots:
       style: secondary
       start: 0
       end: 106
-  ? |
-    def quote(cart, region):
-        return build_quote(**asdict(QuoteArgs(cart=cart, region=region)))
-  : labels:
+  "def quote(cart, region):\n    return build_quote(**asdict(QuoteArgs(cart=cart, region=region)))\n":
+    labels:
     - source: build_quote(**asdict(QuoteArgs(cart=cart, region=region)))
       style: primary
       start: 36
@@ -352,18 +329,16 @@ snapshots:
       style: secondary
       start: 50
       end: 93
-    - source: '**asdict(QuoteArgs(cart=cart, region=region))'
+    - source: "**asdict(QuoteArgs(cart=cart, region=region))"
       style: secondary
       start: 48
       end: 93
-    - source: '**asdict(QuoteArgs(cart=cart, region=region))'
+    - source: "**asdict(QuoteArgs(cart=cart, region=region))"
       style: secondary
       start: 48
       end: 93
-  ? |
-    def quote(cart, region):
-        return build_quote(*astuple(QuoteArgs(cart, region)))
-  : labels:
+  "def quote(cart, region):\n    return build_quote(*astuple(QuoteArgs(cart, region)))\n":
+    labels:
     - source: build_quote(*astuple(QuoteArgs(cart, region)))
       style: primary
       start: 36
@@ -376,11 +351,11 @@ snapshots:
       style: secondary
       start: 49
       end: 81
-    - source: '*astuple(QuoteArgs(cart, region))'
+    - source: "*astuple(QuoteArgs(cart, region))"
       style: secondary
       start: 48
       end: 81
-    - source: '*astuple(QuoteArgs(cart, region))'
+    - source: "*astuple(QuoteArgs(cart, region))"
       style: secondary
       start: 48
       end: 81

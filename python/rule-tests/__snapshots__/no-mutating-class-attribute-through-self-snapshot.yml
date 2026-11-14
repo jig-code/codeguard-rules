@@ -41,7 +41,7 @@ snapshots:
     - source: |-
         class ExampleBlocklist:
             hosts = {"localhost"}
-        
+
             def block(self, host: str) -> None:
                 self.hosts.add(host)
       style: secondary
@@ -88,10 +88,10 @@ snapshots:
     - source: |-
         class ExampleBuffer:
             chunks = []
-        
+
             def reset(self) -> None:
                 self.chunks = []
-        
+
             def write(self, chunk: bytes) -> None:
                 self.chunks.append(chunk)
       style: secondary
@@ -134,7 +134,7 @@ snapshots:
     - source: |-
         class ExampleCache:
             entries = {}
-        
+
             def evict(self, key: str) -> None:
                 del self.entries[key]
       style: secondary
@@ -177,7 +177,7 @@ snapshots:
     - source: |-
         class ExampleCache:
             entries = {}
-        
+
             def put(self, key: str, value: str) -> None:
                 self.entries[key] = value
       style: secondary
@@ -224,7 +224,7 @@ snapshots:
     - source: |-
         class ExampleCart:
             items = []
-        
+
             def add(self, item: str) -> None:
                 self.items.append(item)
       style: secondary
@@ -271,7 +271,7 @@ snapshots:
     - source: |-
         class ExampleChannels:
             names = {f"ch{n}" for n in range(3)}
-        
+
             def leave(self, name: str) -> None:
                 self.names.discard(name)
       style: secondary
@@ -318,7 +318,7 @@ snapshots:
     - source: |-
         class ExampleGrid:
             cells = [0 for _ in range(9)]
-        
+
             def mark(self, cell: int) -> None:
                 self.cells.remove(cell)
       style: secondary
@@ -357,7 +357,7 @@ snapshots:
     - source: |-
         class ExampleLog:
             lines = []
-        
+
             def write(self, line: str) -> None:
                 self.lines += [line]
       style: secondary
@@ -408,7 +408,7 @@ snapshots:
     - source: |-
         class ExampleSeen:
             ids = set()
-        
+
             def mark(self, item_id: int) -> None:
                 self.ids.add(item_id)
       style: secondary
@@ -455,7 +455,7 @@ snapshots:
     - source: |-
         class ExampleShelf:
             books: list[str] = []
-        
+
             def shelve(self, title: str) -> None:
                 self.books.append(title)
       style: secondary
@@ -502,7 +502,7 @@ snapshots:
     - source: |-
         class ExampleTable:
             rows = {name: 0 for name in ("a", "b")}
-        
+
             def reset(self) -> None:
                 self.rows.clear()
       style: secondary
@@ -549,7 +549,7 @@ snapshots:
     - source: |-
         class ExampleTally:
             votes = Counter()
-        
+
             def vote(self, choice: str) -> None:
                 self.votes[choice] += 1
       style: secondary
@@ -600,7 +600,7 @@ snapshots:
     - source: |-
         class ExampleRecent:
             pages = OrderedDict()
-        
+
             def visit(self, url: str) -> None:
                 self.pages.update({url: 1})
       style: secondary
@@ -655,7 +655,7 @@ snapshots:
     - source: |-
         class ExampleIndex:
             by_key = defaultdict(list)
-        
+
             def index(self, key: str, value: str) -> None:
                 self.by_key[key].append(value)
       style: secondary
@@ -702,7 +702,7 @@ snapshots:
     - source: |-
         class ExamplePlugin(BaseModel):
             loaded: ClassVar[list[str]] = []
-        
+
             def load(self, name: str) -> None:
                 self.loaded.append(name)
       style: secondary
@@ -753,7 +753,7 @@ snapshots:
     - source: |-
         class ExampleQueue:
             jobs = collections.deque()
-        
+
             def push(self, job: str) -> None:
                 self.jobs.appendleft(job)
       style: secondary

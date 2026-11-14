@@ -1,28 +1,26 @@
 id: outside-package-import
 snapshots:
-  ? |
-    from .. import Customer
-  : labels:
+  "from .. import Customer\n":
+    labels:
     - source: from .. import Customer
       style: primary
       start: 0
       end: 23
-    - source: ..
+    - source: ".."
       style: secondary
       start: 5
       end: 7
-    - source: ..
+    - source: ".."
       style: secondary
       start: 5
       end: 7
-  ? |
-    from ..shipping.shipment import Shipment
-  : labels:
+  "from ..shipping.shipment import Shipment\n":
+    labels:
     - source: from ..shipping.shipment import Shipment
       style: primary
       start: 0
       end: 40
-    - source: ..
+    - source: ".."
       style: secondary
       start: 5
       end: 7
@@ -30,9 +28,8 @@ snapshots:
       style: secondary
       start: 5
       end: 24
-  ? |
-    from shipping import Shipment
-  : labels:
+  "from shipping import Shipment\n":
+    labels:
     - source: from shipping import Shipment
       style: primary
       start: 0
@@ -41,9 +38,8 @@ snapshots:
       style: secondary
       start: 5
       end: 13
-  ? |
-    from shipping.shipment import Shipment
-  : labels:
+  "from shipping.shipment import Shipment\n":
+    labels:
     - source: from shipping.shipment import Shipment
       style: primary
       start: 0
@@ -52,9 +48,8 @@ snapshots:
       style: secondary
       start: 5
       end: 22
-  ? |
-    import shipping.shipment
-  : labels:
+  "import shipping.shipment\n":
+    labels:
     - source: import shipping.shipment
       style: primary
       start: 0

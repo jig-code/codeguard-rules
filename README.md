@@ -90,6 +90,7 @@ code skip test files:
 | `no-assert-on-lookup-field` | Don't assert the field used to find an item |
 | `no-bucket-module-names` | No `utils`, `helpers`, `common`, `shared`, or `contracts` modules |
 | `no-class-level-mutable-container` | No mutating a class attribute through `self`: a method never mutates, through `self`, a list, dict or set that the class body binds and every instance shares |
+| `union-declares-discriminator` | Union declares discriminator: a model field typed as a union of two or more models defined in the file names its discriminator |
 | `no-comments-in-tests` | No comments in test files, except tool directives |
 | `no-constructed-test-constants` | No module-level `UPPER = SomeClass(...)` in test files; build it in a fixture |
 | `no-default-constructor-fixtures` | No fixture or test helper that only returns `SomeClass()` |
@@ -128,11 +129,16 @@ setting, never a judge rule.
 
 ### `typescript`
 
-Rules for any TypeScript project. Pattern rules (ast-grep); they skip test files:
+Rules for any TypeScript project. Each rule checks one thing, so a project can exclude
+any of them.
+
+Pattern rules (ast-grep). They start as `warning`s and skip test files. The
+`typescript` ruleset has no judge rules; TypeScript's judge rules are in `general`.
 
 | Rule | Checks |
 |---|---|
 | `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
+| `union-declares-discriminator` | Union declares discriminator: a `z.union` of two or more object schemas defined in the file is a `z.discriminatedUnion` |
 
 ## Use a ruleset
 

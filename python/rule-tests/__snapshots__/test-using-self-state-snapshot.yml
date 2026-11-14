@@ -1,10 +1,7 @@
 id: test-using-self-state
 snapshots:
-  ? |
-    class TestExample(unittest.TestCase):
-        def test_total(self):
-            self.assertEqual(self.example_service.total(), 1)
-  : labels:
+  "class TestExample(unittest.TestCase):\n    def test_total(self):\n        self.assertEqual(self.example_service.total(), 1)\n":
+    labels:
     - source: |-
         def test_total(self):
                 self.assertEqual(self.example_service.total(), 1)
@@ -35,11 +32,8 @@ snapshots:
       style: secondary
       start: 46
       end: 56
-  ? |
-    class TestExample:
-        async def test_total(self):
-            assert await self.example_service.total() == 1
-  : labels:
+  "class TestExample:\n    async def test_total(self):\n        assert await self.example_service.total() == 1\n":
+    labels:
     - source: |-
         async def test_total(self):
                 assert await self.example_service.total() == 1

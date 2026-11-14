@@ -1,0 +1,184 @@
+id: union-declares-discriminator
+valid:
+  # A pipe union of two models whose Field default names the discriminator
+  - |
+    from typing import Literal
+    from pydantic import BaseModel, Field
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        value: ExampleA | ExampleB = Field(discriminator="kind")
+
+  # A pipe union of two models whose default is a Discriminator call
+  - |
+    from typing import Literal
+    from pydantic import BaseModel, Discriminator
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        value: ExampleA | ExampleB = Discriminator("kind")
+
+  # A pipe union of two models inside Annotated with a Field that names the discriminator
+  - |
+    from typing import Annotated, Literal
+    from pydantic import BaseModel, Field
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        values: list[Annotated[ExampleA | ExampleB, Field(discriminator="kind")]]
+
+  # A pipe union of one model and None
+  - |
+    from pydantic import BaseModel
+
+    class ExampleA(BaseModel):
+        name: str
+
+    class ExampleHolder(BaseModel):
+        value: ExampleA | None = None
+
+  # A pipe union of a plain value and one model
+  - |
+    from pydantic import BaseModel
+
+    class ExampleA(BaseModel):
+        name: str
+
+    class ExampleHolder(BaseModel):
+        value: str | ExampleA
+
+  # A Union of one model and None
+  - |
+    from typing import Union
+    from pydantic import BaseModel
+
+    class ExampleA(BaseModel):
+        name: str
+
+    class ExampleHolder(BaseModel):
+        value: Union[ExampleA, None] = None
+
+  # A pipe union of two models on a dataclass field
+  - |
+    from dataclasses import dataclass
+    from typing import Literal
+    from pydantic import BaseModel
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    @dataclass
+    class ExampleHolder:
+        value: ExampleA | ExampleB
+
+  # A pipe union of two models imported from another module
+  - |
+    from pydantic import BaseModel
+    from examples.models import ExampleA, ExampleB
+
+    class ExampleHolder(BaseModel):
+        value: ExampleA | ExampleB
+
+invalid:
+  # A pipe union of two models with no default
+  - |
+    from typing import Literal
+    from pydantic import BaseModel
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        value: ExampleA | ExampleB
+
+  # A pipe union of two models whose Field default names no discriminator
+  - |
+    from typing import Literal
+    from pydantic import BaseModel, Field
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        value: ExampleA | ExampleB = Field(description="the example")
+
+  # A pipe union of two models, the second a decorated class
+  - |
+    from typing import Literal
+    from pydantic import BaseModel
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    @some_decorator
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        value: ExampleA | ExampleB
+
+  # A pipe union of two models with None between them
+  - |
+    from typing import Literal
+    from pydantic import BaseModel
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        value: ExampleA | None | ExampleB = None
+
+  # A pipe union of two models inside Annotated with a Field that names no discriminator
+  - |
+    from typing import Annotated, Literal
+    from pydantic import BaseModel, Field
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        value: Annotated[ExampleA | ExampleB, Field(description="the example")]
+
+  # A Union of two models with None between them
+  - |
+    from typing import Literal, Union
+    from pydantic import BaseModel
+
+    class ExampleA(BaseModel):
+        kind: Literal["a"] = "a"
+
+    class ExampleB(BaseModel):
+        kind: Literal["b"] = "b"
+
+    class ExampleHolder(BaseModel):
+        value: Union[ExampleA, None, ExampleB] = None
