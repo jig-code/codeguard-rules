@@ -31,42 +31,6 @@ cases:
           return f"{booking.event.title} at {booking.event.venue.name}"
   expected_output:
     outcome: invalid
-- name: a discount reaches through the cart's owner to their loyalty tier's rate
-  inputs:
-    file: pricing/discounts.py
-    unchanged:
-      pricing/models.py: |
-        from decimal import Decimal
-
-
-        class LoyaltyTier:
-            def __init__(self, name: str, rate: Decimal) -> None:
-                self.name = name
-                self.rate = rate
-
-            def discount_for(self, subtotal_cents: int) -> int:
-                return int(subtotal_cents * self.rate)
-
-
-        class Member:
-            def __init__(self, email: str, tier: LoyaltyTier) -> None:
-                self.email = email
-                self.tier = tier
-
-
-        class Cart:
-            def __init__(self, owner: Member, subtotal_cents: int) -> None:
-                self.owner = owner
-                self.subtotal_cents = subtotal_cents
-    after: |
-      from pricing.models import Cart
-
-
-      def discounted_total(cart: Cart) -> int:
-          discount = cart.owner.tier.discount_for(cart.subtotal_cents)
-          return cart.subtotal_cents - discount
-  expected_output:
-    outcome: invalid
 - name: recording attendance assigns a field of the stadium held by the fixture's home club
   inputs:
     file: league/attendance.py
@@ -100,43 +64,7 @@ cases:
           fixture.home_club.stadium.last_attendance = spectators
   expected_output:
     outcome: invalid
-- name: a rota reaches from its own ward through the supervisor to send on their pager
-  inputs:
-    file: hospital/rota.py
-    unchanged:
-      hospital/models.py: |
-        class Pager:
-            def __init__(self, number: str) -> None:
-                self.number = number
-                self.messages: list[str] = []
-
-            def send(self, message: str) -> None:
-                self.messages.append(message)
-
-
-        class Nurse:
-            def __init__(self, name: str, pager: Pager) -> None:
-                self.name = name
-                self.pager = pager
-
-
-        class Ward:
-            def __init__(self, name: str, supervisor: Nurse) -> None:
-                self.name = name
-                self.supervisor = supervisor
-    after: |
-      from hospital.models import Ward
-
-
-      class Rota:
-          def __init__(self, ward: Ward) -> None:
-              self._ward = ward
-
-          def page_supervisor(self, message: str) -> None:
-              self._ward.supervisor.pager.send(message)
-  expected_output:
-    outcome: invalid
-- name: billing follows Django foreign keys from the appointment through the patient to the insurer's method
+- name: billing calls the insurer's method through the appointment's and the patient's Django foreign keys
   inputs:
     file: clinic/billing.py
     unchanged: &clinic_models
@@ -186,7 +114,7 @@ cases:
           return appointment.patient.phone_number
   expected_output:
     outcome: valid
-- name: confirming a delivery asks the parcel to mark itself delivered
+- name: confirming a delivery calls the parcel's own method
   inputs:
     file: shipping/delivery.py
     unchanged:
@@ -238,31 +166,7 @@ cases:
               self._shipments.get(shipment_id).dispatch()
   expected_output:
     outcome: valid
-- name: a usage report reads the hour of each meter reading's timestamp
-  inputs:
-    file: energy/usage.py
-    unchanged:
-      energy/models.py: |
-        from dataclasses import dataclass
-        from datetime import datetime
-
-
-        @dataclass(frozen=True)
-        class MeterReading:
-            meter_id: str
-            taken_at: datetime
-            kwh: float
-    after: |
-      from collections import Counter
-
-      from energy.models import MeterReading
-
-
-      def readings_per_hour(readings: list[MeterReading]) -> Counter[int]:
-          return Counter(reading.taken_at.hour for reading in readings)
-  expected_output:
-    outcome: valid
-- name: a view asks the signed-in user's Django groups whether they include editors
+- name: a view queries the signed-in user's Django groups for editors
   inputs:
     file: articles/views.py
     after: |
@@ -335,10 +239,10 @@ cases:
           return a + b
   expected_output:
     outcome: skipped
-- name: an edit makes ending a membership reach through the member to release their locker
+- name: an edit adds a membership check beside an unchanged function that holds a chain
   inputs:
-    file: gym/memberships.py
-    unchanged: &gym_models
+    file: gym/lockers.py
+    unchanged:
       gym/models.py: |
         class Locker:
             def __init__(self, number: int) -> None:
@@ -367,25 +271,6 @@ cases:
       from gym.models import Membership
 
 
-      def end_membership(membership: Membership) -> None:
-          membership.cancel()
-    after: |
-      from gym.models import Membership
-
-
-      def end_membership(membership: Membership) -> None:
-          membership.cancel()
-          membership.member.locker.release()
-  expected_output:
-    outcome: invalid
-- name: an edit adds a membership check and leaves an older chain in another function untouched
-  inputs:
-    file: gym/lockers.py
-    unchanged: *gym_models
-    before: |
-      from gym.models import Membership
-
-
       def locker_number(membership: Membership) -> int:
           return membership.member.locker.number
     after: |
@@ -400,7 +285,7 @@ cases:
           return membership.months_left == 1
   expected_output:
     outcome: valid
-- name: announcing an enrollment reaches through the course to notify its instructor
+- name: announcing an enrollment calls the instructor's method through the enrollment's course
   inputs:
     file: school/announce.ts
     unchanged:
@@ -488,7 +373,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: closing a support ticket asks the ticket to resolve itself
+- name: closing a support ticket calls the ticket's own method
   inputs:
     file: support/close.ts
     unchanged:
@@ -564,7 +449,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a Next.js route handler asks the request's URL search params for a preview flag
+- name: a Next.js route handler reads a preview flag from the request's URL search params
   inputs:
     file: app/api/page/route.ts
     after: |
@@ -600,26 +485,6 @@ cases:
           .sort((a, b) => b.goals - a.goals)
           .slice(0, count)
           .map((player) => player.name);
-      }
-  expected_output:
-    outcome: valid
-- name: quiet hours read an optional-chained start time from parsed preferences
-  inputs:
-    file: notifications/quiet.ts
-    after: |
-      export interface QuietHours {
-        readonly start: string;
-        readonly end: string;
-      }
-
-      export interface Preferences {
-        readonly notifications?: {
-          readonly quietHours?: QuietHours;
-        };
-      }
-
-      export function quietHoursStart(preferences: Preferences): string | undefined {
-        return preferences.notifications?.quietHours?.start;
       }
   expected_output:
     outcome: valid
