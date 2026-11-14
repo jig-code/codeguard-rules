@@ -58,7 +58,7 @@ the languages it runs on.
 | `command-query-separation` | Command-query separation: a function that changes data that outlives the call never also returns an answer about any data other than the data the change creates, removes or sets | Not yet |
 | `law-of-demeter` | Law of Demeter: a function never reads, assigns or calls a member of an object that it reaches as a field of a field of another object and whose class the program defines with methods of its own | Not yet |
 | `intention-revealing-names` | Intention-revealing names: a name the program chooses for a function, method or class never consists only of words that could name any code and words that name its caller | Not yet |
-| `one-word-per-concept` | One word per concept: one operation goes by one verb, so names predict each other. | Not yet |
+| `one-word-per-concept` | One verb per operation: a function or method never names its operation with a verb other than the one another function or method in the same file, or in a module the file imports, uses for that operation | Not yet |
 
 Each rule passes 20 of 20 eval runs on its binding's model before it ships, and CI's 3
 runs on each provider before it merges. One check follows, and doesn't hold up the next rule:

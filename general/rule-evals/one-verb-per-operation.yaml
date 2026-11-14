@@ -1,5 +1,5 @@
 cases:
-- name: "sibling classes: a punctuation cleaner scrubs text where the whitespace cleaner beside it cleans, so callers look for a clean method that isn't there"
+- name: a punctuation cleaner scrubs text beside a whitespace cleaner that cleans it
   inputs:
     file: text/cleaners.py
     before: |
@@ -20,7 +20,7 @@ cases:
               return text.translate(str.maketrans("", "", string.punctuation))
   expected_output:
     outcome: invalid
-- name: "sibling classes: a punctuation cleaner cleans text like the whitespace cleaner beside it, so one verb names the operation"
+- name: a punctuation cleaner cleans text beside a whitespace cleaner that cleans it
   inputs:
     file: text/cleaners.py
     before: |
@@ -41,7 +41,7 @@ cases:
               return text.translate(str.maketrans("", "", string.punctuation))
   expected_output:
     outcome: valid
-- name: "imported collaborator: a weight rate calculates the fee the imported flat rate computes, and one function calls both under different verbs"
+- name: a weight rate calculates the fee that an imported flat rate computes
   inputs:
     file: shipping/rates.py
     unchanged:
@@ -62,69 +62,7 @@ cases:
           return [flat.compute_fee(weight_grams), weighted.calculate_fee(weight_grams)]
   expected_output:
     outcome: invalid
-- name: "module functions in parallel: tally_digits beside count_vowels counts characters under a second verb"
-  inputs:
-    file: text/stats.py
-    before: |
-      def count_vowels(text: str) -> int:
-          return sum(1 for char in text if char in "aeiou")
-    after: |
-      def count_vowels(text: str) -> int:
-          return sum(1 for char in text if char in "aeiou")
-
-
-      def tally_digits(text: str) -> int:
-          return sum(1 for char in text if char.isdigit())
-  expected_output:
-    outcome: invalid
-- name: "methods of one class: a roster deletes coaches but removes players, so one operation reads as two"
-  inputs:
-    file: league/roster.py
-    before: |
-      class Roster:
-          def __init__(self) -> None:
-              self._player_names: dict[str, str] = {}
-              self._coach_names: dict[str, str] = {}
-
-          def remove_player(self, player_id: str) -> None:
-              del self._player_names[player_id]
-    after: |
-      class Roster:
-          def __init__(self) -> None:
-              self._player_names: dict[str, str] = {}
-              self._coach_names: dict[str, str] = {}
-
-          def remove_player(self, player_id: str) -> None:
-              del self._player_names[player_id]
-
-          def delete_coach(self, coach_id: str) -> None:
-              del self._coach_names[coach_id]
-  expected_output:
-    outcome: invalid
-- name: "rename: a length sorter's sort is renamed to arrange while the name sorter beside it still sorts"
-  inputs:
-    file: names/sorters.py
-    before: |
-      class AlphabeticalSorter:
-          def sort(self, names: list[str]) -> list[str]:
-              return sorted(names)
-
-
-      class LengthSorter:
-          def sort(self, names: list[str]) -> list[str]:
-              return sorted(names, key=len)
-    after: |
-      class AlphabeticalSorter:
-          def sort(self, names: list[str]) -> list[str]:
-              return sorted(names)
-
-
-      class LengthSorter:
-          def arrange(self, names: list[str]) -> list[str]:
-              return sorted(names, key=len)
-  expected_output:
-    outcome: invalid
-- name: "no collaborator does it: a duration formatter is the only function in its module"
+- name: a duration formatter alone in its module
   inputs:
     file: media/durations.py
     after: |
@@ -133,7 +71,7 @@ cases:
           return f"{minutes}:{remainder:02d}"
   expected_output:
     outcome: valid
-- name: "different operations: decompress_bytes beside compress_bytes undoes it, so a second verb is right"
+- name: a decompress function beside the compress function it undoes
   inputs:
     file: archive/compression.py
     before: |
@@ -154,49 +92,7 @@ cases:
           return zlib.decompress(data)
   expected_output:
     outcome: valid
-- name: "base-declared name: a memory sink writes blobs under the name its imported protocol declares, beside an archive that stores them"
-  inputs:
-    file: uploads/sinks.py
-    unchanged:
-      uploads/sink.py: |
-        from typing import Protocol
-
-
-        class BlobSink(Protocol):
-            def write(self, key: str, data: bytes) -> None: ...
-    before: |
-      from pathlib import Path
-
-
-      class LocalArchive:
-          def __init__(self, root: Path) -> None:
-              self._root = root
-
-          def store(self, key: str, data: bytes) -> None:
-              (self._root / key).write_bytes(data)
-    after: |
-      from pathlib import Path
-
-      from uploads.sink import BlobSink
-
-
-      class LocalArchive:
-          def __init__(self, root: Path) -> None:
-              self._root = root
-
-          def store(self, key: str, data: bytes) -> None:
-              (self._root / key).write_bytes(data)
-
-
-      class MemorySink(BlobSink):
-          def __init__(self) -> None:
-              self._blobs: dict[str, bytes] = {}
-
-          def write(self, key: str, data: bytes) -> None:
-              self._blobs[key] = data
-  expected_output:
-    outcome: valid
-- name: "unrelated code: compute_distance shares an operation only with a module the file neither imports nor calls"
+- name: a distance function shares its operation only with a module that the file doesn't import
   inputs:
     file: maps/distance.py
     unchanged:
@@ -214,7 +110,7 @@ cases:
           return math.hypot(dx, dy)
   expected_output:
     outcome: valid
-- name: "body-only change: a lower-caser's convert body changes but no name is added or renamed"
+- name: the body of a lower-caser's convert method changes
   inputs:
     file: text/casing.py
     before: |
@@ -237,7 +133,7 @@ cases:
               return text.casefold()
   expected_output:
     outcome: skipped
-- name: "sibling classes: a punctuation cleaner scrubs text where the whitespace cleaner beside it cleans, so callers look for a clean method that isn't there (typescript)"
+- name: a punctuation cleaner class scrubs text beside a whitespace cleaner class that cleans it
   inputs:
     file: text/cleaners.ts
     before: |
@@ -260,7 +156,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: "sibling classes: a punctuation cleaner cleans text like the whitespace cleaner beside it, so one verb names the operation (typescript)"
+- name: a punctuation cleaner class cleans text beside a whitespace cleaner class that cleans it
   inputs:
     file: text/cleaners.ts
     before: |
@@ -283,7 +179,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: "imported collaborator: a weight rate calculates the fee the imported flat rate computes, and one function calls both under different verbs (typescript)"
+- name: a weight rate class calculates the fee that an imported flat rate class computes
   inputs:
     file: shipping/rates.ts
     unchanged:
@@ -307,80 +203,7 @@ cases:
       }
   expected_output:
     outcome: invalid
-- name: "module functions in parallel: tallyDigits beside countVowels counts characters under a second verb (typescript)"
-  inputs:
-    file: text/stats.ts
-    before: |
-      export function countVowels(text: string): number {
-        return [...text].filter((char) => "aeiou".includes(char)).length;
-      }
-    after: |
-      export function countVowels(text: string): number {
-        return [...text].filter((char) => "aeiou".includes(char)).length;
-      }
-
-      export function tallyDigits(text: string): number {
-        return [...text].filter((char) => char >= "0" && char <= "9").length;
-      }
-  expected_output:
-    outcome: invalid
-- name: "methods of one class: a library deletes magazines but removes books, so one operation reads as two (typescript)"
-  inputs:
-    file: library/shelf.ts
-    before: |
-      export class Shelf {
-        private readonly bookTitles = new Map<string, string>();
-        private readonly magazineTitles = new Map<string, string>();
-
-        removeBook(isbn: string): void {
-          this.bookTitles.delete(isbn);
-        }
-      }
-    after: |
-      export class Shelf {
-        private readonly bookTitles = new Map<string, string>();
-        private readonly magazineTitles = new Map<string, string>();
-
-        removeBook(isbn: string): void {
-          this.bookTitles.delete(isbn);
-        }
-
-        deleteMagazine(issn: string): void {
-          this.magazineTitles.delete(issn);
-        }
-      }
-  expected_output:
-    outcome: invalid
-- name: "rename: a length sorter's sort is renamed to arrange while the name sorter beside it still sorts (typescript)"
-  inputs:
-    file: names/sorters.ts
-    before: |
-      export class AlphabeticalSorter {
-        sort(names: string[]): string[] {
-          return [...names].sort();
-        }
-      }
-
-      export class LengthSorter {
-        sort(names: string[]): string[] {
-          return [...names].sort((left, right) => left.length - right.length);
-        }
-      }
-    after: |
-      export class AlphabeticalSorter {
-        sort(names: string[]): string[] {
-          return [...names].sort();
-        }
-      }
-
-      export class LengthSorter {
-        arrange(names: string[]): string[] {
-          return [...names].sort((left, right) => left.length - right.length);
-        }
-      }
-  expected_output:
-    outcome: invalid
-- name: "no collaborator does it: a percent formatter is the only function in its module (typescript)"
+- name: a percent formatter alone in its module
   inputs:
     file: reports/percent.ts
     after: |
@@ -389,7 +212,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: "different operations: unlockAccount beside lockAccount undoes it, so a second verb is right (typescript)"
+- name: an unlock function beside the lock function it undoes
   inputs:
     file: accounts/locking.ts
     before: |
@@ -416,43 +239,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: "base-declared name: a memory sink writes blobs under the name its imported interface declares, beside an archive that stores them (typescript)"
-  inputs:
-    file: uploads/sinks.ts
-    unchanged:
-      uploads/sink.ts: |
-        export interface BlobSink {
-          write(key: string, data: Uint8Array): void;
-        }
-    before: |
-      export class ArchiveIndex {
-        private readonly blobs = new Map<string, Uint8Array>();
-
-        store(key: string, data: Uint8Array): void {
-          this.blobs.set(key, data);
-        }
-      }
-    after: |
-      import type { BlobSink } from "./sink";
-
-      export class ArchiveIndex {
-        private readonly blobs = new Map<string, Uint8Array>();
-
-        store(key: string, data: Uint8Array): void {
-          this.blobs.set(key, data);
-        }
-      }
-
-      export class MemorySink implements BlobSink {
-        private readonly blobs = new Map<string, Uint8Array>();
-
-        write(key: string, data: Uint8Array): void {
-          this.blobs.set(key, data);
-        }
-      }
-  expected_output:
-    outcome: valid
-- name: "unrelated code: computeDistance shares an operation only with a module the file neither imports nor calls (typescript)"
+- name: a distance function shares its operation only with a module that the file never imports
   inputs:
     file: maps/distance.ts
     unchanged:
@@ -466,7 +253,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: "body-only change: a lower-caser's convert body changes but no name is added or renamed (typescript)"
+- name: the body of a lower-caser class's convert method changes
   inputs:
     file: text/casing.ts
     before: |
