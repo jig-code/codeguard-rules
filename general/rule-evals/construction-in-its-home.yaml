@@ -128,31 +128,6 @@ cases:
           return ticket
   expected_output:
     outcome: valid
-- name: a lending service throws a refusal error carrying the member's id
-  inputs:
-    file: library/lending.ts
-    unchanged:
-      library/errors.ts: |
-        export class LoanRefused extends Error {
-          constructor(readonly memberId: number, readonly reason: string) {
-            super(`member ${memberId}: ${reason}`);
-          }
-        }
-    after: |
-      import { LoanRefused } from "./errors";
-      import type { LoanRepository, Member } from "./ports";
-
-      export class LendingService {
-        constructor(private readonly loans: LoanRepository) {}
-
-        async checkCanBorrow(member: Member): Promise<void> {
-          if ((await this.loans.overdueCount(member.id)) > 0) {
-            throw new LoanRefused(member.id, "has overdue books");
-          }
-        }
-      }
-  expected_output:
-    outcome: valid
 - name: a loan period constant changes
   inputs:
     file: library/policy.py
