@@ -1,0 +1,166 @@
+cases:
+- name: a password checker class sits beside the invoice numberer
+  inputs:
+    file: billing/numbering.py
+    after: |
+      class InvoiceNumberer:
+          def __init__(self, prefix: str) -> None:
+              self._prefix = prefix
+              self._next = 1
+
+          def next_number(self) -> str:
+              number = f"{self._prefix}-{self._next:06d}"
+              self._next += 1
+              return number
+
+
+      class PasswordStrengthChecker:
+          def __init__(self, min_length: int) -> None:
+              self._min_length = min_length
+
+          def is_strong(self, password: str) -> bool:
+              return len(password) >= self._min_length and any(c.isdigit() for c in password)
+  expected_output:
+    outcome: invalid
+- name: an enums module groups three unrelated enumerations
+  inputs:
+    file: shop/enums.py
+    after: |
+      from enum import StrEnum
+
+
+      class CarrierCode(StrEnum):
+          DHL = "dhl"
+          UPS = "ups"
+
+
+      class RefundReason(StrEnum):
+          DAMAGED = "damaged"
+          LATE = "late"
+
+
+      class InvoiceStatus(StrEnum):
+          DRAFT = "draft"
+          SENT = "sent"
+          PAID = "paid"
+  expected_output:
+    outcome: invalid
+- name: an errors module holds one exception hierarchy
+  inputs:
+    file: payments/errors.py
+    after: |
+      class PaymentError(Exception):
+          pass
+
+
+      class CardDeclined(PaymentError):
+          def __init__(self, code: str) -> None:
+              super().__init__(f"card declined: {code}")
+              self.code = code
+
+
+      class InsufficientFunds(PaymentError):
+          pass
+  expected_output:
+    outcome: valid
+- name: an exporter module holds the exporter and the result it returns
+  inputs:
+    file: reports/exporter.py
+    after: |
+      import csv
+      from dataclasses import dataclass
+      from pathlib import Path
+
+
+      @dataclass(frozen=True)
+      class ExportResult:
+          path: Path
+          rows: int
+
+
+      class CsvExporter:
+          def __init__(self, directory: Path) -> None:
+              self._directory = directory
+
+          def run(self, name: str, fieldnames: list[str], rows: list[dict[str, str]]) -> ExportResult:
+              path = self._directory / f"{name}.csv"
+              with path.open("w", newline="") as handle:
+                  writer = csv.DictWriter(handle, fieldnames=fieldnames)
+                  writer.writeheader()
+                  writer.writerows(rows)
+              return ExportResult(path=path, rows=len(rows))
+  expected_output:
+    outcome: valid
+- name: an app's models module holds the models of different concepts
+  inputs:
+    file: storefront/models.py
+    after: |
+      from django.db import models
+
+
+      class Customer(models.Model):
+          email = models.EmailField(unique=True)
+          full_name = models.CharField(max_length=200)
+
+
+      class Product(models.Model):
+          sku = models.CharField(max_length=40, unique=True)
+          title = models.CharField(max_length=200)
+          price = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+      class Order(models.Model):
+          customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name="orders")
+          placed_at = models.DateTimeField(auto_now_add=True)
+  expected_output:
+    outcome: valid
+- name: a module holds one class
+  inputs:
+    file: reports/clock.py
+    after: |
+      from datetime import UTC, datetime
+
+
+      class SystemClock:
+          def now(self) -> datetime:
+              return datetime.now(UTC)
+  expected_output:
+    outcome: skipped
+- name: an enums module exports three unrelated enumerations
+  inputs:
+    file: shop/enums.ts
+    after: |
+      export enum CarrierCode {
+        Dhl = "dhl",
+        Ups = "ups",
+      }
+
+      export enum RefundReason {
+        Damaged = "damaged",
+        Late = "late",
+      }
+
+      export enum InvoiceStatus {
+        Draft = "draft",
+        Sent = "sent",
+        Paid = "paid",
+      }
+  expected_output:
+    outcome: invalid
+- name: a payment module exports the variants of its payment union
+  inputs:
+    file: payments/payment.ts
+    after: |
+      export interface CardPayment {
+        kind: "card";
+        cardToken: string;
+      }
+
+      export interface BankPayment {
+        kind: "bank";
+        iban: string;
+      }
+
+      export type Payment = CardPayment | BankPayment;
+  expected_output:
+    outcome: valid
