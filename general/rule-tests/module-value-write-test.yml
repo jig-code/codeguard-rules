@@ -1,0 +1,144 @@
+id: module-value-write
+valid:
+# Imported module: an attribute read
+- |
+  from example import config
+
+  def retry_limit():
+      return config.RETRY_LIMIT
+# Imported module: an attribute passed to a mutating call on a local list
+- |
+  from example import config
+
+  def hosts():
+      found = []
+      found.append(config.PRIMARY_HOST)
+      return found
+# Imported module: an attribute used as the key of a local dict write
+- |
+  from example import config
+
+  def index(value):
+      entries = {}
+      entries[config.KEY] = value
+      return entries
+# Imported module: a method call that doesn't change the value
+- |
+  from example import config
+
+  def position(host):
+      return config.HOSTS.index(host)
+# Imported name: another object's attribute of the same name is set
+- |
+  from example import config
+
+  def attach(job):
+      job.config = {}
+# Module-level object: its attribute set at the top level of its module
+- |
+  class ExampleState:
+      count = None
+
+  _state = ExampleState()
+  _state.count = 0
+# Local object: its attribute set in a function
+- |
+  def build():
+      state = ExampleState()
+      state.count = 1
+      return state
+# Instance: its attribute set in a method
+- |
+  class ExampleCounter:
+      def __init__(self):
+          self.count = 0
+invalid:
+# Imported module: attribute assignment
+- |
+  from example import config
+
+  def tighten():
+      config.RETRY_LIMIT = 1
+# Imported module: attribute assignment at the top level of the importing module
+- |
+  import example.config
+
+  example.config.RETRY_LIMIT = 10
+# Imported module under an alias: attribute assignment
+- |
+  import example.config as config
+
+  def tighten():
+      config.RETRY_LIMIT = 1
+# Imported module: augmented attribute assignment
+- |
+  from example import config
+
+  def loosen():
+      config.RETRY_LIMIT += 1
+# Imported module: subscript write to a dict it holds
+- |
+  from example import config
+
+  def set_limit(key, value):
+      config.LIMITS[key] = value
+# Imported name: subscript write
+- |
+  from example.config import LIMITS
+
+  def set_limit(key, value):
+      LIMITS[key] = value
+# Imported module: mutating call on a list it holds
+- |
+  from example import config
+
+  def allow(host):
+      config.HOSTS.append(host)
+# Imported name: mutating call
+- |
+  from example.config import HOSTS
+
+  def allow(host):
+      HOSTS.append(host)
+# Imported module: delete of a dict entry it holds
+- |
+  from example import config
+
+  def drop_limit(key):
+      del config.LIMITS[key]
+# Imported module: setattr
+- |
+  from example import config
+
+  def set_option(name, value):
+      setattr(config, name, value)
+# Module-level object: attribute assignment in a function
+- |
+  _state = ExampleState()
+
+  def reset():
+      _state.count = 0
+# Module-level object: augmented attribute assignment in a function
+- |
+  _state = ExampleState()
+
+  def bump():
+      _state.count += 1
+# Module-level object: subscript write to a dict it holds, in a function
+- |
+  _state = ExampleState()
+
+  def remember(key, value):
+      _state.entries[key] = value
+# Module-level object: mutating call on a list it holds, in a function
+- |
+  _state = ExampleState()
+
+  def record(item):
+      _state.items.append(item)
+# Module-level dict: delete of an entry in a function
+- |
+  _cache = {}
+
+  def forget(key):
+      del _cache[key]

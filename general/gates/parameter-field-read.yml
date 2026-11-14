@@ -33,8 +33,29 @@ rule:
         has:
           field: body
           stopBy: end
-          kind: attribute
-          has:
-            field: object
-            kind: identifier
-            pattern: $P
+          any:
+          - kind: attribute
+            has:
+              field: object
+              kind: identifier
+              pattern: $P
+          - kind: subscript
+            all:
+            - has:
+                field: value
+                kind: identifier
+                pattern: $P
+            - has:
+                field: subscript
+                kind: string
+          - kind: match_statement
+            all:
+            - has:
+                field: subject
+                kind: identifier
+                pattern: $P
+            - has:
+                stopBy: end
+                any:
+                - kind: keyword_pattern
+                - kind: dict_pattern
