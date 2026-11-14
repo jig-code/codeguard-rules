@@ -1,5 +1,49 @@
 id: fallback-default
 snapshots:
+  "def example_label(example_user):\n    example_name = example_user.nickname\n    if example_name is None:\n        example_name = \"Guest\"\n    return example_name\n":
+    labels:
+    - source: |-
+        if example_name is None:
+                example_name = "Guest"
+      style: primary
+      start: 78
+      end: 133
+    - source: example_name is None
+      style: secondary
+      start: 81
+      end: 101
+    - source: example_name = "Guest"
+      style: secondary
+      start: 111
+      end: 133
+    - source: example_name = "Guest"
+      style: secondary
+      start: 111
+      end: 133
+    - source: example_name = "Guest"
+      style: secondary
+      start: 111
+      end: 133
+  "def example_notify(example_user, example_mailer):\n    if example_user.email is None:\n        return\n    example_mailer.send(example_user.email)\n":
+    labels:
+    - source: |-
+        if example_user.email is None:
+                return
+      style: primary
+      start: 54
+      end: 99
+    - source: example_user.email is None
+      style: secondary
+      start: 57
+      end: 83
+    - source: return
+      style: secondary
+      start: 93
+      end: 99
+    - source: return
+      style: secondary
+      start: 93
+      end: 99
   "example_items = example_order.items or []\n":
     labels:
     - source: example_order.items or []
@@ -50,6 +94,26 @@ snapshots:
       style: secondary
       start: 39
       end: 41
+  "example_match = next((example_row for example_row in example_rows if example_row.id == example_id), None)\n":
+    labels:
+    - source: >-
+        next((example_row for example_row in example_rows if example_row.id ==
+        example_id), None)
+      style: primary
+      start: 16
+      end: 105
+    - source: next
+      style: secondary
+      start: 16
+      end: 20
+    - source: None
+      style: secondary
+      start: 100
+      end: 104
+    - source: None
+      style: secondary
+      start: 100
+      end: 104
   "example_meta = example_order.meta or {}\n":
     labels:
     - source: example_order.meta or {}
@@ -120,6 +184,20 @@ snapshots:
       style: secondary
       start: 54
       end: 57
+  "example_rate = example_rates.get(example_currency) or EXAMPLE_DEFAULT_RATE\n":
+    labels:
+    - source: example_rates.get(example_currency) or EXAMPLE_DEFAULT_RATE
+      style: primary
+      start: 15
+      end: 74
+    - source: or
+      style: secondary
+      start: 51
+      end: 53
+    - source: EXAMPLE_DEFAULT_RATE
+      style: secondary
+      start: 54
+      end: 74
   "example_secret = getattr(example_settings, \"EXAMPLE_SECRET\", None)\n":
     labels:
     - source: getattr(example_settings, "EXAMPLE_SECRET", None)
@@ -138,6 +216,20 @@ snapshots:
       style: secondary
       start: 61
       end: 65
+  "example_started = example_job.started_at or datetime.now()\n":
+    labels:
+    - source: example_job.started_at or datetime.now()
+      style: primary
+      start: 18
+      end: 58
+    - source: or
+      style: secondary
+      start: 41
+      end: 43
+    - source: datetime.now()
+      style: secondary
+      start: 44
+      end: 58
   "example_total = example_order.total if example_order.total is not None else 0\n":
     labels:
     - source: example_order.total if example_order.total is not None else 0
