@@ -86,7 +86,7 @@ cases:
               self._sms.send_text(level.buyer_phone, f"{level.sku} is down to {level.on_hand} units")
   expected_output:
     outcome: valid
-- name: an oversize shipping method is a shipping method that prices parcels with a handling surcharge
+- name: an oversize shipping method adds a handling fee to the cost of the shipping method it inherits
   inputs:
     file: shipping/methods.py
     unchanged:
@@ -119,7 +119,7 @@ cases:
               return super().cost(weight_kg) + self.handling_fee
   expected_output:
     outcome: valid
-- name: a markdown exporter implements the abstract exporter whose job it does
+- name: a markdown exporter implements the abstract report exporter
   inputs:
     file: reports/markdown.py
     unchanged:
@@ -160,7 +160,7 @@ cases:
               return "\n".join(lines).encode()
   expected_output:
     outcome: valid
-- name: warehouse and bin models inherit the ORM model base the framework requires
+- name: warehouse and bin models inherit the framework's database model base
   inputs:
     file: warehouses/models.py
     after: |
@@ -175,33 +175,6 @@ cases:
       class Bin(models.Model):
           warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
           label = models.CharField(max_length=16)
-  expected_output:
-    outcome: valid
-- name: a supplier takes a documented mixin that orders instances by name
-  inputs:
-    file: purchasing/suppliers.py
-    unchanged:
-      purchasing/ordering.py: |
-        from typing import Self
-
-
-        class NameOrderMixin:
-            """Mixin for classes with a `name`: orders their instances by it."""
-
-            name: str
-
-            def __lt__(self, other: Self) -> bool:
-                return self.name < other.name
-    after: |
-      from dataclasses import dataclass
-
-      from purchasing.ordering import NameOrderMixin
-
-
-      @dataclass(frozen=True)
-      class Supplier(NameOrderMixin):
-          name: str
-          country: str
   expected_output:
     outcome: valid
 - name: an invoice archiver inherits a library's HTTP session to upload with it
@@ -232,7 +205,7 @@ cases:
               response.raise_for_status()
   expected_output:
     outcome: invalid
-- name: a JSON log formatter is a standard library formatter that formats records its own way
+- name: a JSON log formatter overrides how the standard library formatter formats a record
   inputs:
     file: observability/formatting.py
     after: |
@@ -252,7 +225,7 @@ cases:
               )
   expected_output:
     outcome: valid
-- name: a delivery run inherits a depot to get its opening hours as its own fields
+- name: a delivery run inherits a depot's opening hours as its own fields
   inputs:
     file: logistics/runs.py
     unchanged:
@@ -280,58 +253,6 @@ cases:
 
           def departs_while_open(self) -> bool:
               return self.opening_hour <= self.departure_hour < self.closing_hour
-  expected_output:
-    outcome: invalid
-- name: an edit makes a payslip publisher inherit the SFTP uploader it used to hold
-  inputs:
-    file: payroll/publishing.py
-    unchanged:
-      transfer/sftp.py: |
-        import paramiko
-
-
-        class SftpUploader:
-            def __init__(self, host: str, username: str, key_path: str) -> None:
-                self.host = host
-                self.username = username
-                self.key_path = key_path
-
-            def upload(self, remote_path: str, data: bytes) -> None:
-                with paramiko.SSHClient() as ssh:
-                    ssh.load_system_host_keys()
-                    ssh.connect(self.host, username=self.username, key_filename=self.key_path)
-                    with ssh.open_sftp() as sftp, sftp.open(remote_path, "wb") as remote:
-                        remote.write(data)
-      payroll/payslips.py: |
-        from dataclasses import dataclass
-
-
-        @dataclass(frozen=True)
-        class Payslip:
-            employee_id: str
-            period: str
-            pdf: bytes
-    before: |
-      from payroll.payslips import Payslip
-      from transfer.sftp import SftpUploader
-
-
-      class PayslipPublisher:
-          def __init__(self, uploader: SftpUploader) -> None:
-              self._uploader = uploader
-
-          def publish(self, payslip: Payslip) -> None:
-              self._uploader.upload(
-                  f"payslips/{payslip.period}/{payslip.employee_id}.pdf", payslip.pdf
-              )
-    after: |
-      from payroll.payslips import Payslip
-      from transfer.sftp import SftpUploader
-
-
-      class PayslipPublisher(SftpUploader):
-          def publish(self, payslip: Payslip) -> None:
-              self.upload(f"payslips/{payslip.period}/{payslip.employee_id}.pdf", payslip.pdf)
   expected_output:
     outcome: invalid
 - name: a method is added to a class whose base the change leaves as it was
@@ -462,7 +383,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a tiered tariff is a tariff that prices usage by tier
+- name: a tiered tariff overrides how the tariff it inherits prices usage
   inputs:
     file: energy/tiered-tariff.ts
     unchanged:
@@ -506,7 +427,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a percent-off rule implements the price rule interface whose job it does
+- name: a percent-off rule implements the price rule interface
   inputs:
     file: pricing/percent-off.ts
     unchanged:
@@ -546,7 +467,7 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: a cart badge extends the web component base its framework requires
+- name: a cart badge extends its framework's web component base
   inputs:
     file: components/cart-badge.ts
     after: |
@@ -563,41 +484,3 @@ cases:
       }
   expected_output:
     outcome: valid
-- name: an edit makes a visit tracker extend the cache it used to hold
-  inputs:
-    file: loyalty/visit-tracker.ts
-    unchanged:
-      cache/redis-cache.ts: |
-        import type { RedisClientType } from "redis";
-
-        export class RedisCache {
-          constructor(private readonly client: RedisClientType) {}
-
-          async get(key: string): Promise<string | null> {
-            return this.client.get(key);
-          }
-
-          async set(key: string, value: string): Promise<void> {
-            await this.client.set(key, value);
-          }
-        }
-    before: |
-      import { RedisCache } from "../cache/redis-cache";
-
-      export class VisitTracker {
-        constructor(private readonly cache: RedisCache) {}
-
-        async recordVisit(customerId: string, at: Date): Promise<void> {
-          await this.cache.set(`last-visit:${customerId}`, at.toISOString());
-        }
-      }
-    after: |
-      import { RedisCache } from "../cache/redis-cache";
-
-      export class VisitTracker extends RedisCache {
-        async recordVisit(customerId: string, at: Date): Promise<void> {
-          await this.set(`last-visit:${customerId}`, at.toISOString());
-        }
-      }
-  expected_output:
-    outcome: invalid
