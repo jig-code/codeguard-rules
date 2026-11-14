@@ -87,7 +87,6 @@ code skip test files:
 | `no-tuple-fixtures` | A pytest fixture returns or yields one object, never a tuple |
 | `one-form-per-input` | No parameter reconciled from another parameter when missing (`if index is None: index = build(catalog)`) |
 | `typed-dispatch-registries` | A class takes a registry, not a `dict[str, Callable]` |
-| `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
 
 The `python` ruleset has no judge rules yet. Its judge rules, and some pattern rules, are drafts in
 `drafts/python/`, which codeguard doesn't load. A draft moves into a ruleset one rule at a time, in the order in
@@ -108,6 +107,14 @@ flag. Its binding's `triggers` names that code: a change kind built into codegua
 as `fixture` or `import`, or a gate in the ruleset's `gates/`, an ast-grep rule
 such as `mock-use`. A rule ast-grep or the type checker can check is a pattern rule or a checker
 setting, never a judge rule.
+
+### `typescript`
+
+Rules for any TypeScript project. Pattern rules (ast-grep); they skip test files:
+
+| Rule | Checks |
+|---|---|
+| `no-middle-man` | No middle man: a class without a base type doesn't forward every method to the same collaborator |
 
 ## Use a ruleset
 
@@ -130,6 +137,8 @@ packages:
 - `rules.<id>` overrides `paths`, `exclude_paths` or `severity`. `exclude_paths: []`
   brings test files back into an app rule.
 - `codeguard update` moves `ref` to the newest tag.
+- A project gets only the rulesets it lists under `rulesets`. List `typescript` to add
+  the TypeScript pattern rules.
 
 Diagnostics name a rule by package, ruleset and id: `betterwithranch/python/no-del-param`.
 
@@ -140,7 +149,7 @@ project that sets `ast-grep` in its config must pick a version in that range.
 
 ```
 codeguard-package.yaml       # name, rulesets, and supported ast-grep and codeguard versions
-general/, python/            # one directory per ruleset
+general/, python/, typescript/ # one directory per ruleset
   rules/pattern/<id>.yml     # ast-grep rules
   gates/<id>.yml             # ast-grep rules that decide when a judge rule runs
   rule-tests/<id>-test.yml   # tests for both, with __snapshots__/
