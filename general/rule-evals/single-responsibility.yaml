@@ -372,11 +372,17 @@ cases:
   inputs:
     file: src/staffing/shiftSchedule.ts
     before: |
+      const MAX_STAFF_PER_SHIFT = 4;
+
       export class ShiftSchedule {
         private readonly staffed = new Map<string, string[]>();
 
         assign(shiftId: string, employeeId: string): void {
-          this.staffed.set(shiftId, [...(this.staffed.get(shiftId) ?? []), employeeId]);
+          const staff = this.staffed.get(shiftId) ?? [];
+          if (staff.length >= MAX_STAFF_PER_SHIFT) {
+            throw new Error(`shift ${shiftId} already has ${MAX_STAFF_PER_SHIFT} staff`);
+          }
+          this.staffed.set(shiftId, [...staff, employeeId]);
         }
 
         unassign(shiftId: string, employeeId: string): void {
@@ -384,11 +390,17 @@ cases:
         }
       }
     after: |
+      const MAX_STAFF_PER_SHIFT = 4;
+
       export class ShiftSchedule {
         private readonly staffed = new Map<string, string[]>();
 
         assign(shiftId: string, employeeId: string): void {
-          this.staffed.set(shiftId, [...(this.staffed.get(shiftId) ?? []), employeeId]);
+          const staff = this.staffed.get(shiftId) ?? [];
+          if (staff.length >= MAX_STAFF_PER_SHIFT) {
+            throw new Error(`shift ${shiftId} already has ${MAX_STAFF_PER_SHIFT} staff`);
+          }
+          this.staffed.set(shiftId, [...staff, employeeId]);
         }
 
         unassign(shiftId: string, employeeId: string): void {
@@ -412,11 +424,17 @@ cases:
   inputs:
     file: src/staffing/shiftSchedule.ts
     before: |
+      const MAX_STAFF_PER_SHIFT = 4;
+
       export class ShiftSchedule {
         private readonly staffed = new Map<string, string[]>();
 
         assign(shiftId: string, employeeId: string): void {
-          this.staffed.set(shiftId, [...(this.staffed.get(shiftId) ?? []), employeeId]);
+          const staff = this.staffed.get(shiftId) ?? [];
+          if (staff.length >= MAX_STAFF_PER_SHIFT) {
+            throw new Error(`shift ${shiftId} already has ${MAX_STAFF_PER_SHIFT} staff`);
+          }
+          this.staffed.set(shiftId, [...staff, employeeId]);
         }
 
         unassign(shiftId: string, employeeId: string): void {
@@ -424,11 +442,17 @@ cases:
         }
       }
     after: |
+      const MAX_STAFF_PER_SHIFT = 4;
+
       export class ShiftSchedule {
         private readonly staffed = new Map<string, string[]>();
 
         assign(shiftId: string, employeeId: string): void {
-          this.staffed.set(shiftId, [...(this.staffed.get(shiftId) ?? []), employeeId]);
+          const staff = this.staffed.get(shiftId) ?? [];
+          if (staff.length >= MAX_STAFF_PER_SHIFT) {
+            throw new Error(`shift ${shiftId} already has ${MAX_STAFF_PER_SHIFT} staff`);
+          }
+          this.staffed.set(shiftId, [...staff, employeeId]);
         }
 
         unassign(shiftId: string, employeeId: string): void {
@@ -637,6 +661,9 @@ cases:
 
         classAverage(): number {
           const all = [...this.scores.values()];
+          if (all.length === 0) {
+            throw new Error("no scores recorded");
+          }
           return all.reduce((sum, score) => sum + score, 0) / all.length;
         }
       }
@@ -655,6 +682,9 @@ cases:
 
         classAverage(): number {
           const all = [...this.scores.values()];
+          if (all.length === 0) {
+            throw new Error("no scores recorded");
+          }
           return all.reduce((sum, score) => sum + score, 0) / all.length;
         }
 

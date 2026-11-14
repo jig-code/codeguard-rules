@@ -1,5 +1,33 @@
 id: clamp-call
 snapshots:
+  "def example_left(example_flight):\n    example_seats = example_flight.capacity - example_flight.booked\n    if example_seats < 0:\n        example_seats = 0\n    return example_seats\n":
+    labels:
+    - source: |-
+        if example_seats < 0:
+                example_seats = 0
+      style: primary
+      start: 106
+      end: 153
+    - source: example_seats < 0
+      style: secondary
+      start: 109
+      end: 126
+    - source: "0"
+      style: secondary
+      start: 152
+      end: 153
+    - source: example_seats = 0
+      style: secondary
+      start: 136
+      end: 153
+    - source: example_seats = 0
+      style: secondary
+      start: 136
+      end: 153
+    - source: example_seats = 0
+      style: secondary
+      start: 136
+      end: 153
   "example_balance = max(0, example_account.balance_cents - example_amount)\n":
     labels:
     - source: max(0, example_account.balance_cents - example_amount)
@@ -71,6 +99,30 @@ snapshots:
     - source: example_ratio
       style: secondary
       start: 25
+      end: 38
+  "example_ratio = numpy.clip(example_ratio, 0.0, 1.0)\n":
+    labels:
+    - source: numpy.clip(example_ratio, 0.0, 1.0)
+      style: primary
+      start: 16
+      end: 51
+    - source: numpy.clip
+      style: secondary
+      start: 16
+      end: 26
+  "example_stock = 0 if example_stock < 0 else example_stock\n":
+    labels:
+    - source: 0 if example_stock < 0 else example_stock
+      style: primary
+      start: 16
+      end: 57
+    - source: "0"
+      style: secondary
+      start: 16
+      end: 17
+    - source: example_stock < 0
+      style: secondary
+      start: 21
       end: 38
   "example_stock = max(example_product.stock - example_quantity, 0)\n":
     labels:

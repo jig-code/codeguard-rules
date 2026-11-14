@@ -6,6 +6,23 @@ snapshots:
       style: primary
       start: 0
       end: 40
+  "def example_ship(example_order):\n    if example_order.carrier is None:\n        log(example_order.id)\n        return\n    book(example_order)\n":
+    labels:
+    - source: |-
+        if example_order.carrier is None:
+                log(example_order.id)
+                return
+      style: primary
+      start: 37
+      end: 115
+    - source: return
+      style: secondary
+      start: 109
+      end: 115
+    - source: return
+      style: secondary
+      start: 109
+      end: 115
   "def example_total(example_lines):\n    if not example_lines:\n        return 0\n    return sum(example_lines)\n":
     labels:
     - source: |-
@@ -74,6 +91,30 @@ snapshots:
       style: secondary
       start: 79
       end: 84
+  "if example_config is None:\n    sys.exit(1)\n":
+    labels:
+    - source: |-
+        if example_config is None:
+            sys.exit(1)
+      style: primary
+      start: 0
+      end: 42
+    - source: sys.exit
+      style: secondary
+      start: 31
+      end: 39
+    - source: sys.exit(1)
+      style: secondary
+      start: 31
+      end: 42
+    - source: sys.exit(1)
+      style: secondary
+      start: 31
+      end: 42
+    - source: sys.exit(1)
+      style: secondary
+      start: 31
+      end: 42
   "if example_kind == \"refund\":\n    refund(example_request)\nelif example_kind != \"charge\":\n    raise ExampleError(example_kind)\n":
     labels:
     - source: |-

@@ -1,9 +1,9 @@
 id: union-declares-discriminator
 language: python
 severity: warning
-message: This pydantic field holds a union of two or more pydantic models defined in this file, with no discriminator named.
+message: This model field holds a union of two or more models defined in this file, with no discriminator named.
 note: |
-  Without a discriminator pydantic tries each model in turn: parsing is slower, a payload
+  Without a discriminator the parser tries each model in turn: parsing is slower, a payload
   that fits two models becomes whichever is tried first, and a payload that fits none
   fails with an error per model. Give each model a `Literal` tag field, if it has none,
   and name it: `payment: CardPayment | BankPayment = Field(discriminator="kind")`, or
@@ -13,7 +13,7 @@ metadata:
     A union with no named discriminator is parsed by trying each model in turn, so a
     payload that fits two models becomes whichever is tried first.
 utils:
-  pydantic-model:
+  base-model:
     kind: class_definition
     has: {field: superclasses, kind: argument_list, regex: \bBaseModel\b}
   first-model:
@@ -25,13 +25,13 @@ utils:
       has:
         any:
         - all:
-          - matches: pydantic-model
+          - matches: base-model
           - has: {field: name, pattern: $FIRST}
         - kind: decorated_definition
           has:
             field: definition
             all:
-            - matches: pydantic-model
+            - matches: base-model
             - has: {field: name, pattern: $FIRST}
   second-model:
     kind: identifier
@@ -42,13 +42,13 @@ utils:
       has:
         any:
         - all:
-          - matches: pydantic-model
+          - matches: base-model
           - has: {field: name, pattern: $SECOND}
         - kind: decorated_definition
           has:
             field: definition
             all:
-            - matches: pydantic-model
+            - matches: base-model
             - has: {field: name, pattern: $SECOND}
   pipe-union-of-models:
     kind: binary_operator
@@ -116,4 +116,4 @@ rule:
         inside:
           kind: class_definition
           field: body
-          matches: pydantic-model
+          matches: base-model

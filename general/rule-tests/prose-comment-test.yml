@@ -23,6 +23,16 @@ valid:
 - |
   def total():
       """Return the total."""
+# Module docstring after a shebang
+- |
+  #!/usr/bin/env python
+  """Totals for invoices."""
+# String assigned to a name
+- |
+  LABEL = "total"
+# String passed to a call
+- |
+  print("total")
 invalid:
 # Line comment
 - |
@@ -36,3 +46,18 @@ invalid:
   def total():
       # add the lines
       return 1
+# Commented-out code
+- |
+  # total = sum(lines)
+  total = 0
+# String statement after the first statement of a function
+- |
+  def total():
+      lines = []
+      """add the lines"""
+      return sum(lines)
+# String statement as the first statement of a block that is not a body of a function or class
+- |
+  if lines:
+      """add the lines"""
+      total = sum(lines)

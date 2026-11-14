@@ -4,146 +4,140 @@ rule:
   kind: argument_list
   any:
   - has:
-      any:
-      - kind: identifier
-        pattern: $X
-      - kind: keyword_argument
-        has:
-          field: value
-          kind: identifier
-          pattern: $X
-      follows:
-        any:
-        - any:
-          - kind: call
-            has:
-              field: arguments
-              has:
-                any:
-                - kind: identifier
-                  pattern: $X
-                - kind: keyword_argument
-                  has:
-                    field: value
-                    kind: identifier
-                    pattern: $X
-          - kind: attribute
-            has:
-              field: object
-              kind: identifier
-              pattern: $X
-          - kind: subscript
-            has:
-              field: value
-              kind: identifier
-              pattern: $X
-        - kind: keyword_argument
-          has:
-            any:
-            - kind: call
-              has:
-                field: arguments
-                has:
-                  any:
-                  - kind: identifier
-                    pattern: $X
-                  - kind: keyword_argument
-                    has:
-                      field: value
-                      kind: identifier
-                      pattern: $X
-            - kind: attribute
-              has:
-                field: object
-                kind: identifier
-                pattern: $X
-            - kind: subscript
-              has:
-                field: value
-                kind: identifier
-                pattern: $X
-            field: value
-        stopBy: end
-  - has:
-      any:
-      - kind: identifier
-        pattern: $X
-      - kind: keyword_argument
-        has:
-          field: value
-          kind: identifier
-          pattern: $X
-      precedes:
-        any:
-        - any:
-          - kind: call
-            has:
-              field: arguments
-              has:
-                any:
-                - kind: identifier
-                  pattern: $X
-                - kind: keyword_argument
-                  has:
-                    field: value
-                    kind: identifier
-                    pattern: $X
-          - kind: attribute
-            has:
-              field: object
-              kind: identifier
-              pattern: $X
-          - kind: subscript
-            has:
-              field: value
-              kind: identifier
-              pattern: $X
-        - kind: keyword_argument
-          has:
-            any:
-            - kind: call
-              has:
-                field: arguments
-                has:
-                  any:
-                  - kind: identifier
-                    pattern: $X
-                  - kind: keyword_argument
-                    has:
-                      field: value
-                      kind: identifier
-                      pattern: $X
-            - kind: attribute
-              has:
-                field: object
-                kind: identifier
-                pattern: $X
-            - kind: subscript
-              has:
-                field: value
-                kind: identifier
-                pattern: $X
-            field: value
-        stopBy: end
-  - has:
-      any:
-      - kind: identifier
-        pattern: $V
-      - kind: keyword_argument
-        has:
-          field: value
-          kind: identifier
-          pattern: $V
-      follows:
-        any:
+      all:
+      - any:
         - kind: identifier
           pattern: $X
+        - kind: attribute
+          pattern: $X
+        - kind: keyword_argument
+          has:
+            field: value
+            pattern: $X
+            any:
+            - kind: identifier
+            - kind: attribute
+      - precedes:
+          stopBy: end
+          any:
+          - all:
+            - not:
+                kind: identifier
+            - not:
+                kind: keyword_argument
+            - has:
+                stopBy: end
+                pattern: $X
+                any:
+                - kind: attribute
+                - kind: identifier
+                  not:
+                    any:
+                    - inside:
+                        kind: attribute
+                        field: attribute
+                    - inside:
+                        kind: keyword_argument
+                        field: name
+          - kind: keyword_argument
+            has:
+              field: value
+              not:
+                kind: identifier
+              has:
+                stopBy: end
+                pattern: $X
+                any:
+                - kind: attribute
+                - kind: identifier
+                  not:
+                    any:
+                    - inside:
+                        kind: attribute
+                        field: attribute
+                    - inside:
+                        kind: keyword_argument
+                        field: name
+  - has:
+      all:
+      - any:
+        - kind: identifier
+          pattern: $X
+        - kind: attribute
+          pattern: $X
+        - kind: keyword_argument
+          has:
+            field: value
+            pattern: $X
+            any:
+            - kind: identifier
+            - kind: attribute
+      - follows:
+          stopBy: end
+          any:
+          - all:
+            - not:
+                kind: identifier
+            - not:
+                kind: keyword_argument
+            - has:
+                stopBy: end
+                pattern: $X
+                any:
+                - kind: attribute
+                - kind: identifier
+                  not:
+                    any:
+                    - inside:
+                        kind: attribute
+                        field: attribute
+                    - inside:
+                        kind: keyword_argument
+                        field: name
+          - kind: keyword_argument
+            has:
+              field: value
+              not:
+                kind: identifier
+              has:
+                stopBy: end
+                pattern: $X
+                any:
+                - kind: attribute
+                - kind: identifier
+                  not:
+                    any:
+                    - inside:
+                        kind: attribute
+                        field: attribute
+                    - inside:
+                        kind: keyword_argument
+                        field: name
+  - has:
+      all:
+      - any:
+        - kind: identifier
+          pattern: $V
         - kind: keyword_argument
           has:
             field: value
             kind: identifier
+            pattern: $V
+      - precedes:
+          stopBy: end
+          any:
+          - kind: identifier
             pattern: $X
-        inside:
+          - kind: attribute
+            pattern: $X
+          - kind: keyword_argument
+            has:
+              field: value
+              pattern: $X
+              any:
+              - kind: identifier
+              - kind: attribute
+      - inside:
           kind: function_definition
           stopBy: end
           has:
@@ -153,53 +147,53 @@ rule:
             all:
             - has:
                 field: left
-                kind: identifier
-                pattern: $V
-            - has:
                 any:
-                - kind: call
-                  has:
-                    field: arguments
-                    has:
-                      any:
-                      - kind: identifier
-                        pattern: $X
-                      - kind: keyword_argument
-                        has:
-                          field: value
-                          kind: identifier
-                          pattern: $X
-                - kind: attribute
-                  has:
-                    field: object
+                - kind: identifier
+                  pattern: $V
+                - has:
                     kind: identifier
-                    pattern: $X
-                - kind: subscript
-                  has:
-                    field: value
-                    kind: identifier
-                    pattern: $X
+                    pattern: $V
+            - has:
                 field: right
-        stopBy: end
+                has:
+                  stopBy: end
+                  pattern: $X
+                  any:
+                  - kind: attribute
+                  - kind: identifier
+                    not:
+                      any:
+                      - inside:
+                          kind: attribute
+                          field: attribute
+                      - inside:
+                          kind: keyword_argument
+                          field: name
   - has:
-      any:
-      - kind: identifier
-        pattern: $V
-      - kind: keyword_argument
-        has:
-          field: value
-          kind: identifier
-          pattern: $V
-      precedes:
-        any:
+      all:
+      - any:
         - kind: identifier
-          pattern: $X
+          pattern: $V
         - kind: keyword_argument
           has:
             field: value
             kind: identifier
+            pattern: $V
+      - follows:
+          stopBy: end
+          any:
+          - kind: identifier
             pattern: $X
-        inside:
+          - kind: attribute
+            pattern: $X
+          - kind: keyword_argument
+            has:
+              field: value
+              pattern: $X
+              any:
+              - kind: identifier
+              - kind: attribute
+      - inside:
           kind: function_definition
           stopBy: end
           has:
@@ -209,31 +203,25 @@ rule:
             all:
             - has:
                 field: left
-                kind: identifier
-                pattern: $V
-            - has:
                 any:
-                - kind: call
-                  has:
-                    field: arguments
-                    has:
-                      any:
-                      - kind: identifier
-                        pattern: $X
-                      - kind: keyword_argument
-                        has:
-                          field: value
-                          kind: identifier
-                          pattern: $X
-                - kind: attribute
-                  has:
-                    field: object
+                - kind: identifier
+                  pattern: $V
+                - has:
                     kind: identifier
-                    pattern: $X
-                - kind: subscript
-                  has:
-                    field: value
-                    kind: identifier
-                    pattern: $X
+                    pattern: $V
+            - has:
                 field: right
-        stopBy: end
+                has:
+                  stopBy: end
+                  pattern: $X
+                  any:
+                  - kind: attribute
+                  - kind: identifier
+                    not:
+                      any:
+                      - inside:
+                          kind: attribute
+                          field: attribute
+                      - inside:
+                          kind: keyword_argument
+                          field: name

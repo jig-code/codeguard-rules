@@ -4,3 +4,27 @@ rule:
   any:
   - kind: if_clause
   - kind: continue_statement
+  - kind: call
+    has:
+      field: function
+      regex: (^|\.)(filter|filterfalse)$
+  - kind: if_statement
+    all:
+    - inside:
+        stopBy: end
+        kind: for_statement
+    - not:
+        has:
+          any:
+          - kind: else_clause
+          - kind: elif_clause
+    - has:
+        field: consequence
+        has:
+          stopBy: end
+          any:
+          - kind: yield
+          - kind: call
+            has:
+              field: function
+              regex: \.(append|add)$
