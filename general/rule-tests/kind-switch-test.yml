@@ -45,6 +45,20 @@ valid:
 - |
   def fee(parcel):
       return 500 if parcel.rush else 0
+# enum member comparison arm: a comparison between two fields
+- |
+  def same_size(parcel, other):
+      return parcel.size == other.size
+# getattr arm: getattr with a plain string
+- |
+  def label(parcel):
+      return getattr(parcel, "label")
+# register decorator arm: another decorator
+- |
+  class Parcel:
+      @property
+      def fee(self):
+          return self.base_fee + self.surcharge
 invalid:
 # isinstance call
 - |
@@ -113,3 +127,29 @@ invalid:
 # dict keyed by classes
 - |
   FEES = {Envelope: 100, Box: 400}
+# if/else on one enum member
+- |
+  def fee(parcel):
+      if parcel.size is Size.SMALL:
+          return 100
+      else:
+          return 400
+# conditional expression on one enum member
+- |
+  def fee(parcel):
+      return 100 if parcel.size is Size.SMALL else 400
+# membership test on enum members
+- |
+  def fee(parcel):
+      if parcel.size in (Size.SMALL, Size.MEDIUM):
+          return 100
+      return 400
+# method looked up by a name built from the kind
+- |
+  def fee(self, parcel):
+      return getattr(self, f"fee_for_{parcel.size}")(parcel)
+# function registered for a class
+- |
+  @fee.register
+  def _(parcel: Envelope) -> int:
+      return 100

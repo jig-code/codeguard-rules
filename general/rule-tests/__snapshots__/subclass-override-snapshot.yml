@@ -46,6 +46,48 @@ snapshots:
       style: secondary
       start: 0
       end: 96
+  "class EmptyQueue(FakeQueue):\n    size = lambda self: 0\n":
+    labels:
+    - source: "size = lambda self: 0"
+      style: primary
+      start: 33
+      end: 54
+    - source: size
+      style: secondary
+      start: 33
+      end: 37
+    - source: "lambda self: 0"
+      style: secondary
+      start: 40
+      end: 54
+    - source: |-
+        class EmptyQueue(FakeQueue):
+            size = lambda self: 0
+      style: secondary
+      start: 0
+      end: 54
+    - source: "size = lambda self: 0"
+      style: secondary
+      start: 33
+      end: 54
+    - source: "size = lambda self: 0"
+      style: secondary
+      start: 33
+      end: 54
+    - source: FakeQueue
+      style: secondary
+      start: 17
+      end: 26
+    - source: (FakeQueue)
+      style: secondary
+      start: 16
+      end: 27
+    - source: |-
+        class EmptyQueue(FakeQueue):
+            size = lambda self: 0
+      style: secondary
+      start: 0
+      end: 54
   "class Exporter(Base, metaclass=ABCMeta):\n    def export(self, rows):\n        return rows\n":
     labels:
     - source: |-
