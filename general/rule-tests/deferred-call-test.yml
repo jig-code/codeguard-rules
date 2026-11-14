@@ -1,0 +1,81 @@
+id: deferred-call
+valid:
+# Ordinary method call
+- |
+  order.save()
+# Decorated function that is not a task
+- |
+  @property
+  def total(self):
+      return 1
+# Thread started with arguments
+- |
+  threading.Thread(target=ship_order, args=(order,)).start()
+invalid:
+# Celery delay
+- |
+  ship_order.delay(order)
+# Celery apply_async
+- |
+  ship_order.apply_async(args=[order])
+# Celery signature
+- |
+  chain(ship_order.s(order))
+# RQ enqueue
+- |
+  queue.enqueue(ship_order, order)
+# Dramatiq send
+- |
+  ship_order.send(order)
+# Broker publish
+- |
+  broker.publish("orders", order)
+# Exchange publish
+- |
+  channel.basic_publish(exchange="", routing_key="orders", body=payload)
+# Message produce
+- |
+  producer.produce("orders", value=payload)
+# List push
+- |
+  store.rpush("orders", payload)
+# Stream add
+- |
+  store.xadd("orders", payload)
+# Queue put
+- |
+  jobs.put(order)
+# Process pool submit
+- |
+  pool.submit(ship_order, order)
+# Executor call from an event loop
+- |
+  loop.run_in_executor(pool, ship_order, order)
+# Process pool map
+- |
+  pool.map_async(ship_order, orders)
+# Process pool starmap
+- |
+  pool.starmap_async(ship_order, pairs)
+# Process started with arguments
+- |
+  multiprocessing.Process(target=ship_order, args=(order,)).start()
+# Scheduled job
+- |
+  scheduler.add_job(ship_order, args=[order])
+# Workflow client start
+- |
+  client.start_workflow(ShipOrder.run, order, id="x")
+# Temporal activity call by function
+- |
+  workflow.execute_activity(ship_order, order)
+# Task definition
+- |
+  @shared_task
+  def ship_order(order):
+      pass
+# Task definition with an app decorator
+- |
+  @app.task(bind=True)
+  def ship_order(self, order):
+      pass

@@ -1,0 +1,314 @@
+id: deferred-call
+snapshots:
+  "@app.task(bind=True)\ndef ship_order(self, order):\n    pass\n":
+    labels:
+    - source: |-
+        @app.task(bind=True)
+        def ship_order(self, order):
+            pass
+      style: primary
+      start: 0
+      end: 58
+    - source: "@app.task(bind=True)"
+      style: secondary
+      start: 0
+      end: 20
+    - source: |-
+        def ship_order(self, order):
+            pass
+      style: secondary
+      start: 21
+      end: 58
+  "@shared_task\ndef ship_order(order):\n    pass\n":
+    labels:
+    - source: |-
+        @shared_task
+        def ship_order(order):
+            pass
+      style: primary
+      start: 0
+      end: 44
+    - source: "@shared_task"
+      style: secondary
+      start: 0
+      end: 12
+    - source: |-
+        def ship_order(order):
+            pass
+      style: secondary
+      start: 13
+      end: 44
+  "broker.publish(\"orders\", order)\n":
+    labels:
+    - source: broker.publish("orders", order)
+      style: primary
+      start: 0
+      end: 31
+    - source: publish
+      style: secondary
+      start: 7
+      end: 14
+    - source: broker.publish
+      style: secondary
+      start: 0
+      end: 14
+  "chain(ship_order.s(order))\n":
+    labels:
+    - source: ship_order.s(order)
+      style: primary
+      start: 6
+      end: 25
+    - source: s
+      style: secondary
+      start: 17
+      end: 18
+    - source: ship_order.s
+      style: secondary
+      start: 6
+      end: 18
+  "channel.basic_publish(exchange=\"\", routing_key=\"orders\", body=payload)\n":
+    labels:
+    - source: channel.basic_publish(exchange="", routing_key="orders", body=payload)
+      style: primary
+      start: 0
+      end: 70
+    - source: basic_publish
+      style: secondary
+      start: 8
+      end: 21
+    - source: channel.basic_publish
+      style: secondary
+      start: 0
+      end: 21
+  "client.start_workflow(ShipOrder.run, order, id=\"x\")\n":
+    labels:
+    - source: client.start_workflow(ShipOrder.run, order, id="x")
+      style: primary
+      start: 0
+      end: 51
+    - source: start_workflow
+      style: secondary
+      start: 7
+      end: 21
+    - source: client.start_workflow
+      style: secondary
+      start: 0
+      end: 21
+  "jobs.put(order)\n":
+    labels:
+    - source: jobs.put(order)
+      style: primary
+      start: 0
+      end: 15
+    - source: put
+      style: secondary
+      start: 5
+      end: 8
+    - source: jobs.put
+      style: secondary
+      start: 0
+      end: 8
+  "loop.run_in_executor(pool, ship_order, order)\n":
+    labels:
+    - source: loop.run_in_executor(pool, ship_order, order)
+      style: primary
+      start: 0
+      end: 45
+    - source: run_in_executor
+      style: secondary
+      start: 5
+      end: 20
+    - source: loop.run_in_executor
+      style: secondary
+      start: 0
+      end: 20
+  "multiprocessing.Process(target=ship_order, args=(order,)).start()\n":
+    labels:
+    - source: multiprocessing.Process(target=ship_order, args=(order,))
+      style: primary
+      start: 0
+      end: 57
+    - source: multiprocessing.Process
+      style: secondary
+      start: 0
+      end: 23
+    - source: args
+      style: secondary
+      start: 43
+      end: 47
+    - source: args=(order,)
+      style: secondary
+      start: 43
+      end: 56
+    - source: args=(order,)
+      style: secondary
+      start: 43
+      end: 56
+  "pool.map_async(ship_order, orders)\n":
+    labels:
+    - source: pool.map_async(ship_order, orders)
+      style: primary
+      start: 0
+      end: 34
+    - source: map_async
+      style: secondary
+      start: 5
+      end: 14
+    - source: pool.map_async
+      style: secondary
+      start: 0
+      end: 14
+  "pool.starmap_async(ship_order, pairs)\n":
+    labels:
+    - source: pool.starmap_async(ship_order, pairs)
+      style: primary
+      start: 0
+      end: 37
+    - source: starmap_async
+      style: secondary
+      start: 5
+      end: 18
+    - source: pool.starmap_async
+      style: secondary
+      start: 0
+      end: 18
+  "pool.submit(ship_order, order)\n":
+    labels:
+    - source: pool.submit(ship_order, order)
+      style: primary
+      start: 0
+      end: 30
+    - source: submit
+      style: secondary
+      start: 5
+      end: 11
+    - source: pool.submit
+      style: secondary
+      start: 0
+      end: 11
+  "producer.produce(\"orders\", value=payload)\n":
+    labels:
+    - source: producer.produce("orders", value=payload)
+      style: primary
+      start: 0
+      end: 41
+    - source: produce
+      style: secondary
+      start: 9
+      end: 16
+    - source: producer.produce
+      style: secondary
+      start: 0
+      end: 16
+  "queue.enqueue(ship_order, order)\n":
+    labels:
+    - source: queue.enqueue(ship_order, order)
+      style: primary
+      start: 0
+      end: 32
+    - source: enqueue
+      style: secondary
+      start: 6
+      end: 13
+    - source: queue.enqueue
+      style: secondary
+      start: 0
+      end: 13
+  "scheduler.add_job(ship_order, args=[order])\n":
+    labels:
+    - source: scheduler.add_job(ship_order, args=[order])
+      style: primary
+      start: 0
+      end: 43
+    - source: add_job
+      style: secondary
+      start: 10
+      end: 17
+    - source: scheduler.add_job
+      style: secondary
+      start: 0
+      end: 17
+  "ship_order.apply_async(args=[order])\n":
+    labels:
+    - source: ship_order.apply_async(args=[order])
+      style: primary
+      start: 0
+      end: 36
+    - source: apply_async
+      style: secondary
+      start: 11
+      end: 22
+    - source: ship_order.apply_async
+      style: secondary
+      start: 0
+      end: 22
+  "ship_order.delay(order)\n":
+    labels:
+    - source: ship_order.delay(order)
+      style: primary
+      start: 0
+      end: 23
+    - source: delay
+      style: secondary
+      start: 11
+      end: 16
+    - source: ship_order.delay
+      style: secondary
+      start: 0
+      end: 16
+  "ship_order.send(order)\n":
+    labels:
+    - source: ship_order.send(order)
+      style: primary
+      start: 0
+      end: 22
+    - source: send
+      style: secondary
+      start: 11
+      end: 15
+    - source: ship_order.send
+      style: secondary
+      start: 0
+      end: 15
+  "store.rpush(\"orders\", payload)\n":
+    labels:
+    - source: store.rpush("orders", payload)
+      style: primary
+      start: 0
+      end: 30
+    - source: rpush
+      style: secondary
+      start: 6
+      end: 11
+    - source: store.rpush
+      style: secondary
+      start: 0
+      end: 11
+  "store.xadd(\"orders\", payload)\n":
+    labels:
+    - source: store.xadd("orders", payload)
+      style: primary
+      start: 0
+      end: 29
+    - source: xadd
+      style: secondary
+      start: 6
+      end: 10
+    - source: store.xadd
+      style: secondary
+      start: 0
+      end: 10
+  "workflow.execute_activity(ship_order, order)\n":
+    labels:
+    - source: workflow.execute_activity(ship_order, order)
+      style: primary
+      start: 0
+      end: 44
+    - source: execute_activity
+      style: secondary
+      start: 9
+      end: 25
+    - source: workflow.execute_activity
+      style: secondary
+      start: 0
+      end: 25
