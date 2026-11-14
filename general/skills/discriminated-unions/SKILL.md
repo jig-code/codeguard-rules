@@ -1,18 +1,13 @@
 ---
 name: discriminated-unions
-description: A union of record types that a parser builds from outside data never lets the parser pick the variant by anything other than one field that the union names to the parser and that holds a different single literal value in each variant.
+description: A tagged union never has two variants whose tag fields can hold the same value.
 ---
 
 # Discriminated Unions
 
-A union of record types that a parser builds from outside data never lets the parser
-pick the variant by anything other than one field that the union names to the parser and
-that holds a different single literal value in each variant.
+A tagged union never has two variants whose tag fields can hold the same value.
 
 ## Why
 
-Without a tag the parser tries each variant in turn, so a payload that fits two variants
-becomes whichever is tried first, and a payload that fits none fails with an error per
-variant instead of one naming the tag.
-
-Source: pydantic's and zod's documentation of discriminated unions.
+When two variants can hold the same tag value, code that narrows or dispatches on the tag
+cannot tell those variants apart, so data of one variant is read as the other.

@@ -1,12 +1,13 @@
 ---
 name: make-illegal-states-unrepresentable
-description: A type never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type.
+description: A type whose instances exist only in the program's memory never declares a field as optional when the domain decides whether that field is set from the value of another field of the same type.
 ---
 
 # Make Illegal States Unrepresentable
 
-A type never declares a field as optional when the domain decides whether that field is
-set from the value of another field of the same type.
+A type whose instances exist only in the program's memory never declares a field as
+optional when the domain decides whether that field is set from the value of another field
+of the same type.
 
 ## Why
 

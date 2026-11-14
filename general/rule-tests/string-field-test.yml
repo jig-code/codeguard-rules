@@ -1,0 +1,24 @@
+id: string-field
+valid:
+# Module-level str annotation
+- |
+  kind: str = 'card'
+# Class field annotated with another type
+- |
+  class Card(TypedDict):
+      retries: int
+# Local str annotation in a method
+- |
+  class Card:
+      def label(self):
+          kind: str = 'card'
+          return kind
+invalid:
+# Class field annotated str with no default
+- |
+  class Card(TypedDict):
+      kind: str
+# Class field annotated str with a default
+- |
+  class Card:
+      kind: str = 'card'
