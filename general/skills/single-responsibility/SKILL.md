@@ -1,14 +1,12 @@
 ---
 name: single-responsibility
-description: A function or class never holds code that belongs to two different concerns, where a concern is one set of business rules, one outside system or one file or message format, and the code that a function holds is the code written in the function's own body, not the code of the functions that the function calls.
+description: A function or class never holds both business rules and the details of a data format or of an outside system's interface.
 ---
 
 # Single Responsibility
 
-A function or class never holds code that belongs to two different concerns, where a
-concern is one set of business rules, one outside system or one file or message format,
-and the code that a function holds is the code written in the function's own body, not
-the code of the functions that the function calls.
+A function or class never holds both business rules and the details of a data format or
+of an outside system's interface.
 
 ## Why
 
