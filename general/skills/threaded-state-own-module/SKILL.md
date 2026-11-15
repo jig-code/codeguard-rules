@@ -11,8 +11,8 @@ declaration of that type uses.
 
 ## Why
 
-Kept in the workflow module, every step that needs the state imports the whole
-workflow, which imports the steps back; kept apart, each step imports only the state.
+When the state's type is defined in the workflow module, every step that needs the
+state imports the whole workflow, which imports the steps back.
 
 Source: house convention, from the Common Closure Principle (Robert C. Martin, *Agile
 Software Development*, 2002).
