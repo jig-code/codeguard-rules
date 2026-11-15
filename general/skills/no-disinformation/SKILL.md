@@ -11,7 +11,7 @@ qualifier that the code of that function, method or class makes false.
 ## Why
 
 Readers trust names and read the body only when the name leaves them unsure, so a false
-name sends them wrong with no reason to look: they call `validate` expecting an error for
-bad input and get none.
+name sends them wrong with no reason to look: a reader calls a function named validate
+expecting an error for bad input and gets none.
 
 Source: avoid disinformation (Robert C. Martin, *Clean Code*, 2008, chapter 2).
