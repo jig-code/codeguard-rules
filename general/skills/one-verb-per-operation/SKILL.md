@@ -11,7 +11,8 @@ for that same operation.
 
 ## Why
 
-One operation under two verbs reads as two operations: a reader who knows `parse` looks
-for `parse_json` and doesn't find it, or reads `interpret` and wonders how it differs.
+One operation under two verbs reads as two operations: a reader who knows one verb
+searches for it and misses the function named with the other, or reads the other verb
+and wonders how the two operations differ.
 
 Source: Robert C. Martin, *Clean Code* (2008), chapter 2, "Pick One Word per Concept".
