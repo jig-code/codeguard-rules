@@ -10,7 +10,7 @@ that comment or docstring, or from earlier versions of that code.
 
 ## Why
 
-A comment restating code goes stale with it, and readers can't tell which to trust; a
-comment giving an outside reason is the only kind the code can't replace.
+A comment that restates code goes stale when the code changes, and readers can't tell
+whether to trust the comment or the code.
 
 Source: Robert C. Martin, *Clean Code* (2008), chapter 4, "Comments".
