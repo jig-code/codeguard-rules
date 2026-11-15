@@ -23,11 +23,9 @@ name, and [basedpyright](https://docs.basedpyright.com) with these rules on:
 
 ### `general`
 
-Architecture rules for any language. Each is one judge rule: its `SKILL.md` states the
-convention in no language's terms, and a supplement beside it for each language,
-`python.md` and `typescript.md`, gives that language's forms and examples. The judge
-gets the skill and the supplement for the file's language. Its binding's `paths` name
-the languages it runs on.
+Architecture rules for any language. Each is one judge rule: its `SKILL.md` is a title,
+one statement of the convention in no language's terms, and `## Why`. Its binding's
+`paths` name the languages it runs on.
 
 | Rule | Checks | Validated |
 |---|---|---|
