@@ -1,6 +1,6 @@
 """Print the judge rules a diff can change the verdicts of, one id per line.
 
-A judge rule's verdicts change with its skill, its binding (which names its model), its
+A judge rule's verdicts change with its rule file, its binding (which names its model), its
 eval, and the gates its binding triggers on. A change to the package config, the CI
 workflow or this script can change every rule's. CI passes each id to
 `codeguard eval --rule`, and skips the eval when none is printed.
@@ -29,7 +29,7 @@ def judge_triggers(ruleset: Path) -> dict[str, set[str]]:
     rules: dict[str, set[str]] = {}
     for binding in sorted((ruleset / "bindings").glob("*.yaml")):
         config = yaml.safe_load(binding.read_text())
-        if "skill" in config:
+        if (ruleset / "rules" / "judge" / f"{config['rule']}.md").is_file():
             rules[binding.stem] = set(config.get("triggers", []))
     return rules
 
@@ -42,8 +42,8 @@ def affected(ruleset: str, rules: dict[str, set[str]], paths: set[str]) -> set[s
         parts = Path(path).parts
         if len(parts) < 3 or parts[0] != ruleset:
             continue
-        kind, name = parts[1], Path(parts[2]).stem
-        if kind in {"skills", "bindings", "rule-evals"} and name in rules:
+        kind, name = "/".join(parts[1:-1]), Path(parts[-1]).stem
+        if kind in {"rules/judge", "bindings", "rule-evals"} and name in rules:
             kept.add(name)
         elif kind == "gates":
             kept |= {rule for rule, triggers in rules.items() if name in triggers}

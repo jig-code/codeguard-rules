@@ -1,0 +1,4 @@
+# codeguard config for CI's Bedrock eval leg, through CODEGUARD_CONFIG; the leg sets the
+# model through CODEGUARD_JUDGE__MODEL.
+judge:
+  provider: bedrock
