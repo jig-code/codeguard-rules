@@ -152,25 +152,33 @@ cases:
                 calibrated = self.calibrator.calibrate(reading)
                 self.store.save(calibrated)
     before: |
-      from sensors.pipeline import ReadingPipeline
+      from sensors.calibration import Calibrator
+      from sensors.decoding import Decoder
+      from sensors.storage import ReadingStore
 
 
       class Backfill:
-          def __init__(self, pipeline: ReadingPipeline) -> None:
-              self.pipeline = pipeline
+          def __init__(self, decoder: Decoder, calibrator: Calibrator, store: ReadingStore) -> None:
+              self.decoder = decoder
+              self.calibrator = calibrator
+              self.store = store
     after: |
-      from sensors.pipeline import ReadingPipeline
+      from sensors.calibration import Calibrator
+      from sensors.decoding import Decoder
+      from sensors.storage import ReadingStore
 
 
       class Backfill:
-          def __init__(self, pipeline: ReadingPipeline) -> None:
-              self.pipeline = pipeline
+          def __init__(self, decoder: Decoder, calibrator: Calibrator, store: ReadingStore) -> None:
+              self.decoder = decoder
+              self.calibrator = calibrator
+              self.store = store
 
           def replay(self, frames: list[bytes]) -> None:
               for frame in frames:
-                  reading = self.pipeline.decoder.decode(frame)
-                  calibrated = self.pipeline.calibrator.calibrate(reading)
-                  self.pipeline.store.save(calibrated)
+                  reading = self.decoder.decode(frame)
+                  calibrated = self.calibrator.calibrate(reading)
+                  self.store.save(calibrated)
   expected_output:
     outcome: invalid
 - name: backfill hands each frame to the reading pipeline
@@ -727,22 +735,34 @@ cases:
           }
         }
     before: |
-      import type { ImportJob } from "./importJob";
+      import type { Parser } from "./parser";
+      import type { Validator } from "./validator";
+      import type { Writer } from "./writer";
 
       export class RetryQueue {
-        constructor(private readonly job: ImportJob) {}
+        constructor(
+          private readonly parser: Parser,
+          private readonly validator: Validator,
+          private readonly writer: Writer,
+        ) {}
       }
     after: |
-      import type { ImportJob } from "./importJob";
+      import type { Parser } from "./parser";
+      import type { Validator } from "./validator";
+      import type { Writer } from "./writer";
 
       export class RetryQueue {
-        constructor(private readonly job: ImportJob) {}
+        constructor(
+          private readonly parser: Parser,
+          private readonly validator: Validator,
+          private readonly writer: Writer,
+        ) {}
 
         async retry(failed: Buffer[]): Promise<void> {
           for (const upload of failed) {
-            const records = this.job.parser.parse(upload);
-            const accepted = this.job.validator.check(records);
-            await this.job.writer.write(accepted);
+            const records = this.parser.parse(upload);
+            const accepted = this.validator.check(records);
+            await this.writer.write(accepted);
           }
         }
       }

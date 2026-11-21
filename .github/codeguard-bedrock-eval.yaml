@@ -1,0 +1,4 @@
+# codeguard config for CI's Bedrock eval leg, through CODEGUARD_CONFIG.
+judge:
+  provider: bedrock
+  model: us.anthropic.claude-haiku-5-5
