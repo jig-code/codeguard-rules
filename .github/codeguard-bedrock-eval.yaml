@@ -1,4 +1,4 @@
-# codeguard config for CI's Bedrock eval leg, through CODEGUARD_CONFIG. The leg sets the
-# model to the BEDROCK_MODEL variable's inference profile, through CODEGUARD_JUDGE__MODEL.
+# codeguard config for CI's Bedrock eval leg, through CODEGUARD_CONFIG; the leg sets the
+# model through CODEGUARD_JUDGE__MODEL.
 judge:
   provider: bedrock

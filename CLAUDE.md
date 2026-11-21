@@ -10,7 +10,7 @@
 
   ```bash
   CODEGUARD_CONFIG=.github/codeguard-bedrock-eval.yaml CODEGUARD_JUDGE__MODEL=<Bedrock inference profile> codeguard eval --rule <id>
-  CODEGUARD_CONFIG=.github/codeguard-gemini-eval.yaml codeguard eval --rule <id>
+  CODEGUARD_CONFIG=.github/codeguard-gemini-eval.yaml CODEGUARD_JUDGE__MODEL=gemini-4-argon codeguard eval --rule <id>
   ```
 
 ## Repositories
