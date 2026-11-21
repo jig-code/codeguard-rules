@@ -14,10 +14,11 @@ This repository owns its rules' accuracy, and proves it only with its own tests 
 through codeguard: `codeguard test` for pattern rules and gates, `codeguard eval` for
 judge rules. Reviewing other code, codeguard's included, is not part of that.
 
-Judge rules are judged with their binding's `provider` and `model`: Gemini on Vertex AI
-(`dry` on `gemini-4-argon`), in local `task eval` and in CI. CI's `eval`
-job also judges each affected rule with Claude Haiku 5.5 on Bedrock. A rule moves to another
-model only by setting it in its binding and passing its evals there.
+A judge rule's binding names no `provider` or `model`: an eval judges it with the judge in
+the config `CODEGUARD_CONFIG` names. CI's `eval` job judges each affected rule with each
+config in its matrix, `.github/codeguard-bedrock-eval.yaml` and
+`.github/codeguard-gemini-eval.yaml`, and a rule merges only when it passes on both. Run
+`task eval` locally with each of those configs.
 
 ## Repositories
 
