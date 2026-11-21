@@ -1,24 +1,17 @@
 # codeguard-rules
 
-The rule package codeguard reviews with. [README.md](README.md) explains the layout and
-the tests.
-
 ## Rules
 
-Before adding or changing a rule, and whenever a rule test or eval fails, flips between
-runs or reports a warning, load codeguard's `writing-rules` skill and follow it, and the
-references it points to. A case that fails is fixed in the rule's criterion or in the
-case, never by re-running it until it passes.
+- Before adding or changing a rule, and whenever a rule test or eval fails, flips between
+  runs or reports a warning, load codeguard's `writing-rules` skill and follow it.
+- Fix a failing case in the rule or in the case, never by re-running it until it passes.
+- Prove a rule only with its own tests, never by reviewing other code: `codeguard test`
+  for pattern rules and gates, and for a judge rule its eval with each CI config:
 
-This repository owns its rules' accuracy, and proves it only with its own tests run
-through codeguard: `codeguard test` for pattern rules and gates, `codeguard eval` for
-judge rules. Reviewing other code, codeguard's included, is not part of that.
-
-A judge rule's binding names no `provider` or `model`: an eval judges it with the judge in
-the config `CODEGUARD_CONFIG` names. CI's `eval` job judges each affected rule with each
-config in its matrix, `.github/codeguard-bedrock-eval.yaml` and
-`.github/codeguard-gemini-eval.yaml`, and a rule merges only when it passes on both. Run
-`task eval` locally with each of those configs.
+  ```bash
+  CODEGUARD_CONFIG=.github/codeguard-bedrock-eval.yaml codeguard eval --rule <id>
+  CODEGUARD_CONFIG=.github/codeguard-gemini-eval.yaml codeguard eval --rule <id>
+  ```
 
 ## Repositories
 
