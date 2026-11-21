@@ -7,7 +7,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 env:
-  CODEGUARD_REF: 5f6c7ff2d6c9df647eb031bc2c7e7b938ce4be36
+  CODEGUARD_REF: 9efbac682d924e37feba72f1e162349e0cdeff82
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -82,6 +82,7 @@ jobs:
           RULES: ${{ steps.affected.outputs.rules }}
           CODEGUARD_CONFIG: ${{ matrix.config }}
           CODEGUARD_JUDGE__MODEL: ${{ matrix.model }}
+          CODEGUARD_JUDGE__REQUEST_TIME_LIMIT_SECONDS: 180
           CODEGUARD_JUDGE__GEMINI__PROJECT: ${{ vars.GOOGLE_CLOUD_PROJECT }}
           CODEGUARD_JUDGE__GEMINI__CREDENTIALS_FILE: ${{ steps.google.outputs.credentials_file_path }}
           LOGFIRE_TOKEN: ${{ secrets.LOGFIRE_TOKEN }}
