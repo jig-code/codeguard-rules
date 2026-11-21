@@ -27,9 +27,9 @@ Architecture rules for any language. Each is one judge rule, `rules/judge/<id>.m
 states the convention in no language's terms. Its binding's `paths` name the languages it
 runs on.
 
-| Rule | Checks | Validated |
-|---|---|---|
-| `dry` | Don't Repeat Yourself: code doesn't hold a reason to change that other code in the program already holds | Not yet |
+| Rule | Validated |
+|---|---|
+| [`dry`](general/rules/judge/dry.md) | Not yet |
 
 Each rule passes 20 of 20 eval runs on each of CI's eval models before it ships, and CI's
 3 runs on each before it merges. One check follows, and doesn't hold up the next rule:
@@ -82,12 +82,6 @@ provider, a pattern rule once its rule tests cover each branch and pass. codegua
 `writing-rules` skill has the steps, and [drafts/README.md](drafts/README.md) the
 conditions.
 
-The bindings here name no `provider` or `model`, so a review judges each rule with the
-project's judge (`judge` in its `.codeguard/config.yaml`), and an eval with the judge in
-the config `CODEGUARD_CONFIG` names. CI judges each rule with every model in its eval
-matrix: Claude on Amazon Bedrock, and Gemini on Vertex AI.
-[drafts/README.md](drafts/README.md) lists the drafts' models.
-
 A judge rule runs on a changed file only when a changed line falls inside code it could
 flag. Its binding's `triggers` names that code: a change kind built into codeguard, such
 as `fixture` or `import`, or a gate in the ruleset's `gates/`, an ast-grep rule
@@ -115,6 +109,7 @@ packages:
 - `rules.<id>` overrides `paths`, `exclude_paths` or `severity`. `exclude_paths: []`
   brings test files back into an app rule.
 - `codeguard update` moves `ref` to the newest tag.
+- The bindings name no judge: set `judge` in the project's `.codeguard/config.yaml`.
 
 Diagnostics name a rule by package, ruleset and id: `betterwithranch/python/no-del-param`.
 
@@ -145,27 +140,6 @@ task eval                # codeguard eval: judge each judge rule eval case with 
 ```
 
 `CODEGUARD=<path>` runs another codeguard build, such as a checkout's `.venv/bin/codeguard`.
-`CODEGUARD_CONFIG=.github/codeguard-gemini-eval.yaml CODEGUARD_JUDGE__MODEL=gemini-4-argon task eval`
-judges as CI's Gemini leg does, so it needs `CODEGUARD_JUDGE__GEMINI__PROJECT` and a Google Cloud sign-in with the
-Vertex AI User role; `CODEGUARD_CONFIG=.github/codeguard-bedrock-eval.yaml` with
-`CODEGUARD_JUDGE__MODEL=<Bedrock inference profile>` judges as its Bedrock leg does, with
-AWS credentials. codeguard's `docs/judges.md` has the setup.
-
-A Claude Code session here installs codeguard at the commit CI pins (`CODEGUARD_REF`
-in `.github/workflows/ci.yaml`) when it starts, through `.claude/hooks/session-start.sh`,
-so local runs match CI. Moving to a new codeguard commit is that one line.
-
-CI judges only the rules a change can affect: a rule whose rule file, binding, eval or a
-trigger's gate changed, or every rule when `codeguard-package.yaml`, the workflow or
-`scripts/affected_judge_rules.py` changed. That script prints the affected rules, and
-CI passes each to `codeguard eval --rule`. The `eval` job runs once per config file in
-its matrix, which it passes as `CODEGUARD_CONFIG`: `.github/codeguard-bedrock-eval.yaml`
-and `.github/codeguard-gemini-eval.yaml`. Each file's `judge` names the provider the leg
-judges every rule with, and each leg sets its model through `CODEGUARD_JUDGE__MODEL`:
-the Bedrock leg the inference profile in the repository variable `BEDROCK_MODEL`, the
-Gemini leg `gemini-4-argon`. The Gemini leg also makes 10 judge calls at once.
-Locally, `codeguard eval --rule <id> --repeat 20` judges one rule with the judge in the
-file `CODEGUARD_CONFIG` names.
 
 [Which test to write](https://github.com/jig-code/codeguard#which-test-to-write)
 says which test covers which change. Every judge rule has a rule eval with `invalid`,
@@ -173,18 +147,5 @@ says which test covers which change. Every judge rule has a rule eval with `inva
 violation, a clear non-violation, or clearly outside the rule's gate. A case a reviewer
 could argue either way doesn't belong in a rule eval.
 
-A case or finding that flips between runs means the rule's criterion or the case is unclear. Fix the criterion or the case. Don't
-re-run or loosen the gate. [CLAUDE.md](CLAUDE.md) has the details.
-
-The rules are tested only by their own cases, through codeguard, so they are shown
-accurate as codeguard runs them. CI's `test` job runs `codeguard test`, then, on a pull
-request, its `eval` job runs `codeguard eval --repeat 3` with each config; a case that
-fails or isn't judged in any run fails the build. Pushes to `main` run only `test`. The
-Bedrock leg runs in `us-west-2`: the job signs in to AWS with GitHub's OIDC token by
-assuming the role in the repository variable `CLAUDE_AWS_ROLE`. The Gemini leg runs on
-Vertex AI in the `global` location: the job signs in with `google-github-actions/auth`
-using the secret `GOOGLE_CREDENTIALS` (a service account key with the Vertex AI User
-role), and bills the project in the variable `GOOGLE_CLOUD_PROJECT`. codeguard's
-`docs/judges.md` has the setup.
-CI runs the codeguard commit in `CODEGUARD_REF` in `.github/workflows/ci.yaml`, so
-moving to a new commit is a change here, which judges every rule.
+A case or finding that flips between runs means the rule's criterion or the case is
+unclear. Fix the criterion or the case. Don't re-run or loosen the gate. [CLAUDE.md](CLAUDE.md) has the details.
