@@ -9,7 +9,7 @@
   for pattern rules and gates, and for a judge rule its eval with each CI config:
 
   ```bash
-  CODEGUARD_CONFIG=.github/codeguard-bedrock-eval.yaml codeguard eval --rule <id>
+  CODEGUARD_CONFIG=.github/codeguard-bedrock-eval.yaml CODEGUARD_JUDGE__MODEL=<Bedrock inference profile> codeguard eval --rule <id>
   CODEGUARD_CONFIG=.github/codeguard-gemini-eval.yaml codeguard eval --rule <id>
   ```
 

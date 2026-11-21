@@ -76,6 +76,7 @@ jobs:
         env:
           RULES: ${{ steps.affected.outputs.rules }}
           CODEGUARD_CONFIG: ${{ matrix.config }}
+          CODEGUARD_JUDGE__MODEL: ${{ matrix.config == '.github/codeguard-bedrock-eval.yaml' && vars.BEDROCK_MODEL || '' }}
           CODEGUARD_JUDGE__GEMINI__PROJECT: ${{ vars.GOOGLE_CLOUD_PROJECT }}
           CODEGUARD_JUDGE__GEMINI__CREDENTIALS_FILE: ${{ steps.google.outputs.credentials_file_path }}
           LOGFIRE_TOKEN: ${{ secrets.LOGFIRE_TOKEN }}

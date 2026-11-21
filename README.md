@@ -147,8 +147,9 @@ task eval                # codeguard eval: judge each judge rule eval case with 
 `CODEGUARD=<path>` runs another codeguard build, such as a checkout's `.venv/bin/codeguard`.
 `CODEGUARD_CONFIG=.github/codeguard-gemini-eval.yaml task eval` judges as CI's Gemini leg
 does, so it needs `CODEGUARD_JUDGE__GEMINI__PROJECT` and a Google Cloud sign-in with the
-Vertex AI User role; `CODEGUARD_CONFIG=.github/codeguard-bedrock-eval.yaml` judges as its
-Bedrock leg does, with AWS credentials. codeguard's `docs/judges.md` has the setup.
+Vertex AI User role; `CODEGUARD_CONFIG=.github/codeguard-bedrock-eval.yaml` with
+`CODEGUARD_JUDGE__MODEL=<Bedrock inference profile>` judges as its Bedrock leg does, with
+AWS credentials. codeguard's `docs/judges.md` has the setup.
 
 A Claude Code session here installs codeguard at the commit CI pins (`CODEGUARD_REF`
 in `.github/workflows/ci.yaml`) when it starts, through `.claude/hooks/session-start.sh`,
@@ -159,8 +160,10 @@ trigger's gate changed, or every rule when `codeguard-package.yaml`, the workflo
 `scripts/affected_judge_rules.py` changed. That script prints the affected rules, and
 CI passes each to `codeguard eval --rule`. The `eval` job runs once per config file in
 its matrix, which it passes as `CODEGUARD_CONFIG`: `.github/codeguard-bedrock-eval.yaml`
-and `.github/codeguard-gemini-eval.yaml`. Each file's `judge` names the provider and
-model the leg judges every rule with; the Gemini leg also makes 10 judge calls at once.
+and `.github/codeguard-gemini-eval.yaml`. Each file's `judge` names the provider the leg
+judges every rule with. The Gemini file also names its model and makes 10 judge calls at
+once; the Bedrock leg takes its model, an inference profile, from the repository variable
+`BEDROCK_MODEL` through `CODEGUARD_JUDGE__MODEL`.
 Locally, `codeguard eval --rule <id> --repeat 20` judges one rule with the judge in the
 file `CODEGUARD_CONFIG` names.
 
