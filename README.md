@@ -94,7 +94,7 @@ In the project's `.codeguard/config.yaml`:
 
 ```yaml
 packages:
-  - git: https://github.com/betterwithranch/codeguard-rules.git
+  - git: https://github.com/jig-code/codeguard-rules.git
     ref: v0.2.0
     rulesets:
       python:
@@ -111,7 +111,7 @@ packages:
 - `codeguard update` moves `ref` to the newest tag.
 - The bindings name no judge: set `judge` in the project's `.codeguard/config.yaml`.
 
-Diagnostics name a rule by package, ruleset and id: `betterwithranch/python/no-del-param`.
+Diagnostics name a rule by package, ruleset and id: `codeguard/python/no-del-param`.
 
 The pattern rules work with ast-grep `>=0.45`, set in `codeguard-package.yaml`. A
 project that sets `ast-grep` in its config must pick a version in that range.
