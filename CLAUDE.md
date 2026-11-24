@@ -17,3 +17,14 @@
 
 Work only in this repository. Don't attach other repositories; ask the user for any
 reference material you need.
+
+## Pull requests
+
+- Finish an open PR before starting new work, unless the new work blocks it. Don't open
+  a new PR while an open one can be finished.
+- Fix a PR on its own branch; never open a replacement PR.
+- Before calling a PR ready, have a fresh reviewer check its whole diff against main for
+  simplicity and against every quality and testing skill that applies, line by line,
+  comments and docstrings included. Fix its findings first.
+- A PR doesn't fix violations already on main.
+- A PR description states the final commit's results, and nothing about earlier attempts.
