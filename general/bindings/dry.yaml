@@ -1,5 +1,5 @@
 rule: dry
-severity: warning
+severity: error
 paths: ["**/*.py", "**/*.ts", "**/*.tsx"]
 exclude_paths:
   - "**/test_*.py"
